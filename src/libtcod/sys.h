@@ -242,9 +242,9 @@ TCOD_DEPRECATED("This API is deprecated, use SDL_PollEvent instead.")
 TCODLIB_API TCOD_event_t TCOD_sys_check_for_event(int eventMask, TCOD_key_t* key, TCOD_mouse_t* mouse);
 
 /* clipboard */
-TCOD_DEPRECATED("Use the SDL2 API to handle the clipboard.")
+TCOD_DEPRECATED("Use the SDL API to handle the clipboard.")
 TCODLIB_API bool TCOD_sys_clipboard_set(const char* value);
-TCOD_DEPRECATED("Use the SDL2 API to handle the clipboard.")
+TCOD_DEPRECATED("Use the SDL API to handle the clipboard.")
 TCODLIB_API char* TCOD_sys_clipboard_get(void);
 
 /* SDL renderer callback */

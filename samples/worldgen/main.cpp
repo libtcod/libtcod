@@ -25,7 +25,7 @@
  */
 #include "main.hpp"
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 #include <algorithm>
 #include <array>
@@ -158,10 +158,10 @@ int main(int argc, char* argv[]) {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
-        case SDL_QUIT:
+        case SDL_EVENT_QUIT:
           std::exit(EXIT_SUCCESS);
           break;
-        case SDL_MOUSEMOTION: {
+        case SDL_EVENT_MOUSE_MOTION: {
           const auto mouse_xy_d = context.pixel_to_tile_coordinates(
               std::array<double, 2>{static_cast<double>(event.motion.x), static_cast<double>(event.motion.y)});
           mouse_subtile_xy = {static_cast<float>(mouse_xy_d.at(0)), static_cast<float>(mouse_xy_d.at(1))};

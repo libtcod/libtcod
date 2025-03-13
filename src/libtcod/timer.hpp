@@ -32,7 +32,7 @@
 #pragma once
 #ifndef LIBTCOD_TIMER_HPP_
 #define LIBTCOD_TIMER_HPP_
-#include <SDL_timer.h>
+#include <SDL3/SDL_timer.h>
 
 #include <algorithm>
 #include <cstddef>

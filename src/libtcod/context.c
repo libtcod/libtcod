@@ -32,7 +32,7 @@
 #include "context.h"
 
 #ifndef NO_SDL
-#include <SDL_events.h>
+#include <SDL3/SDL_events.h>
 #endif  // NO_SDL
 #ifndef TCOD_NO_PNG
 #include <lodepng.h>
@@ -97,24 +97,29 @@ TCOD_Error TCOD_context_screen_pixel_to_tile_i(struct TCOD_Context* context, int
 TCOD_Error TCOD_context_convert_event_coordinates(struct TCOD_Context* context, union SDL_Event* event) {
   if (!event) return TCOD_E_OK;
   switch (event->type) {
-    case SDL_MOUSEMOTION: {
-      int tile_x = event->motion.x;
-      int tile_y = event->motion.y;
+    case SDL_EVENT_MOUSE_MOTION: {
+      int tile_x = (int)event->motion.x;
+      int tile_y = (int)event->motion.y;
       int previous_tile_x = event->motion.x - event->motion.xrel;
       int previous_tile_y = event->motion.y - event->motion.yrel;
       TCOD_Error err = TCOD_context_screen_pixel_to_tile_i(context, &tile_x, &tile_y);
       if (err < 0) return err;
       err = TCOD_context_screen_pixel_to_tile_i(context, &previous_tile_x, &previous_tile_y);
       if (err < 0) return err;
-      event->motion.x = tile_x;
-      event->motion.y = tile_y;
+      event->motion.x = (float)tile_x;
+      event->motion.y = (float)tile_y;
       event->motion.xrel = tile_x - previous_tile_x;
       event->motion.yrel = tile_y - previous_tile_y;
     } break;
-    case SDL_MOUSEBUTTONDOWN:
-    case SDL_MOUSEBUTTONUP:
-      return TCOD_context_screen_pixel_to_tile_i(context, &event->button.x, &event->button.y);
-      break;
+    case SDL_EVENT_MOUSE_BUTTON_DOWN:
+    case SDL_EVENT_MOUSE_BUTTON_UP: {
+      int x = (int)event->button.x;
+      int y = (int)event->button.y;
+      TCOD_Error err = TCOD_context_screen_pixel_to_tile_i(context, &x, &y);
+      event->button.x = (float)x;
+      event->button.y = (float)y;
+      return err;
+    } break;
   }
   return TCOD_E_OK;
 }

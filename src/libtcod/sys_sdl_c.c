@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #ifndef NO_SDL
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #endif  // NO_SDL
 #include <ctype.h>
 #include <stdio.h>
@@ -283,7 +283,7 @@ void TCOD_sys_set_fullscreen(bool fullscreen) {
   if (!window) {
     return;
   }
-  SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+  SDL_SetWindowFullscreen(window, fullscreen);
 }
 
 void TCOD_sys_set_scale_factor(float value) {
@@ -363,25 +363,25 @@ static void TCOD_sys_convert_event(const SDL_Event* ev, TCOD_key_t* ret) {
   /* SDL2 does not map keycodes and modifiers to characters, this is on the developer.
           Presumably in order to avoid problems with different keyboard layouts, they
           are expected to write their own key mapping editing code for the user.  */
-  if (SDLK_SCANCODE_MASK == (kev->keysym.sym & SDLK_SCANCODE_MASK)) {
+  if (SDLK_SCANCODE_MASK == (kev->key & SDLK_SCANCODE_MASK)) {
     ret->c = 0;
-  } else if (kev->keysym.sym < 0 || kev->keysym.sym >= 256) {
-    TCOD_set_errorvf("Old event API does not support key: %s", SDL_GetKeyName(kev->keysym.sym));
+  } else if (kev->key < 0 || kev->key >= 256) {
+    TCOD_set_errorvf("Old event API does not support key: %s", SDL_GetKeyName(kev->key));
     ret->c = 0;
   } else {
-    ret->c = (char)kev->keysym.sym;
+    ret->c = (char)kev->key;
   }
-  if ((kev->keysym.mod & (KMOD_LCTRL | KMOD_RCTRL)) != 0) {
+  if ((kev->mod & (SDL_KMOD_LCTRL | SDL_KMOD_RCTRL)) != 0) {
     /* when pressing CTRL-A, we don't get unicode for 'a', but unicode for CTRL-A = 1. Fix it */
-    if (kev->keysym.sym >= SDLK_a && kev->keysym.sym <= SDLK_z) {
-      ret->c = (char)('a' + (kev->keysym.sym - SDLK_a));
+    if (kev->key >= SDLK_A && kev->key <= SDLK_Z) {
+      ret->c = (char)('a' + (kev->key - SDLK_A));
     }
   }
-  if (ev->type == SDL_KEYDOWN)
-    TCOD_sys_set_vk(kev->keysym.sym, ret->c);
-  else if (ev->type == SDL_KEYUP)
-    ret->c = TCOD_sys_get_vk(kev->keysym.sym);
-  switch (kev->keysym.sym) {
+  if (ev->type == SDL_EVENT_KEY_DOWN)
+    TCOD_sys_set_vk(kev->key, ret->c);
+  else if (ev->type == SDL_EVENT_KEY_UP)
+    ret->c = TCOD_sys_get_vk(kev->key);
+  switch (kev->key) {
     case SDLK_ESCAPE:
       ret->vk = TCODK_ESCAPE;
       break;
@@ -582,9 +582,9 @@ static TCOD_key_t TCOD_sys_SDLtoTCOD(const SDL_Event* ev, int flags) {
   ret->c = 0;
   ret->pressed = 0;
   switch (ev->type) {
-    case SDL_KEYUP: {
+    case SDL_EVENT_KEY_UP: {
       TCOD_key_t tmp_key;
-      switch (ev->key.keysym.sym) {
+      switch (ev->key.key) {
         case SDLK_LALT:
           ret->lalt = 0;
           break;
@@ -620,9 +620,9 @@ static TCOD_key_t TCOD_sys_SDLtoTCOD(const SDL_Event* ev, int flags) {
       }
       break;
     }
-    case SDL_KEYDOWN: {
+    case SDL_EVENT_KEY_DOWN: {
       TCOD_key_t tmp_key;
-      switch (ev->key.keysym.sym) {
+      switch (ev->key.key) {
         case SDLK_LALT:
           ret->lalt = 1;
           break;
@@ -663,7 +663,7 @@ static TCOD_key_t TCOD_sys_SDLtoTCOD(const SDL_Event* ev, int flags) {
 }
 
 bool TCOD_sys_is_key_pressed(TCOD_keycode_t key) {
-  const uint8_t* state = SDL_GetKeyboardState(NULL);
+  const bool* state = SDL_GetKeyboardState(NULL);
   switch (key) {
     case TCODK_ESCAPE:
       return state[SDL_SCANCODE_ESCAPE] != 0;
@@ -844,22 +844,22 @@ static void sdl_parse_mouse_(const SDL_Event* ev, TCOD_mouse_t* mouse) {
     return;
   }
   switch (ev->type) {
-    case SDL_MOUSEMOTION:
-      mouse->x = ev->motion.x;
-      mouse->y = ev->motion.y;
-      mouse->dx = ev->motion.xrel;
-      mouse->dy = ev->motion.yrel;
+    case SDL_EVENT_MOUSE_MOTION:
+      mouse->x = (int)ev->motion.x;
+      mouse->y = (int)ev->motion.y;
+      mouse->dx = (int)ev->motion.xrel;
+      mouse->dy = (int)ev->motion.yrel;
       break;
-    case SDL_MOUSEWHEEL:
+    case SDL_EVENT_MOUSE_WHEEL:
       // Leave x,y attributes as is to preserve the original libtcod behaviour.
       mouse->wheel_up = ev->wheel.y > 0;
       mouse->wheel_down = ev->wheel.y < 0;
       mouse->dx = mouse->dy = 0;
       break;
-    case SDL_MOUSEBUTTONDOWN:
-    case SDL_MOUSEBUTTONUP:
-      mouse->x = ev->button.x;
-      mouse->y = ev->button.y;
+    case SDL_EVENT_MOUSE_BUTTON_DOWN:
+    case SDL_EVENT_MOUSE_BUTTON_UP:
+      mouse->x = (int)ev->button.x;
+      mouse->y = (int)ev->button.y;
       mouse->dx = mouse->dy = 0;
       break;
     default:
@@ -901,11 +901,11 @@ TCOD_event_t TCOD_sys_handle_mouse_event(const SDL_Event* ev, TCOD_mouse_t* mous
   }
   sdl_parse_mouse_(ev, mouse);
   switch (ev->type) {
-    case SDL_MOUSEMOTION:
+    case SDL_EVENT_MOUSE_MOTION:
       return TCOD_EVENT_MOUSE_MOVE;
-    case SDL_MOUSEWHEEL:
+    case SDL_EVENT_MOUSE_WHEEL:
       return TCOD_EVENT_MOUSE_PRESS;
-    case SDL_MOUSEBUTTONDOWN:
+    case SDL_EVENT_MOUSE_BUTTON_DOWN:
       switch (ev->button.button) {
         case SDL_BUTTON_LEFT:
           mouse->lbutton = true;
@@ -920,7 +920,7 @@ TCOD_event_t TCOD_sys_handle_mouse_event(const SDL_Event* ev, TCOD_mouse_t* mous
           break;
       }
       return TCOD_EVENT_MOUSE_PRESS;
-    case SDL_MOUSEBUTTONUP:
+    case SDL_EVENT_MOUSE_BUTTON_UP:
       switch (ev->button.button) {
         case SDL_BUTTON_LEFT:
           if (mouse->lbutton) {
@@ -959,13 +959,13 @@ TCOD_event_t TCOD_sys_handle_key_event(const SDL_Event* ev, TCOD_key_t* key) {
     key = &TCOD_ctx.key_state;
   }
   switch (ev->type) {
-    case SDL_KEYDOWN:
+    case SDL_EVENT_KEY_DOWN:
       *key = TCOD_sys_SDLtoTCOD(ev, TCOD_KEY_PRESSED);
       return TCOD_EVENT_KEY_PRESS;
-    case SDL_KEYUP:
+    case SDL_EVENT_KEY_UP:
       *key = TCOD_sys_SDLtoTCOD(ev, TCOD_KEY_RELEASED);
       return TCOD_EVENT_KEY_RELEASE;
-    case SDL_TEXTINPUT: {
+    case SDL_EVENT_TEXT_INPUT: {
       *key = TCOD_ctx.key_state;
       key->vk = TCODK_TEXT;
       key->c = 0;
@@ -983,44 +983,33 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event* ev, TCOD_event_t eventMask,
   retMask |= TCOD_sys_handle_mouse_event(ev, mouse) & eventMask;
   retMask |= TCOD_sys_handle_key_event(ev, key) & eventMask;
   switch (ev->type) {
-    case SDL_QUIT:
+    case SDL_EVENT_QUIT:
       TCOD_ctx.is_window_closed = true;
       break;
-    case SDL_WINDOWEVENT:
-      /* At this point, there are some corner cases that need dealing with.  So log this. */
-      /* printf("SDL2 WINDOWEVENT: 0x%04x\n", ev->window.event); */
-      switch (ev->window.event) {
 #ifdef TCOD_ANDROID
-        case SDL_WINDOWEVENT_SIZE_CHANGED: {
-          /* printf("SDL2 WINDOWEVENT (SDL_WINDOWEVENT_SIZE_CHANGED): 0x%04x w=%d h=%d\n", ev->window.event,
-           * ev->window.data1, ev->window.data2); */
-          /* If the app is started while the device is locked, the screen will be in portrait mode.  We need to rescale
-           * when it changes. */
-          if (scale_data.surface_width != ev->window.data1 || scale_data.surface_height != ev->window.data1)
-            scale_data.force_recalc = 1;
-          break;
-        }
+    case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED: {
+      /* printf("SDL2 WINDOWEVENT (SDL_WINDOWEVENT_SIZE_CHANGED): 0x%04x w=%d h=%d\n", ev->window.event,
+       * ev->window.data1, ev->window.data2); */
+      /* If the app is started while the device is locked, the screen will be in portrait mode.  We need to rescale
+       * when it changes. */
+      if (scale_data.surface_width != ev->window.data1 || scale_data.surface_height != ev->window.data1)
+        scale_data.force_recalc = 1;
+      break;
+    }
 #endif
-        case SDL_WINDOWEVENT_ENTER: /**< Window has gained mouse focus */
-          TCOD_ctx.app_has_mouse_focus = true;
-          break;
-        case SDL_WINDOWEVENT_LEAVE: /**< Window has lost mouse focus */
-          TCOD_ctx.app_has_mouse_focus = false;
-          break;
-        case SDL_WINDOWEVENT_FOCUS_GAINED:
-          TCOD_ctx.app_is_active = true;
-          break;
-        case SDL_WINDOWEVENT_FOCUS_LOST:
-          TCOD_ctx.app_is_active = false;
-          break;
-        case SDL_WINDOWEVENT_EXPOSED: /**< Window has been returned to and needs a refresh. */
-          break;
-#ifdef NDEBUG_HMM
-        default:
-          TCOD_LOG(("SDL2 WINDOWEVENT (unknown): 0x%04x\n", ev->window.event));
-          break;
-#endif
-      }
+    case SDL_EVENT_WINDOW_MOUSE_ENTER: /**< Window has gained mouse focus */
+      TCOD_ctx.app_has_mouse_focus = true;
+      break;
+    case SDL_EVENT_WINDOW_MOUSE_LEAVE: /**< Window has lost mouse focus */
+      TCOD_ctx.app_has_mouse_focus = false;
+      break;
+    case SDL_EVENT_WINDOW_FOCUS_GAINED:
+      TCOD_ctx.app_is_active = true;
+      break;
+    case SDL_EVENT_WINDOW_FOCUS_LOST:
+      TCOD_ctx.app_is_active = false;
+      break;
+    case SDL_EVENT_WINDOW_EXPOSED: /**< Window has been returned to and needs a refresh. */
       break;
     default:
       break;
@@ -1086,7 +1075,7 @@ TCOD_event_t TCOD_sys_wait_for_event(int eventMask, TCOD_key_t* key, TCOD_mouse_
   do {
     SDL_WaitEvent(NULL);
     retMask = TCOD_sys_check_for_event_(&ev, eventMask, key, mouse);
-  } while (ev.type != SDL_QUIT && (retMask & eventMask) == 0);
+  } while (ev.type != SDL_EVENT_QUIT && (retMask & eventMask) == 0);
   return retMask;
 }
 /**
@@ -1164,23 +1153,25 @@ TCOD_color_t TCOD_sys_get_image_pixel(const SDL_Surface* image, int x, int y) {
   if (x < 0 || y < 0 || x >= image->w || y >= image->h) {
     return TCOD_black;
   }
-  uint8_t bpp = image->format->BytesPerPixel;
+  const SDL_PixelFormatDetails* format = SDL_GetPixelFormatDetails(image->format);
+  uint8_t bpp = format->bytes_per_pixel;
   uint8_t* bits = image->pixels;
   bits += y * image->pitch + x * bpp;
   switch (bpp) {
-    case 1:
-      if (image->format->palette) {
-        SDL_Color col = image->format->palette->colors[(*bits)];
+    case 1: {
+      const SDL_Palette* palette = SDL_GetSurfacePalette((SDL_Surface*)image);
+      if (palette) {
+        SDL_Color col = palette->colors[(*bits)];
         return (TCOD_ColorRGB){col.r, col.g, col.b};
       } else {
         return TCOD_black;
       }
-      break;
+    } break;
     default:
       return (TCOD_ColorRGB){
-          *((bits) + image->format->Rshift / 8),
-          *((bits) + image->format->Gshift / 8),
-          *((bits) + image->format->Bshift / 8),
+          *((bits) + format->Rshift / 8),
+          *((bits) + format->Gshift / 8),
+          *((bits) + format->Bshift / 8),
       };
   }
 }
@@ -1189,15 +1180,16 @@ int TCOD_sys_get_image_alpha(const SDL_Surface* surf, int x, int y) {
   if (x < 0 || y < 0 || x >= surf->w || y >= surf->h) {
     return 255;
   }
-  uint8_t bpp = surf->format->BytesPerPixel;
+  const SDL_PixelFormatDetails* format = SDL_GetPixelFormatDetails(surf->format);
+  uint8_t bpp = format->bytes_per_pixel;
   if (bpp != 4) {
     return 255;
   }
   uint8_t* bits = surf->pixels;
   bits += y * surf->pitch + x * bpp;
-  return bits[surf->format->Ashift / 8];
+  return bits[format->Ashift / 8];
 }
-uint32_t TCOD_sys_elapsed_milli(void) { return SDL_GetTicks(); }
+uint32_t TCOD_sys_elapsed_milli(void) { return (uint32_t)SDL_GetTicks(); }
 float TCOD_sys_elapsed_seconds(void) {
   static float div = 1.0f / 1000.0f;
   return SDL_GetTicks() * div;
@@ -1235,19 +1227,19 @@ void TCOD_sys_get_char_size(int* w, int* h) {
 
 TCOD_Error TCOD_sys_get_current_resolution(int* w, int* h) {
   struct SDL_Window* window = TCOD_sys_get_sdl_window();
-  int monitor_index = 0;
+  SDL_DisplayID monitor_index = 0;
   if (window) {
-    monitor_index = SDL_GetWindowDisplayIndex(window);
+    monitor_index = SDL_GetDisplayForWindow(window);
     if (monitor_index < 0) {
       return TCOD_set_errorvf("SDL error: %s", SDL_GetError());
     }
   }
   // Temporarily load the video subsystem if it isn't already active.
-  if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
+  if (!SDL_InitSubSystem(SDL_INIT_VIDEO)) {
     return TCOD_set_errorvf("SDL error: %s", SDL_GetError());
   }
   SDL_Rect display_rect;
-  if (SDL_GetDisplayBounds(monitor_index, &display_rect) < 0) {
+  if (!SDL_GetDisplayBounds(monitor_index, &display_rect)) {
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
     return TCOD_set_errorvf("SDL error: %s", SDL_GetError());
   }
@@ -1260,15 +1252,14 @@ TCOD_Error TCOD_sys_get_current_resolution(int* w, int* h) {
 /* image stuff */
 bool TCOD_sys_check_magic_number(const char* filename, size_t size, uint8_t* data) {
   uint8_t tmp[128];
-  size_t i;
-  SDL_RWops* rwops = SDL_RWFromFile(filename, "rb");
+  SDL_IOStream* rwops = SDL_IOFromFile(filename, "rb");
   if (!rwops) return false;
-  if ((i = rwops->read(rwops, tmp, size, 1)) != 1) {
-    rwops->close(rwops);
+  if (SDL_ReadIO(rwops, tmp, size) != size) {
+    SDL_CloseIO(rwops);
     return false;
   }
-  rwops->close(rwops);
-  for (i = 0; i < size; i++) {
+  SDL_CloseIO(rwops);
+  for (size_t i = 0; i < size; i++) {
     if (tmp[i] != data[i]) {
       return false;
     }
@@ -1281,16 +1272,22 @@ SDL_Window* TCOD_sys_get_SDL_window(void) { return TCOD_sys_get_sdl_window(); }
 SDL_Renderer* TCOD_sys_get_SDL_renderer(void) { return TCOD_sys_get_sdl_renderer(); }
 
 /* mouse stuff */
-void TCOD_mouse_show_cursor(bool visible) { SDL_ShowCursor(visible ? 1 : 0); }
+void TCOD_mouse_show_cursor(bool visible) {
+  if (visible) {
+    SDL_ShowCursor();
+  } else {
+    SDL_HideCursor();
+  }
+}
 
-bool TCOD_mouse_is_cursor_visible(void) { return SDL_ShowCursor(-1) ? true : false; }
+bool TCOD_mouse_is_cursor_visible(void) { return SDL_CursorVisible(); }
 
 void TCOD_mouse_move(int x, int y) {
   struct SDL_Window* window = TCOD_sys_get_sdl_window();
   if (!window) {
     return;
   }
-  SDL_WarpMouseInWindow(window, x, y);
+  SDL_WarpMouseInWindow(window, (float)x, (float)y);
 }
 
 void TCOD_mouse_includes_touch(bool enable) { (void)enable; }
@@ -1318,22 +1315,22 @@ char* TCOD_sys_clipboard_get() {
 
 bool TCOD_sys_read_file(const char* filename, unsigned char** buf, size_t* size) {
   /* get file size */
-  SDL_RWops* rwops = SDL_RWFromFile(filename, "rb");
+  SDL_IOStream* rwops = SDL_IOFromFile(filename, "rb");
   if (!rwops) {
     return false;
   }
-  SDL_RWseek(rwops, 0, RW_SEEK_END);
-  size_t filesize = SDL_RWtell(rwops);
-  SDL_RWseek(rwops, 0, RW_SEEK_SET);
+  SDL_SeekIO(rwops, 0, SDL_IO_SEEK_END);
+  size_t filesize = SDL_TellIO(rwops);
+  SDL_SeekIO(rwops, 0, SDL_IO_SEEK_SET);
   /* allocate buffer */
-  *buf = (unsigned char*)malloc(sizeof(unsigned char) * filesize);
+  *buf = (unsigned char*)malloc(filesize);
   /* read from file */
-  if (SDL_RWread(rwops, *buf, sizeof(unsigned char), filesize) != filesize) {
-    SDL_RWclose(rwops);
+  if (SDL_ReadIO(rwops, *buf, filesize) != filesize) {
+    SDL_CloseIO(rwops);
     free(*buf);
     return false;
   }
-  SDL_RWclose(rwops);
+  SDL_CloseIO(rwops);
   *size = filesize;
   return true;
 }
@@ -1344,22 +1341,16 @@ bool TCOD_sys_file_exists(const char* filename, ...) {
   va_start(ap, filename);
   vsnprintf(f, sizeof(f), filename, ap);
   va_end(ap);
-  SDL_RWops* rwops;
-  rwops = SDL_RWFromFile(f, "rb");
-  if (rwops) {
-    SDL_RWclose(rwops);
-    return true;
-  }
-  return false;
+  return SDL_GetPathInfo(f, NULL);
 }
 
 bool TCOD_sys_write_file(const char* filename, unsigned char* buf, uint32_t size) {
-  SDL_RWops* rwops = SDL_RWFromFile(filename, "wb");
+  SDL_IOStream* rwops = SDL_IOFromFile(filename, "wb");
   if (!rwops) {
     return false;
   }
-  SDL_RWwrite(rwops, buf, sizeof(unsigned char), size);
-  SDL_RWclose(rwops);
+  SDL_WriteIO(rwops, buf, size);
+  SDL_CloseIO(rwops);
   return true;
 }
 #endif  // NO_SDL

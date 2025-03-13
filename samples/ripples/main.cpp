@@ -25,7 +25,7 @@
  */
 #include "main.hpp"
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 #include <algorithm>
 #include <array>
@@ -88,7 +88,7 @@ int main(int argc, char* argv[]) {
   auto console = tcod::Console{CON_W, CON_H};
   // initialize the game window
   TCOD_ContextParams params{};
-  params.tcod_version = SDL_COMPILEDVERSION;
+  params.tcod_version = TCOD_COMPILEDVERSION;
   params.argc = argc;
   params.argv = argv;
   params.console = console.get();
@@ -131,11 +131,11 @@ int main(int argc, char* argv[]) {
     while (SDL_PollEvent(&event)) {
       context.convert_event_coordinates(event);
       switch (event.type) {
-        case SDL_QUIT:
+        case SDL_EVENT_QUIT:
           std::exit(EXIT_SUCCESS);
           break;
-        case SDL_KEYDOWN:
-          switch (event.key.keysym.sym) {
+        case SDL_EVENT_KEY_DOWN:
+          switch (event.key.key) {
             case SDLK_PRINTSCREEN:
               context.save_screenshot();
               break;
@@ -143,14 +143,14 @@ int main(int argc, char* argv[]) {
               break;
           }
           break;
-        case SDL_MOUSEMOTION:
+        case SDL_EVENT_MOUSE_MOTION:
           if (event.motion.state & SDL_BUTTON_LMASK) {
-            rippleManager->startRipple(event.motion.x * 2, event.motion.y * 2);
+            rippleManager->startRipple((int)event.motion.x * 2, (int)event.motion.y * 2);
           }
           break;
-        case SDL_MOUSEBUTTONDOWN:
+        case SDL_EVENT_MOUSE_BUTTON_DOWN:
           if (event.button.button == SDL_BUTTON_LEFT) {
-            rippleManager->startRipple(event.button.x * 2, event.button.y * 2);
+            rippleManager->startRipple((int)event.button.x * 2, (int)event.button.y * 2);
           }
           break;
         default:

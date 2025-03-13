@@ -25,7 +25,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 #include <cmath>
 #include <libtcod.hpp>
@@ -60,7 +60,7 @@ static float stdTime = 0.0f;
 static float radTime = 0.0f;
 static float stdLength = 0.0f;
 static float radLength = 0.0f;
-static int timeSecond;
+static uint64_t timeSecond;
 static int framesCount = 0;
 
 // gamma correction lookup table
@@ -138,11 +138,11 @@ void init(TCOD_Console& console) {
 void render(TCOD_Console& console) {
   // compute lights
   ++framesCount;
-  const uint32_t start = SDL_GetTicks();
+  const uint64_t start = SDL_GetTicks();
   leftShader->compute();
-  const uint32_t leftEnd = SDL_GetTicks();
+  const uint64_t leftEnd = SDL_GetTicks();
   rightShader->compute();
-  const uint32_t rightEnd = SDL_GetTicks();
+  const uint64_t rightEnd = SDL_GetTicks();
   stdTime += (leftEnd - start) * 0.001f;
   radTime += (rightEnd - leftEnd) * 0.001f;
   if ((int)(start / 1000) != timeSecond) {
@@ -236,11 +236,11 @@ int main(int argc, char* argv[]) {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
-        case SDL_QUIT:
+        case SDL_EVENT_QUIT:
           return 0;
           break;
-        case SDL_KEYDOWN:
-          switch (event.key.keysym.scancode) {
+        case SDL_EVENT_KEY_DOWN:
+          switch (event.key.scancode) {
             case SDL_SCANCODE_UP:
             case SDL_SCANCODE_KP_8:
             case SDL_SCANCODE_W:

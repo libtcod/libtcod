@@ -31,9 +31,9 @@
       ]
     },
     "sdl": {
-      "description": "Support for SDL2 windows and events.",
+      "description": "Support for SDL3 windows and events.",
       "dependencies": [
-        "sdl2"
+        "sdl3"
       ]
     },
     "tests": {

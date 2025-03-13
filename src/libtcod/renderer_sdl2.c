@@ -31,7 +31,8 @@
  */
 #include "renderer_sdl2.h"
 #ifndef NO_SDL
-#include <SDL.h>
+#include <SDL3/SDL.h>
+#include <assert.h>
 #include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -45,7 +46,7 @@
 typedef struct VertexElement {
   float x;
   float y;
-  TCOD_ColorRGBA rgba;
+  SDL_FColor rgba;
 } VertexElement;
 /// Vertex normalize UV coords.
 typedef struct VertexUV {
@@ -98,7 +99,9 @@ static int prepare_sdl2_atlas(struct TCOD_TilesetAtlasSDL2* atlas) {
   }
   int current_size = 0;
   if (atlas->texture) {
-    SDL_QueryTexture(atlas->texture, NULL, NULL, &current_size, NULL);
+    float current_size_f = 0;
+    SDL_GetTextureSize(atlas->texture, &current_size_f, NULL);
+    current_size = (int)current_size_f;
   }
   int new_size = current_size ? current_size : 256;
   int columns = 1;  // Must be more than zero.
@@ -301,7 +304,7 @@ static void vertex_buffer_flush_bg(VertexBuffer* __restrict buffer, const TCOD_T
       NULL,  // No texture, this renders solid colors.
       &buffer->vertex->x,
       sizeof(*buffer->vertex),
-      (SDL_Color*)&buffer->vertex->rgba,
+      &buffer->vertex->rgba,
       sizeof(*buffer->vertex),
       NULL,
       0,
@@ -320,7 +323,7 @@ static void vertex_buffer_flush_fg(VertexBuffer* __restrict buffer, const TCOD_T
       atlas->texture,
       &buffer->vertex->x,
       sizeof(*buffer->vertex),
-      (SDL_Color*)&buffer->vertex->rgba,
+      &buffer->vertex->rgba,
       sizeof(*buffer->vertex),
       (float*)buffer->vertex_uv,
       sizeof(*buffer->vertex_uv),
@@ -344,10 +347,15 @@ static void vertex_buffer_set_tile_pos(
 }
 /// Set the colors of a tile.
 static void vertex_buffer_set_color(VertexBuffer* __restrict buffer, int index, TCOD_ColorRGBA rgba) {
-  buffer->vertex[index * 4 + 0].rgba = rgba;
-  buffer->vertex[index * 4 + 1].rgba = rgba;
-  buffer->vertex[index * 4 + 2].rgba = rgba;
-  buffer->vertex[index * 4 + 3].rgba = rgba;
+  SDL_FColor new_color = {
+      (float)rgba.r * (1.0f / 255.0f),
+      (float)rgba.g * (1.0f / 255.0f),
+      (float)rgba.b * (1.0f / 255.0f),
+      (float)rgba.a * (1.0f / 255.0f)};
+  buffer->vertex[index * 4 + 0].rgba = new_color;
+  buffer->vertex[index * 4 + 1].rgba = new_color;
+  buffer->vertex[index * 4 + 2].rgba = new_color;
+  buffer->vertex[index * 4 + 3].rgba = new_color;
 }
 /// Push a background element onto the buffer, flushing it if needed.
 static void vertex_buffer_push_bg(
@@ -448,9 +456,9 @@ static TCOD_Error TCOD_sdl2_render(
   vertex_buffer_flush_bg(buffer, atlas);
 
   // The foreground rendering pass.  Draw FG glyphs on top of the background tiles.
-  int tex_width;
-  int tex_height;
-  SDL_QueryTexture(atlas->texture, NULL, NULL, &tex_width, &tex_height);
+  float tex_width;
+  float tex_height;
+  SDL_GetTextureSize(atlas->texture, &tex_width, &tex_height);
   const float u_multiply = 1.0f / (float)(tex_width);  // Used to transform texture pixel coordinates to UV coords.
   const float v_multiply = 1.0f / (float)(tex_height);
   for (int y = 0; y < console->h; ++y) {
@@ -524,20 +532,13 @@ TCOD_Error TCOD_sdl2_render_texture_setup(
     TCOD_set_errorv("target must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
   }
-  SDL_RendererInfo renderer_info;
-  if (SDL_GetRendererInfo(atlas->renderer, &renderer_info)) {
-    return TCOD_set_errorvf("SDL error getting renderer info: %s", SDL_GetError());
-  }
-  if (!(renderer_info.flags & SDL_RENDERER_TARGETTEXTURE)) {
-    return TCOD_set_errorv("SDL_RENDERER_TARGETTEXTURE is required.");
-  }
   if (*target) {
     // Checks if *target texture is still valid for the current parameters, deletes *target if not.
-    int tex_width;
-    int tex_height;
-    SDL_QueryTexture(*target, NULL, NULL, &tex_width, &tex_height);
-    if (tex_width != atlas->tileset->tile_width * console->w ||
-        tex_height != atlas->tileset->tile_height * console->h) {
+    float tex_width;
+    float tex_height;
+    SDL_GetTextureSize(*target, &tex_width, &tex_height);
+    if ((int)tex_width != atlas->tileset->tile_width * console->w ||
+        (int)tex_height != atlas->tileset->tile_height * console->h) {
       TCOD_log_debug("The console renderer buffer is the wrong size and will be replaced.");
       SDL_DestroyTexture(*target);
       *target = NULL;
@@ -593,10 +594,10 @@ TCOD_Error TCOD_sdl2_render_texture(
     This is sometimes called while the renderer is holding a reference to the
     cache console.
  */
-static int sdl2_handle_event(void* userdata, SDL_Event* event) {
+static bool sdl2_handle_event(void* userdata, SDL_Event* event) {
   struct TCOD_RendererSDL2* context = userdata;
   switch (event->type) {
-    case SDL_RENDER_TARGETS_RESET:
+    case SDL_EVENT_RENDER_TARGETS_RESET:
       TCOD_log_debug("SDL2 renderer targets have been reset.");
       if (context->cache_console) {
         for (int i = 0; i < context->cache_console->elements; ++i) {
@@ -615,7 +616,7 @@ static void sdl2_destructor(struct TCOD_Context* __restrict self) {
   if (!context) {
     return;
   }
-  SDL_DelEventWatch(sdl2_handle_event, context);
+  SDL_RemoveEventWatch(sdl2_handle_event, context);
   if (context->cache_console) {
     TCOD_console_delete(context->cache_console);
   }
@@ -635,21 +636,25 @@ static void sdl2_destructor(struct TCOD_Context* __restrict self) {
   free(context);
 }
 /** Return the destination rectangle for these inputs. */
-TCOD_NODISCARD static SDL_Rect get_destination_rect(
+TCOD_NODISCARD static SDL_FRect get_destination_rect(
     const struct TCOD_TilesetAtlasSDL2* atlas,
     int source_width,
     int source_height,
     const struct TCOD_ViewportOptions* viewport) {
   if (!viewport) viewport = &TCOD_VIEWPORT_DEFAULT_;
-  int output_w;
-  int output_h;
+  float output_w;
+  float output_h;
   SDL_Texture* render_target = SDL_GetRenderTarget(atlas->renderer);
   if (render_target) {
-    SDL_QueryTexture(render_target, NULL, NULL, &output_w, &output_h);
+    SDL_GetTextureSize(render_target, &output_w, &output_h);
   } else {
-    SDL_GetRendererOutputSize(atlas->renderer, &output_w, &output_h);
+    int out_w_int;
+    int out_h_int;
+    SDL_GetCurrentRenderOutputSize(atlas->renderer, &out_w_int, &out_h_int);
+    output_w = (float)out_w_int;
+    output_h = (float)out_h_int;
   }
-  SDL_Rect out = {0, 0, output_w, output_h};
+  SDL_FRect out = {0, 0, output_w, output_h};
   float scale_w = (float)output_w / (float)(source_width);
   float scale_h = (float)output_h / (float)(source_height);
   if (viewport->integer_scaling) {
@@ -659,16 +664,16 @@ TCOD_NODISCARD static SDL_Rect get_destination_rect(
   if (viewport->keep_aspect) {
     scale_w = scale_h = minf(scale_w, scale_h);
   }
-  out.w = (int)((float)(source_width)*scale_w);
-  out.h = (int)((float)(source_height)*scale_h);
-  out.x = (int)((float)(output_w - out.w) * clampf(viewport->align_x, 0, 1));
-  out.y = (int)((float)(output_h - out.h) * clampf(viewport->align_y, 0, 1));
+  out.w = (float)source_width * scale_w;
+  out.h = (float)source_height * scale_h;
+  out.x = (output_w - out.w) * clampf(viewport->align_x, 0.0f, 1.0f);
+  out.y = (output_h - out.h) * clampf(viewport->align_y, 0.0f, 1.0f);
   return out;
 }
 /***************************************************************************
     @brief Return the destination rectangle for these inputs
  */
-TCOD_NODISCARD static SDL_Rect get_destination_rect_for_console(
+TCOD_NODISCARD static SDL_FRect get_destination_rect_for_console(
     const struct TCOD_TilesetAtlasSDL2* atlas,
     const struct TCOD_Console* console,
     const struct TCOD_ViewportOptions* viewport) {
@@ -683,7 +688,7 @@ TCOD_NODISCARD static TCOD_MouseTransform sdl2_cursor_transform_for_console_view
     const struct TCOD_TilesetAtlasSDL2* atlas,
     const struct TCOD_Console* console,
     const struct TCOD_ViewportOptions* viewport) {
-  SDL_Rect dest = get_destination_rect_for_console(atlas, console, viewport);
+  SDL_FRect dest = get_destination_rect_for_console(atlas, console, viewport);
   return (TCOD_MouseTransform){
       dest.x,
       dest.y,
@@ -719,27 +724,23 @@ static TCOD_Error sdl2_accumulate(
   if (err < 0) {
     return err;
   }
-  SDL_Rect dest = get_destination_rect_for_console(context->atlas, console, viewport);
+  SDL_FRect dest = get_destination_rect_for_console(context->atlas, console, viewport);
   // Set mouse coordinate scaling.
   context->cursor_transform = sdl2_cursor_transform_for_console_viewport(context->atlas, console, viewport);
   if (!TCOD_ctx.sdl_cbk) {
     // Normal rendering.
-    SDL_RenderCopy(context->renderer, context->cache_texture, NULL, &dest);
+    SDL_RenderTexture(context->renderer, context->cache_texture, NULL, &dest);
   } else {
     // Deprecated callback rendering.
-    int tex_width;
-    int tex_height;
-    SDL_QueryTexture(context->cache_texture, NULL, NULL, &tex_width, &tex_height);
-    SDL_Surface* canvas = SDL_CreateRGBSurfaceWithFormat(0, tex_width, tex_height, 32, SDL_PIXELFORMAT_RGBA32);
     SDL_Texture* old_target = SDL_GetRenderTarget(context->renderer);
     SDL_SetRenderTarget(context->renderer, context->cache_texture);
-    SDL_RenderReadPixels(context->renderer, NULL, SDL_PIXELFORMAT_RGBA32, canvas->pixels, tex_width * 4);
+    SDL_Surface* canvas = SDL_RenderReadPixels(context->renderer, NULL);
     SDL_SetRenderTarget(context->renderer, old_target);
     TCOD_ctx.sdl_cbk(canvas);
     SDL_Texture* canvas_tex = SDL_CreateTextureFromSurface(context->renderer, canvas);
-    SDL_RenderCopy(context->renderer, canvas_tex, NULL, &dest);
+    SDL_RenderTexture(context->renderer, canvas_tex, NULL, &dest);
     SDL_DestroyTexture(canvas_tex);
-    SDL_FreeSurface(canvas);
+    SDL_DestroySurface(canvas);
   }
   return TCOD_E_OK;
 }
@@ -793,19 +794,29 @@ static TCOD_Error sdl2_screen_capture(
     return TCOD_E_WARN;
   }
   SDL_SetRenderTarget(context->renderer, context->cache_texture);
-  int current_width = 0;
-  int current_height = 0;
-  SDL_QueryTexture(context->cache_texture, NULL, NULL, &current_width, &current_height);
+  float current_width = 0;
+  float current_height = 0;
+  SDL_GetTextureSize(context->cache_texture, &current_width, &current_height);
   TCOD_Error err = TCOD_E_OK;
   if (!out_pixels) {
-    *width = current_width;
-    *height = current_height;
-  } else if (*width != current_width || *height != current_height) {
-    TCOD_set_errorv("width or height do not match the size of the screen.");
-    err = TCOD_E_INVALID_ARGUMENT;
+    *width = (int)current_width;
+    *height = (int)current_height;
   } else {
-    SDL_RenderReadPixels(
-        context->renderer, NULL, SDL_PIXELFORMAT_RGBA32, out_pixels, (int)(sizeof(*out_pixels) * (*width)));
+    SDL_Surface* capture = SDL_RenderReadPixels(context->renderer, NULL);
+    if (capture->w == (*width) && capture->h == (*height)) {
+      SDL_ConvertPixels(
+          capture->w,
+          capture->h,
+          capture->format,
+          capture->pixels,
+          capture->pitch,
+          SDL_PIXELFORMAT_RGBA32,
+          out_pixels,
+          (int)(sizeof(*out_pixels) * (*width)));
+    } else {
+      err = TCOD_set_errorv("width or height do not match the size of the screen.");
+    }
+    SDL_DestroySurface(capture);
   }
   SDL_SetRenderTarget(context->renderer, NULL);
   return err;
@@ -846,7 +857,7 @@ static TCOD_Error sdl2_recommended_console_size(
   struct TCOD_RendererSDL2* context = self->contextdata_;
   int w;
   int h;
-  if (SDL_GetRendererOutputSize(context->renderer, &w, &h) < 0) {
+  if (!SDL_GetCurrentRenderOutputSize(context->renderer, &w, &h)) {
     TCOD_set_errorvf("SDL Error: %s", SDL_GetError());
     return TCOD_E_ERROR;
   }
@@ -858,56 +869,9 @@ static TCOD_Error sdl2_recommended_console_size(
   }
   return TCOD_E_OK;
 }
-/**
-    Lists SDL2's video driver status to `log_out[log_length]`.
-
-    The output will always be NULL terminated.
- */
-static void TCOD_sdl2_debug_video_drivers(int log_length, char* log_out) {
-  if (log_length < 1) {
-    return;
-  }
-  log_out[0] = '\0';
-  if (SDL_GetCurrentVideoDriver() != NULL) {
-    return;
-  }
-  int driver_count = SDL_GetNumVideoDrivers();
-  for (int i = 0; i < driver_count; ++i) {
-    if (log_length <= 1) {
-      return;
-    }
-    const char* driver_name = SDL_GetVideoDriver(i);
-    bool is_working;
-    if (SDL_VideoInit(driver_name) == 0) {
-      SDL_VideoQuit();
-      is_working = 1;
-    } else {
-      is_working = 0;
-    }
-    int print_length = snprintf(
-        log_out,
-        log_length,
-        "%sVideo driver '%s' %s.",
-        i == 0 ? "" : "\n",
-        driver_name,
-        is_working ? "is available" : "is not working");
-    if (print_length < 0) {
-      return;
-    }
-    log_out += print_length;
-    log_length -= print_length;
-  }
-}
-struct TCOD_Context* TCOD_renderer_init_sdl2(
-    int x,
-    int y,
-    int pixel_width,
-    int pixel_height,
-    const char* title,
-    int window_flags,
-    int renderer_flags,
-    struct TCOD_Tileset* tileset) {
-  TCOD_log_debug("Initializing an SDL2 renderer.");
+struct TCOD_Context* TCOD_renderer_init_sdl3(
+    SDL_PropertiesID window_props, SDL_PropertiesID renderer_props, struct TCOD_Tileset* tileset) {
+  TCOD_log_debug("Initializing an SDL3 renderer.");
   if (!tileset) {
     TCOD_set_errorv("Tileset must not be NULL.");
     return NULL;
@@ -924,18 +888,13 @@ struct TCOD_Context* TCOD_renderer_init_sdl2(
     TCOD_context_delete(context);
     return NULL;
   }
-  if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
-    char video_driver_log[512];
-    TCOD_sdl2_debug_video_drivers((int)sizeof(video_driver_log), video_driver_log);
-    TCOD_set_errorvf("Could not initialize SDL:\n%s\n%s", SDL_GetError(), video_driver_log);
+  if (!SDL_InitSubSystem(SDL_INIT_VIDEO)) {
+    TCOD_set_errorvf("Could not initialize SDL:\n%s", SDL_GetError());
     TCOD_context_delete(context);
     return NULL;
   }
   sdl2_data->sdl_subsystems = SDL_INIT_VIDEO;
   context->type = TCOD_RENDERER_SDL2;
-  if (renderer_flags & SDL_RENDERER_SOFTWARE) {
-    context->type = TCOD_RENDERER_SDL;
-  }
   context->c_present_ = sdl2_present;
   context->c_accumulate_ = sdl2_accumulate;
   context->c_get_sdl_window_ = sdl2_get_window;
@@ -947,14 +906,15 @@ struct TCOD_Context* TCOD_renderer_init_sdl2(
   context->c_set_mouse_transform_ = sdl2_cursor_set_transform;
 
   SDL_AddEventWatch(sdl2_handle_event, sdl2_data);
-  sdl2_data->window = SDL_CreateWindow(title, x, y, pixel_width, pixel_height, window_flags);
+  sdl2_data->window = SDL_CreateWindowWithProperties(window_props);
   if (!sdl2_data->window) {
     TCOD_set_errorvf("Could not create SDL window:\n%s", SDL_GetError());
     TCOD_context_delete(context);
     return NULL;
   }
-  renderer_flags |= SDL_RENDERER_TARGETTEXTURE;
-  sdl2_data->renderer = SDL_CreateRenderer(sdl2_data->window, -1, renderer_flags);
+  SDL_SetPointerProperty(renderer_props, SDL_PROP_RENDERER_CREATE_WINDOW_POINTER, sdl2_data->window);
+  sdl2_data->renderer = SDL_CreateRendererWithProperties(renderer_props);
+  SDL_SetPointerProperty(renderer_props, SDL_PROP_RENDERER_CREATE_WINDOW_POINTER, NULL);
   if (!sdl2_data->renderer) {
     TCOD_set_errorvf("Could not create SDL renderer:\n%s", SDL_GetError());
     TCOD_context_delete(context);
@@ -964,6 +924,30 @@ struct TCOD_Context* TCOD_renderer_init_sdl2(
     TCOD_context_delete(context);
     return NULL;
   }
+  return context;
+}
+struct TCOD_Context* TCOD_renderer_init_sdl2(
+    int x,
+    int y,
+    int pixel_width,
+    int pixel_height,
+    const char* title,
+    int window_flags,
+    int vsync,
+    struct TCOD_Tileset* tileset) {
+  SDL_PropertiesID window_props = SDL_CreateProperties();
+  SDL_SetStringProperty(window_props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, title);
+  SDL_SetNumberProperty(window_props, SDL_PROP_WINDOW_CREATE_X_NUMBER, x);
+  SDL_SetNumberProperty(window_props, SDL_PROP_WINDOW_CREATE_Y_NUMBER, y);
+  SDL_SetNumberProperty(window_props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, pixel_width);
+  SDL_SetNumberProperty(window_props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, pixel_height);
+  SDL_SetNumberProperty(window_props, SDL_PROP_WINDOW_CREATE_FLAGS_NUMBER, window_flags);
+
+  SDL_PropertiesID renderer_props = SDL_CreateProperties();
+  SDL_SetNumberProperty(renderer_props, SDL_PROP_RENDERER_CREATE_PRESENT_VSYNC_NUMBER, (vsync ? 1 : 0));
+  TCOD_Context* context = TCOD_renderer_init_sdl3(window_props, renderer_props, tileset);
+  SDL_DestroyProperties(renderer_props);
+  SDL_DestroyProperties(window_props);
   return context;
 }
 #endif  // NO_SDL

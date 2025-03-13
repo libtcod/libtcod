@@ -33,7 +33,7 @@
 #ifndef TCOD_GUI_TEXTBOX_HPP
 #define TCOD_GUI_TEXTBOX_HPP
 #ifndef TCOD_NO_UNICODE
-#include <SDL_timer.h>
+#include <SDL3/SDL_timer.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -140,10 +140,10 @@ class TextBox : public Widget {
   void update(const SDL_Event& ev_tile, const SDL_Event& ev_pixel) override {
     pos = std::clamp(pos, 0, static_cast<int>(text_.size()));
     switch (ev_tile.type) {
-      case SDL_KEYDOWN:
+      case SDL_EVENT_KEY_DOWN:
         if (keyboardFocus == this) {
           blink_start_ms_ = SDL_GetTicks();
-          switch (ev_tile.key.keysym.sym) {
+          switch (ev_tile.key.key) {
             case SDLK_LEFT:
               if (pos > 0) pos--;
               if (pos < offset) offset = pos;
@@ -173,8 +173,8 @@ class TextBox : public Widget {
               }
               break;
             default:
-              const unsigned char ch = static_cast<unsigned char>(ev_tile.key.keysym.sym);
-              if (ev_tile.key.keysym.sym <= 0xFF && std::isprint(ch)) {
+              const unsigned char ch = static_cast<unsigned char>(ev_tile.key.key);
+              if (ev_tile.key.key <= 0xFF && std::isprint(ch)) {
                 if (!insert || static_cast<int>(text_.size()) < max_width) {
                   text_.insert(pos, 1, ch);
                   if (pos < max_width) ++pos;
@@ -225,7 +225,7 @@ class TextBox : public Widget {
 
  private:
   std::function<void(const std::string&)> text_callback_{};
-  uint32_t blink_start_ms_{};
+  uint64_t blink_start_ms_{};
 };
 }  // namespace tcod::gui
 #endif  // TCOD_NO_UNICODE

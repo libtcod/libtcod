@@ -7,7 +7,7 @@
 // uncomment this to disable SDL sample (might cause compilation issues on some systems)
 // #define NO_SDL_SAMPLE
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <libtcod.h>
 #include <math.h>
 #include <stdio.h>
@@ -28,9 +28,9 @@ typedef struct {
 #define SAMPLE_SCREEN_Y 10
 
 // A custom SDL event for when a sample is switched to.
-#define ON_ENTER_USEREVENT (SDL_USEREVENT + 0)
+#define ON_ENTER_USEREVENT (SDL_EVENT_USER + 0)
 // A custom SDL event to tell a sample to draw.
-#define ON_DRAW_USEREVENT (SDL_USEREVENT + 1)
+#define ON_DRAW_USEREVENT (SDL_EVENT_USER + 1)
 
 static float delta_time = 0.0f;  // The time in seconds of the current frame.
 #define DELTA_SAMPLES_LENGTH 64
@@ -147,7 +147,7 @@ void render_offscreen(const SDL_Event* event) {
   static TCOD_console_t secondary; /* second screen */
   static TCOD_console_t screenshot; /* second screen */
   static bool init = false; /* draw the secondary screen only the first time */
-  static int counter;
+  static uint64_t counter;
   static int x = 0, y = 0; /* secondary screen position */
   static int x_dir = 1, y_dir = 1; /* movement direction */
   if (!init) {
@@ -171,7 +171,7 @@ void render_offscreen(const SDL_Event* event) {
     /* get a "screenshot" of the current sample screen */
     TCOD_console_blit(sample_console, 0, 0, SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT, screenshot, 0, 0, 1.0f, 1.0f);
   }
-  if (SDL_TICKS_PASSED(SDL_GetTicks(), counter + 1000)) {  // Once every second.
+  if (SDL_GetTicks() >= counter + 1000) {  // Once every second.
     counter = SDL_GetTicks();
     x += x_dir;
     y += y_dir;
@@ -220,12 +220,12 @@ void render_lines(const SDL_Event* event) {
       "TCOD_BKGND_OVERLAY",
       "TCOD_BKGND_ALPHA"};
   switch (event->type) {
-    case SDL_KEYDOWN:
-      switch (event->key.keysym.scancode) {
+    case SDL_EVENT_KEY_DOWN:
+      switch (event->key.scancode) {
         case SDL_SCANCODE_RETURN:
         case SDL_SCANCODE_RETURN2:
         case SDL_SCANCODE_KP_ENTER:
-          if (event->key.keysym.mod & KMOD_ALT) break;
+          if (event->key.mod & SDL_KMOD_ALT) break;
           /* switch to the next blending mode */
           ++bk_flag;
           if ((bk_flag & 0xff) > TCOD_BKGND_ALPH) bk_flag = TCOD_BKGND_NONE;
@@ -415,8 +415,8 @@ void render_noise(const SDL_Event* event) {
   }
   /* handle keypress */
   switch (event->type) {
-    case SDL_KEYDOWN:
-      switch (event->key.keysym.scancode) {
+    case SDL_EVENT_KEY_DOWN:
+      switch (event->key.scancode) {
         case SDL_SCANCODE_E:
           /* increase hurst */
           hurst += 0.1f;
@@ -459,7 +459,7 @@ void render_noise(const SDL_Event* event) {
           break;
         default: {
           /* change the noise function */
-          const int scancode = event->key.keysym.scancode;
+          const int scancode = event->key.scancode;
           if (scancode >= SDL_SCANCODE_1 && scancode <= SDL_SCANCODE_9) {
             func = scancode - SDL_SCANCODE_1;
           }
@@ -610,8 +610,8 @@ void render_fov(const SDL_Event* event) {
     }
   }
   switch (event->type) {
-    case SDL_KEYDOWN:
-      switch (event->key.keysym.scancode) {
+    case SDL_EVENT_KEY_DOWN:
+      switch (event->key.scancode) {
         case SDL_SCANCODE_I:
           if (SAMPLE_MAP[py - 1][px] == ' ') {
             TCOD_console_put_char(sample_console, px, py, ' ', TCOD_BKGND_NONE);
@@ -675,7 +675,7 @@ void render_fov(const SDL_Event* event) {
         case SDL_SCANCODE_KP_PLUS:
         case SDL_SCANCODE_MINUS:
         case SDL_SCANCODE_KP_MINUS:
-          if (event->key.keysym.scancode == SDL_SCANCODE_EQUALS || event->key.keysym.scancode == SDL_SCANCODE_KP_PLUS) {
+          if (event->key.scancode == SDL_SCANCODE_EQUALS || event->key.scancode == SDL_SCANCODE_KP_PLUS) {
             ++algonum;
           } else {
             --algonum;
@@ -752,36 +752,36 @@ void render_mouse(const SDL_Event* event) {
   static TCOD_mouse_t mouse = {0};
   static int tile_motion_x = 0;
   static int tile_motion_y = 0;
-  int pixel_x;
-  int pixel_y;
+  float pixel_x;
+  float pixel_y;
   uint32_t mouse_state = SDL_GetMouseState(&pixel_x, &pixel_y);
-  int tile_x = pixel_x;
-  int tile_y = pixel_y;
+  int tile_x = (int)pixel_x;
+  int tile_y = (int)pixel_y;
   TCOD_context_screen_pixel_to_tile_i(g_context, &tile_x, &tile_y);
   switch (event->type) {
     case ON_ENTER_USEREVENT:
       TCOD_console_set_default_background(sample_console, TCOD_grey);
       TCOD_console_set_default_foreground(sample_console, TCOD_light_yellow);
       SDL_WarpMouseInWindow(NULL, 320, 200);
-      SDL_ShowCursor(1);
+      SDL_ShowCursor();
       break;
-    case SDL_KEYDOWN:
-      switch (event->key.keysym.scancode) {
+    case SDL_EVENT_KEY_DOWN:
+      switch (event->key.scancode) {
         case SDL_SCANCODE_1:
         case SDL_SCANCODE_KP_1:
-          SDL_ShowCursor(0);
+          SDL_HideCursor();
           break;
         case SDL_SCANCODE_2:
         case SDL_SCANCODE_KP_2:
-          SDL_ShowCursor(1);
+          SDL_ShowCursor();
           break;
         default:
           break;
       }
       break;
-    case SDL_MOUSEMOTION:
-      tile_motion_x = event->motion.xrel;
-      tile_motion_y = event->motion.yrel;
+    case SDL_EVENT_MOUSE_MOTION:
+      tile_motion_x = (int)event->motion.xrel;
+      tile_motion_y = (int)event->motion.yrel;
       break;
   }
   TCOD_console_clear(sample_console);
@@ -936,8 +936,8 @@ void render_path(const SDL_Event* event) {
     }
   }
   switch (event->type) {
-    case SDL_KEYDOWN:
-      switch (event->key.keysym.scancode) {
+    case SDL_EVENT_KEY_DOWN:
+      switch (event->key.scancode) {
         case SDL_SCANCODE_TAB:
         case SDL_SCANCODE_KP_TAB:
           usingAstar = !usingAstar;
@@ -991,9 +991,9 @@ void render_path(const SDL_Event* event) {
           break;
       }
       break;
-    case SDL_MOUSEMOTION: {
-      const int mx = event->motion.x - SAMPLE_SCREEN_X;
-      const int my = event->motion.y - SAMPLE_SCREEN_Y;
+    case SDL_EVENT_MOUSE_MOTION: {
+      const int mx = (int)event->motion.x - SAMPLE_SCREEN_X;
+      const int my = (int)event->motion.y - SAMPLE_SCREEN_Y;
       if (mx >= 0 && mx < SAMPLE_SCREEN_WIDTH && my >= 0 && my < SAMPLE_SCREEN_HEIGHT && (dx != mx || dy != my)) {
         TCOD_console_put_char(sample_console, dx, dy, oldChar, TCOD_BKGND_NONE);
         dx = mx;
@@ -1166,12 +1166,12 @@ void render_bsp(const SDL_Event* event) {
   static const TCOD_color_t darkWall = {0, 0, 100};
   static const TCOD_color_t darkGround = {50, 50, 150};
   switch (event->type) {
-    case SDL_KEYDOWN:
-      switch (event->key.keysym.scancode) {
+    case SDL_EVENT_KEY_DOWN:
+      switch (event->key.scancode) {
         case SDL_SCANCODE_RETURN:
         case SDL_SCANCODE_RETURN2:
         case SDL_SCANCODE_KP_ENTER:
-          if (event->key.keysym.mod & KMOD_ALT) break;
+          if (event->key.mod & SDL_KMOD_ALT) break;
           generate = true;
           break;
         case SDL_SCANCODE_SPACE:
@@ -1312,8 +1312,8 @@ void render_name(const SDL_Event* event) {
       TCOD_list_push(names, TCOD_namegen_generate((const char*)TCOD_list_get(sets, curSet), true));
     }
     switch (event->type) {
-      case SDL_KEYDOWN:
-        switch (event->key.keysym.scancode) {
+      case SDL_EVENT_KEY_DOWN:
+        switch (event->key.scancode) {
           case SDL_SCANCODE_EQUALS:
           case SDL_SCANCODE_KP_PLUS:
             ++curSet;
@@ -1346,22 +1346,23 @@ static int effectNum = 0;
 static float delay = 3.0f;
 
 void burn(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sample_h) {
-  const int r_idx = screen->format->Rshift / 8;
-  const int g_idx = screen->format->Gshift / 8;
-  const int b_idx = screen->format->Bshift / 8;
+  const SDL_PixelFormatDetails* format = SDL_GetPixelFormatDetails(screen->format);
+  const int r_idx = format->Rshift / 8;
+  const int g_idx = format->Gshift / 8;
+  const int b_idx = format->Bshift / 8;
   for (int x = sample_x; x < sample_x + sample_w; ++x) {
-    uint8_t* p = (uint8_t*)screen->pixels + x * screen->format->BytesPerPixel + sample_y * screen->pitch;
+    uint8_t* p = (uint8_t*)screen->pixels + x * format->bytes_per_pixel + sample_y * screen->pitch;
     for (int y = sample_y; y < sample_y + sample_h; ++y) {
       int ir = 0, ig = 0, ib = 0;
-      const uint8_t* p2 = p + screen->format->BytesPerPixel;  // get pixel at x+1,y
+      const uint8_t* p2 = p + format->bytes_per_pixel;  // get pixel at x+1,y
       ir += p2[r_idx];
       ig += p2[g_idx];
       ib += p2[b_idx];
-      p2 -= 2 * screen->format->BytesPerPixel;  // get pixel at x-1,y
+      p2 -= 2 * format->bytes_per_pixel;  // get pixel at x-1,y
       ir += p2[r_idx];
       ig += p2[g_idx];
       ib += p2[b_idx];
-      p2 += screen->format->BytesPerPixel + screen->pitch;  // get pixel at x,y+1
+      p2 += format->bytes_per_pixel + screen->pitch;  // get pixel at x,y+1
       ir += p2[r_idx];
       ig += p2[g_idx];
       ib += p2[b_idx];
@@ -1378,19 +1379,20 @@ void burn(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sam
 }
 
 void explode(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sample_h) {
-  const int r_idx = screen->format->Rshift / 8;
-  const int g_idx = screen->format->Gshift / 8;
-  const int b_idx = screen->format->Bshift / 8;
+  const SDL_PixelFormatDetails* format = SDL_GetPixelFormatDetails(screen->format);
+  const int r_idx = format->Rshift / 8;
+  const int g_idx = format->Gshift / 8;
+  const int b_idx = format->Bshift / 8;
   const int dist = (int)(10 * (3.0f - delay));
   for (int x = sample_x; x < sample_x + sample_w; ++x) {
-    uint8_t* p = (uint8_t*)screen->pixels + x * screen->format->BytesPerPixel + sample_y * screen->pitch;
+    uint8_t* p = (uint8_t*)screen->pixels + x * format->bytes_per_pixel + sample_y * screen->pitch;
     for (int y = sample_y; y < sample_y + sample_h; ++y) {
       int ir = 0, ig = 0, ib = 0;
       for (int i = 0; i < 3; ++i) {
         const int dx = TCOD_random_get_int(NULL, -dist, dist);
         const int dy = TCOD_random_get_int(NULL, -dist, dist);
         const uint8_t* p2;
-        p2 = p + dx * screen->format->BytesPerPixel;
+        p2 = p + dx * format->bytes_per_pixel;
         p2 += dy * screen->pitch;
         ir += p2[r_idx];
         ig += p2[g_idx];
@@ -1405,15 +1407,16 @@ void explode(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int 
 }
 
 void blur(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sample_h) {
+  const SDL_PixelFormatDetails* format = SDL_GetPixelFormatDetails(screen->format);
   // let's blur that sample console
   float n = 0.0f;
-  const int r_idx = screen->format->Rshift / 8;
-  const int g_idx = screen->format->Gshift / 8;
-  const int b_idx = screen->format->Bshift / 8;
+  const int r_idx = format->Rshift / 8;
+  const int g_idx = format->Gshift / 8;
+  const int b_idx = format->Bshift / 8;
   float f[3] = {0, 0, SDL_GetTicks() / 1000.0f};
   if (noise == NULL) noise = TCOD_noise_new(3, TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY, NULL);
   for (int x = sample_x; x < sample_x + sample_w; ++x) {
-    uint8_t* p = (uint8_t*)screen->pixels + x * screen->format->BytesPerPixel + sample_y * screen->pitch;
+    uint8_t* p = (uint8_t*)screen->pixels + x * format->bytes_per_pixel + sample_y * screen->pitch;
     f[0] = (float)(x) / sample_w;
     for (int y = sample_y; y < sample_y + sample_h; ++y) {
       int ir = 0, ig = 0, ib = 0;
@@ -1430,7 +1433,7 @@ void blur(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sam
           ir += p[r_idx];
           ig += p[g_idx];
           ib += p[b_idx];
-          p -= 2 * screen->format->BytesPerPixel;  // get pixel at x+2,y
+          p -= 2 * format->bytes_per_pixel;  // get pixel at x+2,y
           ir += p[r_idx];
           ig += p[g_idx];
           ib += p[b_idx];
@@ -1438,7 +1441,7 @@ void blur(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sam
           ir += p[r_idx];
           ig += p[g_idx];
           ib += p[b_idx];
-          p += 2 * screen->format->BytesPerPixel;  // get pixel at x,y+2
+          p += 2 * format->bytes_per_pixel;  // get pixel at x,y+2
           ir += p[r_idx];
           ig += p[g_idx];
           ib += p[b_idx];
@@ -1450,7 +1453,7 @@ void blur(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sam
           ir += p[r_idx];
           ig += p[g_idx];
           ib += p[b_idx];
-          p += 2 * screen->format->BytesPerPixel;  // get pixel at x+2,y
+          p += 2 * format->bytes_per_pixel;  // get pixel at x+2,y
           ir += p[r_idx];
           ig += p[g_idx];
           ib += p[b_idx];
@@ -1458,7 +1461,7 @@ void blur(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sam
           ir += p[r_idx];
           ig += p[g_idx];
           ib += p[b_idx];
-          p -= 2 * screen->format->BytesPerPixel;  // get pixel at x,y+2
+          p -= 2 * format->bytes_per_pixel;  // get pixel at x,y+2
           ir += p[r_idx];
           ig += p[g_idx];
           ib += p[b_idx];
@@ -1470,7 +1473,7 @@ void blur(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sam
           ir += p[r_idx];
           ig += p[g_idx];
           ib += p[b_idx];
-          p -= screen->format->BytesPerPixel;  // get pixel at x-1,y
+          p -= format->bytes_per_pixel;  // get pixel at x-1,y
           ir += p[r_idx];
           ig += p[g_idx];
           ib += p[b_idx];
@@ -1478,7 +1481,7 @@ void blur(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sam
           ir += p[r_idx];
           ig += p[g_idx];
           ib += p[b_idx];
-          p += screen->format->BytesPerPixel;  // get pixel at x,y-1
+          p += format->bytes_per_pixel;  // get pixel at x,y-1
           ir += p[r_idx];
           ig += p[g_idx];
           ib += p[b_idx];
@@ -1490,7 +1493,7 @@ void blur(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sam
           ir += p[r_idx];
           ig += p[g_idx];
           ib += p[b_idx];
-          p += screen->format->BytesPerPixel;  // get pixel at x+1,y
+          p += format->bytes_per_pixel;  // get pixel at x+1,y
           ir += p[r_idx];
           ig += p[g_idx];
           ib += p[b_idx];
@@ -1498,7 +1501,7 @@ void blur(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sam
           ir += p[r_idx];
           ig += p[g_idx];
           ib += p[b_idx];
-          p -= screen->format->BytesPerPixel;  // get pixel at x,y+1
+          p -= format->bytes_per_pixel;  // get pixel at x,y+1
           ir += p[r_idx];
           ig += p[g_idx];
           ib += p[b_idx];
@@ -1566,8 +1569,8 @@ void render_sdl(const SDL_Event* event) {
           "callback. While enabled, it will be active on other samples too.\n\nNote that the SDL callback only works "
           "with SDL renderer.");
       break;
-    case SDL_KEYDOWN:
-      switch (event->key.keysym.scancode) {
+    case SDL_EVENT_KEY_DOWN:
+      switch (event->key.scancode) {
         case SDL_SCANCODE_TAB:
         case SDL_SCANCODE_KP_TAB:
           sdl_callback_enabled = !sdl_callback_enabled;
@@ -1639,7 +1642,7 @@ void print_log(const TCOD_LogMessage* message, void* userdata) {
  * the main function
  * ***************************/
 int main(int argc, char* argv[]) {
-  SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
+  SDL_SetLogPriorities(SDL_LOG_PRIORITY_VERBOSE);
   TCOD_set_log_callback(print_log, NULL);
   TCOD_set_log_level(TCOD_LOG_DEBUG);
   static const SDL_Event on_enter_event = {.type = ON_ENTER_USEREVENT};
@@ -1665,7 +1668,7 @@ int main(int argc, char* argv[]) {
   atexit(TCOD_quit);
 
   bool credits_end = false;
-  uint32_t last_time = SDL_GetTicks();
+  uint64_t last_time = SDL_GetTicks();
 
   /* initialize the offscreen console for the samples */
   sample_console = TCOD_console_new(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
@@ -1673,8 +1676,8 @@ int main(int argc, char* argv[]) {
   int cur_sample = 0; /* index of the current sample */
   samples[cur_sample].render(&on_enter_event);
   while (true) {
-    const uint32_t current_time = SDL_GetTicks();
-    const int32_t delta_time_ms = TCOD_MAX(0, (int32_t)(current_time - last_time));
+    const uint64_t current_time = SDL_GetTicks();
+    const int64_t delta_time_ms = TCOD_MAX(0, (int64_t)(current_time - last_time));
     last_time = current_time;
     delta_time = (float)(delta_time_ms) / 1000.0f;
 
@@ -1776,8 +1779,8 @@ int main(int argc, char* argv[]) {
     while (SDL_PollEvent(&event)) {
       TCOD_context_convert_event_coordinates(g_context, &event);
       switch (event.type) {
-        case SDL_KEYDOWN:
-          switch (event.key.keysym.scancode) {
+        case SDL_EVENT_KEY_DOWN:
+          switch (event.key.scancode) {
             case SDL_SCANCODE_DOWN:  // Next sample.
               if (++cur_sample >= nb_samples) cur_sample = 0;
               samples[cur_sample].render(&on_enter_event);
@@ -1789,12 +1792,11 @@ int main(int argc, char* argv[]) {
             case SDL_SCANCODE_RETURN:  // Toggle fullscreen with Alt+Enter.
             case SDL_SCANCODE_RETURN2:
             case SDL_SCANCODE_KP_ENTER:
-              if (event.key.keysym.mod & KMOD_ALT) {
+              if (event.key.mod & SDL_KMOD_ALT) {
                 SDL_Window* sdl_window = TCOD_context_get_sdl_window(g_context);
                 if (sdl_window) {
-                  static const uint32_t FULLSCREEN_FLAGS = SDL_WINDOW_FULLSCREEN | SDL_WINDOW_FULLSCREEN_DESKTOP;
-                  const bool is_fullscreen = (SDL_GetWindowFlags(sdl_window) & FULLSCREEN_FLAGS) != 0;
-                  SDL_SetWindowFullscreen(sdl_window, (is_fullscreen ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP));
+                  const bool is_fullscreen = (SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_FULLSCREEN) != 0;
+                  SDL_SetWindowFullscreen(sdl_window, !is_fullscreen);
                 }
               }
               break;
@@ -1803,14 +1805,13 @@ int main(int argc, char* argv[]) {
               break;
             default: {
               // Switch renderers with the function keys.
-              const int renderer_pick = event.key.keysym.scancode - SDL_SCANCODE_F1;
+              const int renderer_pick = event.key.scancode - SDL_SCANCODE_F1;
               if (0 <= renderer_pick && renderer_pick < RENDERER_OPTIONS_COUNT) {
                 // Preserve window flags and position during context switching.
                 SDL_Window* sdl_window = TCOD_context_get_sdl_window(g_context);
                 if (sdl_window) {
-                  params.sdl_window_flags = SDL_GetWindowFlags(sdl_window);
-                  if ((params.sdl_window_flags &
-                       (SDL_WINDOW_MAXIMIZED | SDL_WINDOW_FULLSCREEN | SDL_WINDOW_FULLSCREEN_DESKTOP)) == 0) {
+                  params.sdl_window_flags = (int)SDL_GetWindowFlags(sdl_window);
+                  if ((params.sdl_window_flags & (SDL_WINDOW_MAXIMIZED | SDL_WINDOW_FULLSCREEN)) == 0) {
                     // Don't track window size/position when fullscreen.
                     SDL_GetWindowSize(sdl_window, &params.pixel_width, &params.pixel_height);
                     SDL_GetWindowPosition(sdl_window, &params.window_x, &params.window_y);
@@ -1824,23 +1825,22 @@ int main(int argc, char* argv[]) {
             } break;
           }
           break;
-        case SDL_DROPFILE: {  // Change to a new tileset when one is dropped on the window.
+        case SDL_EVENT_DROP_FILE: {  // Change to a new tileset when one is dropped on the window.
           TCOD_Tileset* new_tileset = NULL;
-          if (str_ends_with(event.drop.file, ".bdf")) {
-            new_tileset = TCOD_load_bdf(event.drop.file);
-          } else if (str_ends_with(event.drop.file, "_tc.png")) {
-            new_tileset = TCOD_tileset_load(event.drop.file, 32, 8, 256, TCOD_CHARMAP_TCOD);
+          if (str_ends_with(event.drop.data, ".bdf")) {
+            new_tileset = TCOD_load_bdf(event.drop.data);
+          } else if (str_ends_with(event.drop.data, "_tc.png")) {
+            new_tileset = TCOD_tileset_load(event.drop.data, 32, 8, 256, TCOD_CHARMAP_TCOD);
           } else {
-            new_tileset = TCOD_tileset_load(event.drop.file, 16, 16, 256, TCOD_CHARMAP_CP437);
+            new_tileset = TCOD_tileset_load(event.drop.data, 16, 16, 256, TCOD_CHARMAP_CP437);
           }
           if (new_tileset) {
             TCOD_tileset_delete(tileset);
             params.tileset = tileset = new_tileset;
             TCOD_context_change_tileset(g_context, tileset);
           }
-          SDL_free(event.drop.file);
         } break;
-        case SDL_QUIT:
+        case SDL_EVENT_QUIT:
           return EXIT_SUCCESS;  // Exit program by returning from main.
       }
       /* render current sample */

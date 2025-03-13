@@ -8,9 +8,9 @@ if(CONAN_FILE)
     set(LINK_TCOD CONAN_PKG::libtcod)
     set(SDL2MAIN)
 else()
-    find_package(SDL2 CONFIG REQUIRED)
+    find_package(SDL3 CONFIG REQUIRED)
     set(LINK_TCOD libtcod::libtcod)
-    set(SDL2MAIN SDL2::SDL2main)
+    set(SDL2MAIN)
 endif()
 
 # This and KEEP_RPATHS is required to handle RPATH's on MacOS.

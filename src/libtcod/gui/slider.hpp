@@ -91,14 +91,14 @@ class Slider : public TextBox {
     TextBox::update(ev_tile, ev_pixel);
     textToValue();
     switch (ev_tile.type) {
-      case SDL_MOUSEMOTION:
+      case SDL_EVENT_MOUSE_MOTION:
         onArrows = ev_tile.motion.x >= x + w - 2 && ev_tile.motion.x < x + w && ev_tile.motion.y == y;
         break;
       default:
         break;
     }
     switch (ev_pixel.type) {
-      case SDL_MOUSEMOTION:
+      case SDL_EVENT_MOUSE_MOTION:
         if (drag) {
           const float old_value2 = value;
           float motion_dx = ((ev_pixel.motion.xrel) * sensitivity) / (64 * 8);
@@ -155,14 +155,14 @@ class Slider : public TextBox {
       drag = true;
       drag_y = -1;
       dragValue = value;
-      SDL_SetRelativeMouseMode(SDL_TRUE);
+      SDL_SetWindowRelativeMouseMode(SDL_GetMouseFocus(), true);
     }
   }
   void onButtonRelease() override {
     if (drag) {
       drag = false;
       SDL_WarpMouseInWindow(nullptr, (x + w - 2) * 8, y * 8);
-      SDL_SetRelativeMouseMode(SDL_FALSE);
+      SDL_SetWindowRelativeMouseMode(SDL_GetGrabbedWindow(), false);
     }
   }
 

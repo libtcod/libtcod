@@ -77,7 +77,7 @@ class FlatList : public TextBox {
   void update(const SDL_Event& ev_tile, const SDL_Event& ev_pixel) override {
     onLeftArrow = onRightArrow = false;
     switch (ev_tile.type) {
-      case SDL_MOUSEMOTION:
+      case SDL_EVENT_MOUSE_MOTION:
         onLeftArrow = ev_tile.motion.x == x + box_x && ev_tile.motion.y == y;
         onRightArrow = ev_tile.motion.x == x + w - 1 && ev_tile.motion.y == y;
         break;

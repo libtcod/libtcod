@@ -6,8 +6,7 @@
                 "${workspaceFolder}/src/**",
                 "${workspaceFolder}/samples/**",
                 "${workspaceFolder}/tests/**",
-                "${vcpkgRoot}/x64-windows/include",
-                "${vcpkgRoot}/x64-windows/include/SDL2"
+                "${vcpkgRoot}/x64-windows/include"
             ],
             "cStandard": "c99",
             "cppStandard": "c++17",

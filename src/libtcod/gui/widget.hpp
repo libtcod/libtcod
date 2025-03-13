@@ -32,7 +32,7 @@
 #pragma once
 #ifndef TCOD_GUI_WIDGET_HPP
 #define TCOD_GUI_WIDGET_HPP
-#include <SDL_events.h>
+#include <SDL3/SDL_events.h>
 
 #include <functional>
 #include <memory>
@@ -60,7 +60,7 @@ class Widget {
 
   virtual void render() {}
   virtual void update(const TCOD_key_t) {
-    const int cursor_visible = SDL_ShowCursor(SDL_QUERY);
+    const int cursor_visible = SDL_CursorVisible();
     if (cursor_visible) {
       if (mouse.cx >= x && mouse.cx < x + w && mouse.cy >= y && mouse.cy < y + h) {
         if (!mouseIn) {
@@ -95,10 +95,10 @@ class Widget {
     }
   }
   virtual void update(const SDL_Event& ev_tile, [[maybe_unused]] const SDL_Event& ev_pixel) {
-    const int cursor_visible = SDL_ShowCursor(SDL_QUERY);
+    const int cursor_visible = SDL_CursorVisible();
     const bool cursor_over = mouseIn || (!cursor_visible && this == focus);
     switch (ev_tile.type) {
-      case SDL_MOUSEMOTION:
+      case SDL_EVENT_MOUSE_MOTION:
         if (cursor_visible) {
           if (ev_tile.motion.x >= x && ev_tile.motion.x < x + w && ev_tile.motion.y >= y && ev_tile.motion.y < y + h) {
             if (!mouseIn) {
@@ -115,13 +115,13 @@ class Widget {
           }
         }
         break;
-      case SDL_MOUSEBUTTONDOWN:
+      case SDL_EVENT_MOUSE_BUTTON_DOWN:
         if (cursor_over && ev_tile.button.button == SDL_BUTTON_LEFT) {
           mouseL = true;
           onButtonPress();
         }
         break;
-      case SDL_MOUSEBUTTONUP:
+      case SDL_EVENT_MOUSE_BUTTON_UP:
         if (ev_tile.button.button == SDL_BUTTON_LEFT && mouseL) {
           onButtonRelease();
           keyboardFocus = nullptr;
@@ -164,19 +164,19 @@ class Widget {
   }
   static void updateWidgets(const SDL_Event& ev_tile, const SDL_Event& ev_pixel) {
     switch (ev_tile.type) {
-      case SDL_MOUSEMOTION:
-        mouse.cx = ev_tile.motion.x;
-        mouse.cy = ev_tile.motion.y;
-        mouse.dcx = ev_tile.motion.xrel;
-        mouse.dcy = ev_tile.motion.yrel;
+      case SDL_EVENT_MOUSE_MOTION:
+        mouse.cx = (int)ev_tile.motion.x;
+        mouse.cy = (int)ev_tile.motion.y;
+        mouse.dcx = (int)ev_tile.motion.xrel;
+        mouse.dcy = (int)ev_tile.motion.yrel;
         break;
       default:
         break;
     }
     switch (ev_pixel.type) {
-      case SDL_MOUSEMOTION:
-        mouse.dx = ev_pixel.motion.xrel;
-        mouse.dy = ev_pixel.motion.yrel;
+      case SDL_EVENT_MOUSE_MOTION:
+        mouse.dx = (int)ev_pixel.motion.xrel;
+        mouse.dy = (int)ev_pixel.motion.yrel;
         break;
       default:
         break;

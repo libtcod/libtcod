@@ -31,7 +31,7 @@
  */
 #include "context_init.h"
 #ifndef NO_SDL
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -145,7 +145,6 @@ static const char TCOD_help_msg[] =
 -help : Show this help message.\n\
 -windowed : Open in a resizable window.\n\
 -fullscreen : Open a borderless fullscreen window.\n\
--exclusive-fullscreen : Open an exclusive fullscreen window.\n\
 -resolution <width>x<height> : Sets the desired pixel resolution.\n\
 -width <pixels> : Set the desired pixel width.\n\
 -height <pixels> : Set the desired pixel height.\n\
@@ -194,14 +193,14 @@ static TCOD_Error parse_context_parameters(const TCOD_ContextParams* in, TCOD_Co
         TCOD_CHECK_ARGUMENT(out->argv[i], "help")) {
       return send_to_cli_out(out, "%s", TCOD_help_msg);
     } else if (TCOD_CHECK_ARGUMENT(out->argv[i], "windowed")) {
-      out->sdl_window_flags &= ~(SDL_WINDOW_FULLSCREEN | SDL_WINDOW_FULLSCREEN_DESKTOP);
+      out->sdl_window_flags &= ~(SDL_WINDOW_FULLSCREEN);
       out->sdl_window_flags |= SDL_WINDOW_RESIZABLE;
     } else if (TCOD_CHECK_ARGUMENT(out->argv[i], "exclusive-fullscreen")) {
-      out->sdl_window_flags &= ~(SDL_WINDOW_FULLSCREEN | SDL_WINDOW_FULLSCREEN_DESKTOP);
+      out->sdl_window_flags &= ~(SDL_WINDOW_FULLSCREEN);
       out->sdl_window_flags |= SDL_WINDOW_FULLSCREEN;
     } else if (TCOD_CHECK_ARGUMENT(out->argv[i], "fullscreen")) {
-      out->sdl_window_flags &= ~(SDL_WINDOW_FULLSCREEN | SDL_WINDOW_FULLSCREEN_DESKTOP);
-      out->sdl_window_flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+      out->sdl_window_flags &= ~(SDL_WINDOW_FULLSCREEN);
+      out->sdl_window_flags |= SDL_WINDOW_FULLSCREEN;
     } else if (TCOD_CHECK_ARGUMENT(out->argv[i], "vsync")) {
       out->vsync = 1;
     } else if (TCOD_CHECK_ARGUMENT(out->argv[i], "no-vsync")) {
@@ -269,7 +268,6 @@ TCOD_Error TCOD_context_new(const TCOD_ContextParams* params_in, TCOD_Context** 
   if (err < 0) return err;
 
   // Initialize the renderer.
-  int renderer_flags = SDL_RENDERER_PRESENTVSYNC * params.vsync;
   err = TCOD_E_OK;
   switch (params.renderer_type) {
     case TCOD_RENDERER_SDL:
@@ -287,7 +285,7 @@ TCOD_Error TCOD_context_new(const TCOD_ContextParams* params_in, TCOD_Context** 
           params.pixel_height,
           params.window_title,
           params.sdl_window_flags,
-          renderer_flags,
+          params.vsync,
           params.tileset);
       if (!*out) {
         return TCOD_E_ERROR;

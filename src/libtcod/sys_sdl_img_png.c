@@ -37,7 +37,7 @@
 #include <stdlib.h>
 #endif
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <lodepng.h>
 
 #include "error.h"
@@ -86,21 +86,14 @@ SDL_Surface* TCOD_sys_read_png(const char* filename) {
   }
   SDL_Surface* bitmap;
   if (bpp == 32) {
-    bitmap = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, SDL_PIXELFORMAT_RGBA32);
+    bitmap = SDL_CreateSurface(width, height, SDL_PIXELFORMAT_RGBA32);
   } else {
-    bitmap = SDL_CreateRGBSurfaceWithFormat(0, width, height, 24, SDL_PIXELFORMAT_RGB24);
+    bitmap = SDL_CreateSurface(width, height, SDL_PIXELFORMAT_RGB24);
   }
   if (bitmap) {
     if (SDL_ConvertPixels(
-            width,
-            height,
-            bitmap->format->format,
-            image,
-            width * bpp / 8,
-            bitmap->format->format,
-            bitmap->pixels,
-            bitmap->pitch) < 0) {
-      SDL_FreeSurface(bitmap);
+            width, height, bitmap->format, image, width * bpp / 8, bitmap->format, bitmap->pixels, bitmap->pitch) < 0) {
+      SDL_DestroySurface(bitmap);
       bitmap = NULL;
       TCOD_set_errorvf("SDL Error: %s", SDL_GetError());
     }
@@ -112,12 +105,12 @@ SDL_Surface* TCOD_sys_read_png(const char* filename) {
 }
 
 TCOD_Error TCOD_sys_write_png(SDL_Surface* surf, const char* filename) {
-  SDL_Surface* rgba32 = SDL_ConvertSurfaceFormat(surf, SDL_PIXELFORMAT_RGBA32, 0);
+  SDL_Surface* rgba32 = SDL_ConvertSurface(surf, SDL_PIXELFORMAT_RGBA32);
   if (!rgba32) {
     return TCOD_set_errorvf("SDL: %s", SDL_GetError());
   }
   unsigned int error = lodepng_encode32_file(filename, rgba32->pixels, rgba32->w, rgba32->h);
-  SDL_FreeSurface(rgba32);
+  SDL_DestroySurface(rgba32);
   if (error) {
     return TCOD_set_errorvf("LodePNG error %u: %s\n", error, lodepng_error_text(error));
   }

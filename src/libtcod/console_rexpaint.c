@@ -42,10 +42,10 @@
 #include "libtcod_int.h"
 
 #ifndef NO_SDL
-#include <SDL_endian.h>
+#include <SDL3/SDL_endian.h>
 #else
 // Ignore endianness for now if SDL is missing.
-#define SDL_SwapLE32(x) (x)
+#define SDL_Swap32LE(x) (x)
 #endif  // NO_SDL
 
 #pragma pack(push, 1)
@@ -91,7 +91,7 @@ void xp_tile_to_console_tile(int i, const RexPaintTile* xp_tile, TCOD_Console* c
   const int x = i / console->h;
   const int y = i % console->h;
   console->tiles[x + y * console->w] = (TCOD_ConsoleTile){
-      SDL_SwapLE32(xp_tile->ch),
+      SDL_Swap32LE(xp_tile->ch),
       {xp_tile->fg.r, xp_tile->fg.g, xp_tile->fg.b, 0xff},
       {xp_tile->bg.r, xp_tile->bg.g, xp_tile->bg.b, 0xff},
   };
@@ -105,8 +105,8 @@ static int console_from_xp_file(gzFile gz_file, TCOD_Console** out) {
   if (z_errno < 0) {
     return TCOD_set_errorvf("Error decoding REXPaint file: %s", gzerror(gz_file, &z_errno));
   }
-  xp_layer.width = SDL_SwapLE32(xp_layer.width);
-  xp_layer.height = SDL_SwapLE32(xp_layer.height);
+  xp_layer.width = SDL_Swap32LE(xp_layer.width);
+  xp_layer.height = SDL_Swap32LE(xp_layer.height);
   *out = TCOD_console_new(xp_layer.width, xp_layer.height);
   if (!*out) return -1;
   const int layer_total = xp_layer.width * xp_layer.height;
@@ -134,8 +134,8 @@ int TCOD_load_xp(const char* path, int n, TCOD_Console** out) {
     gzclose(gz_file);
     return TCOD_E_ERROR;
   }
-  xp_header.version = SDL_SwapLE32(xp_header.version);
-  xp_header.layer_count = SDL_SwapLE32(xp_header.layer_count);
+  xp_header.version = SDL_Swap32LE(xp_header.version);
+  xp_header.layer_count = SDL_Swap32LE(xp_header.layer_count);
   if (n <= 0 || !out) {
     gzclose(gz_file);
     return xp_header.layer_count;
@@ -160,7 +160,7 @@ static TCOD_Error console_to_xp_file(const TCOD_Console* console, gzFile gz_file
   if (console->w < 0 || console->h < 0) {
     return TCOD_set_errorv("Console data is corrupt.");
   }
-  RexPaintLayerChunk xp_layer = {.width = SDL_SwapLE32(console->w), .height = SDL_SwapLE32(console->h)};
+  RexPaintLayerChunk xp_layer = {.width = SDL_Swap32LE(console->w), .height = SDL_Swap32LE(console->h)};
   int z_err = gzwrite(gz_file, &xp_layer, sizeof(xp_layer));
   if (z_err < 0) {
     return TCOD_set_errorvf("Error encoding file: %s", gzerror(gz_file, &z_err));
@@ -169,7 +169,7 @@ static TCOD_Error console_to_xp_file(const TCOD_Console* console, gzFile gz_file
     for (int y = 0; y < console->h; ++y) {
       const TCOD_ConsoleTile tile = console->tiles[x + y * console->w];
       const RexPaintTile xp_tile = {
-          SDL_SwapLE32(tile.ch),
+          SDL_Swap32LE(tile.ch),
           {tile.fg.r, tile.fg.g, tile.fg.b},
           {tile.bg.r, tile.bg.g, tile.bg.b},
       };
@@ -214,8 +214,8 @@ TCOD_Error TCOD_save_xp(int n, const TCOD_Console* const* consoles, const char* 
     gzclose(gz_file);
     return TCOD_E_ERROR;
   }
-  xp_header.version = SDL_SwapLE32(-1);
-  xp_header.layer_count = SDL_SwapLE32(n);
+  xp_header.version = SDL_Swap32LE(-1);
+  xp_header.layer_count = SDL_Swap32LE(n);
   z_err = gzwrite(gz_file, &xp_header, sizeof(xp_header));
   if (z_err < 0) {
     TCOD_set_errorvf("Error encoding: %s", gzerror(gz_file, &z_err));
@@ -285,8 +285,8 @@ static int console_from_xp_stream(z_stream* stream, TCOD_Console** out) {
   if (z_err < 0) {
     return TCOD_set_errorvf("Decoding error: %s", stream->msg);
   }
-  xp_layer.width = SDL_SwapLE32(xp_layer.width);
-  xp_layer.height = SDL_SwapLE32(xp_layer.height);
+  xp_layer.width = SDL_Swap32LE(xp_layer.width);
+  xp_layer.height = SDL_Swap32LE(xp_layer.height);
   *out = TCOD_console_new(xp_layer.width, xp_layer.height);
   if (!*out) return -1;
   const int layer_total = xp_layer.width * xp_layer.height;
@@ -313,8 +313,8 @@ int TCOD_load_xp_from_memory(int n_data, const unsigned char* data, int n_out, T
     inflateEnd(&stream);
     return TCOD_E_ERROR;
   }
-  header.version = SDL_SwapLE32(header.version);
-  header.layer_count = SDL_SwapLE32(header.layer_count);
+  header.version = SDL_Swap32LE(header.version);
+  header.layer_count = SDL_Swap32LE(header.layer_count);
   if (n_out <= 0 || !out) {
     inflateEnd(&stream);
     return header.layer_count;
@@ -334,7 +334,7 @@ int TCOD_load_xp_from_memory(int n_data, const unsigned char* data, int n_out, T
 }
 
 static int console_to_xp_stream(const TCOD_Console* console, z_stream* stream) {
-  const RexPaintLayerChunk xp_layer = {.width = SDL_SwapLE32(console->w), .height = SDL_SwapLE32(console->h)};
+  const RexPaintLayerChunk xp_layer = {.width = SDL_Swap32LE(console->w), .height = SDL_Swap32LE(console->h)};
   stream->next_in = (Bytef*)&xp_layer;
   stream->avail_in = sizeof(xp_layer);
   if (deflate(stream, Z_NO_FLUSH) < 0) {
@@ -344,7 +344,7 @@ static int console_to_xp_stream(const TCOD_Console* console, z_stream* stream) {
     for (int y = 0; y < console->h; ++y) {
       const TCOD_ConsoleTile in_tile = console->tiles[x + y * console->w];
       const RexPaintTile out_tile = {
-          SDL_SwapLE32(in_tile.ch),
+          SDL_Swap32LE(in_tile.ch),
           {in_tile.fg.r, in_tile.fg.g, in_tile.fg.b},
           {in_tile.bg.r, in_tile.bg.g, in_tile.bg.b},
       };
@@ -375,7 +375,7 @@ int TCOD_save_xp_to_memory(
     deflateEnd(&stream);
     return upper_size;
   }
-  const RexPaintHeader header = {.version = SDL_SwapLE32(-1), .layer_count = SDL_SwapLE32(n_consoles)};
+  const RexPaintHeader header = {.version = SDL_Swap32LE(-1), .layer_count = SDL_Swap32LE(n_consoles)};
   stream.next_in = (Bytef*)&header;
   stream.avail_in = sizeof(header);
   if (deflate(&stream, Z_NO_FLUSH)) {

@@ -1,11 +1,10 @@
 #ifndef NO_SDL
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 #include <catch2/catch_all.hpp>
 #include <libtcod/timer.hpp>
 
 TEST_CASE("tcod::Timer") {
-  REQUIRE(SDL_InitSubSystem(SDL_INIT_TIMER) == 0);
   auto timer = tcod::Timer();
 
   // Check that getting the FPS with no samples won't crash.
@@ -23,7 +22,5 @@ TEST_CASE("tcod::Timer") {
   static_cast<void>(timer.get_median_fps());
   static_cast<void>(timer.get_min_fps());
   static_cast<void>(timer.get_max_fps());
-
-  SDL_QuitSubSystem(SDL_INIT_TIMER);
 }
 #endif  // NO_SDL

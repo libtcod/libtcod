@@ -9,7 +9,7 @@
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif  // __EMSCRIPTEN__
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 #include <cmath>
 #include <cstdio>
@@ -188,7 +188,7 @@ class OffscreenConsole : public Sample {
   }
   void on_event(SDL_Event&) override {}
   void on_draw(tcod::Console& console) override {
-    if (SDL_TICKS_PASSED(SDL_GetTicks(), counter + 1000)) {  // Once every second.
+    if (SDL_GetTicks() >= counter + 1000) {  // Once every second.
       counter = SDL_GetTicks();
       x_ += x_dir_;
       y_ += y_dir_;
@@ -208,7 +208,7 @@ class OffscreenConsole : public Sample {
   }
 
  private:
-  int counter;
+  uint64_t counter;
   tcod::Console screenshot{SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT};
   tcod::Console secondary{SAMPLE_SCREEN_WIDTH / 2, SAMPLE_SCREEN_HEIGHT / 2};  // second screen
   int x_ = 0;  // secondary screen position
@@ -237,8 +237,8 @@ class LineDrawingSample : public Sample {
   void on_enter() override {}
   void on_event(SDL_Event& event) override {
     switch (event.type) {
-      case SDL_KEYDOWN:
-        switch (event.key.keysym.sym) {
+      case SDL_EVENT_KEY_DOWN:
+        switch (event.key.key) {
           case SDLK_RETURN:
           case SDLK_RETURN2:
           case SDLK_KP_ENTER:
@@ -328,42 +328,42 @@ class NoiseSample : public Sample {
   void on_enter() override {}
   void on_event(SDL_Event& event) override {
     switch (event.type) {
-      case SDL_KEYDOWN:
-        switch (event.key.keysym.sym) {
-          case SDLK_e:  // increase hurst
+      case SDL_EVENT_KEY_DOWN:
+        switch (event.key.key) {
+          case SDLK_E:  // increase hurst
             hurst_ += 0.1f;
             noise_ = TCODNoise(2, hurst_, lacunarity_);
             break;
-          case SDLK_d:  // decrease hurst
+          case SDLK_D:  // decrease hurst
             hurst_ -= 0.1f;
             noise_ = TCODNoise(2, hurst_, lacunarity_);
             break;
-          case SDLK_r:  // increase lacunarity
+          case SDLK_R:  // increase lacunarity
             lacunarity_ += 0.5f;
             noise_ = TCODNoise(2, hurst_, lacunarity_);
             break;
-          case SDLK_f:  // decrease lacunarity
+          case SDLK_F:  // decrease lacunarity
             lacunarity_ -= 0.5f;
             noise_ = TCODNoise(2, hurst_, lacunarity_);
             break;
-          case SDLK_t:  // increase octaves
+          case SDLK_T:  // increase octaves
             octaves_ += 0.5f;
             break;
-          case SDLK_g:  // decrease octaves
+          case SDLK_G:  // decrease octaves
             octaves_ -= 0.5f;
             break;
-          case SDLK_y:  // increase zoom
+          case SDLK_Y:  // increase zoom
             zoom += 0.2f;
             break;
-          case SDLK_h:  // decrease zoom
+          case SDLK_H:  // decrease zoom
             zoom -= 0.2f;
             break;
           default:
             const auto set_func = [&](int n) {
               if (0 <= n && n < 9) func_ = n;
             };
-            set_func(event.key.keysym.sym - SDLK_1);
-            set_func(event.key.keysym.sym - SDLK_KP_1);
+            set_func(event.key.key - SDLK_1);
+            set_func(event.key.key - SDLK_KP_1);
             break;
         }
         break;
@@ -521,24 +521,24 @@ class FOVSample : public Sample {
   }
   void on_event(SDL_Event& event) override {
     switch (event.type) {
-      case SDL_KEYDOWN:
-        switch (event.key.keysym.sym) {
-          case SDLK_i:
+      case SDL_EVENT_KEY_DOWN:
+        switch (event.key.key) {
+          case SDLK_I:
             try_move(0, -1);  // player move north
             break;
-          case SDLK_k:
+          case SDLK_K:
             try_move(0, 1);  // player move south
             break;
-          case SDLK_j:
+          case SDLK_J:
             try_move(-1, 0);  // player move west
             break;
-          case SDLK_l:
+          case SDLK_L:
             try_move(1, 0);  // player move east
             break;
-          case SDLK_t:
+          case SDLK_T:
             torch_ = !torch_;  // enable/disable the torch fx
             break;
-          case SDLK_w:
+          case SDLK_W:
             light_walls_ = !light_walls_;
             break;
           case SDLK_EQUALS:
@@ -657,7 +657,7 @@ class ImageSample : public Sample {
     const float scale_x = 0.2f + 1.8f * (1.0f + cosf(SDL_GetTicks() / 1000.0f / 2.0f)) / 2.0f;
     const float scale_y = scale_x;
     const float angle = SDL_GetTicks() / 1000.0f;
-    const long elapsed = SDL_GetTicks() / 2000;
+    const uint64_t elapsed = SDL_GetTicks() / 2000;
     if (elapsed & 1) {
       // split the color channels of circle.png
       // the red channel
@@ -690,26 +690,26 @@ class MouseSample : public Sample {
  public:
   void on_enter() override {
     SDL_WarpMouseInWindow(NULL, 320, 200);
-    SDL_ShowCursor(1);
+    SDL_ShowCursor();
     last_motion_ = SDL_Event{};
   }
   void on_event(SDL_Event& event) override {
     switch (event.type) {
-      case SDL_KEYDOWN:
-        switch (event.key.keysym.sym) {
+      case SDL_EVENT_KEY_DOWN:
+        switch (event.key.key) {
           case SDLK_1:
           case SDLK_KP_1:
-            SDL_ShowCursor(0);
+            SDL_HideCursor();
             break;
           case SDLK_2:
           case SDLK_KP_2:
-            SDL_ShowCursor(1);
+            SDL_ShowCursor();
             break;
           default:
             break;
         }
         break;
-      case SDL_MOUSEMOTION:
+      case SDL_EVENT_MOUSE_MOTION:
         last_motion_ = event;  // Track mouse motion.
         break;
       default:
@@ -790,18 +790,18 @@ class PathfinderSample : public Sample {
   void on_event(SDL_Event& event) override {
     g_context.convert_event_coordinates(event);
     switch (event.type) {
-      case SDL_KEYDOWN:
-        switch (event.key.keysym.sym) {
-          case SDLK_i:
+      case SDL_EVENT_KEY_DOWN:
+        switch (event.key.key) {
+          case SDLK_I:
             dest_y_ -= 1;  // destination move north
             break;
-          case SDLK_k:
+          case SDLK_K:
             dest_y_ += 1;  // destination move south
             break;
-          case SDLK_j:
+          case SDLK_J:
             dest_x_ -= 1;  // destination move west
             break;
-          case SDLK_l:
+          case SDLK_L:
             dest_x_ += 1;  // destination move east
             break;
           case SDLK_TAB:  // Toggle pathfinder.
@@ -812,9 +812,9 @@ class PathfinderSample : public Sample {
             break;
         }
         break;
-      case SDL_MOUSEMOTION: {
-        const auto dest_x = event.motion.x - SAMPLE_SCREEN_X;
-        const auto dest_y = event.motion.y - SAMPLE_SCREEN_Y;
+      case SDL_EVENT_MOUSE_MOTION: {
+        const auto dest_x = (int)event.motion.x - SAMPLE_SCREEN_X;
+        const auto dest_y = (int)event.motion.y - SAMPLE_SCREEN_Y;
         if (0 <= dest_x && dest_x < SAMPLE_SCREEN_WIDTH && 0 <= dest_y && dest_y < SAMPLE_SCREEN_HEIGHT) {
           dest_x_ = dest_x;
           dest_y_ = dest_y;
@@ -1078,8 +1078,8 @@ class BSPSample : public Sample {
   void on_enter() override {}
   void on_event(SDL_Event& event) override {
     switch (event.type) {
-      case SDL_KEYDOWN:
-        switch (event.key.keysym.sym) {
+      case SDL_EVENT_KEY_DOWN:
+        switch (event.key.key) {
           case SDLK_RETURN:
           case SDLK_RETURN2:
           case SDLK_KP_ENTER:
@@ -1197,8 +1197,8 @@ class NameGeneratorSample : public Sample {
   void on_enter() override {}
   void on_event(SDL_Event& event) override {
     switch (event.type) {
-      case SDL_KEYDOWN:
-        switch (event.key.keysym.sym) {
+      case SDL_EVENT_KEY_DOWN:
+        switch (event.key.key) {
           case SDLK_EQUALS:
           case SDLK_KP_PLUS:
             curSet = (curSet + 1) % static_cast<int>(sets.size());
@@ -1296,22 +1296,23 @@ class SampleRenderer : public ITCODSDLRenderer {
   float delay_ = 3.0f;
 
   void burn(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sample_h) {
-    int r_idx = screen->format->Rshift / 8;
-    int g_idx = screen->format->Gshift / 8;
-    int b_idx = screen->format->Bshift / 8;
+    const SDL_PixelFormatDetails* format = SDL_GetPixelFormatDetails(screen->format);
+    const int r_idx = format->Rshift / 8;
+    const int g_idx = format->Gshift / 8;
+    const int b_idx = format->Bshift / 8;
     for (int x = sample_x; x < sample_x + sample_w; x++) {
-      uint8_t* p = (uint8_t*)screen->pixels + x * screen->format->BytesPerPixel + sample_y * screen->pitch;
+      uint8_t* p = (uint8_t*)screen->pixels + x * format->bytes_per_pixel + sample_y * screen->pitch;
       for (int y = sample_y; y < sample_y + sample_h; y++) {
         int ir = 0, ig = 0, ib = 0;
-        uint8_t* p2 = p + screen->format->BytesPerPixel;  // get pixel at x+1,y
+        uint8_t* p2 = p + format->bytes_per_pixel;  // get pixel at x+1,y
         ir += p2[r_idx];
         ig += p2[g_idx];
         ib += p2[b_idx];
-        p2 -= 2 * screen->format->BytesPerPixel;  // get pixel at x-1,y
+        p2 -= 2 * format->bytes_per_pixel;  // get pixel at x-1,y
         ir += p2[r_idx];
         ig += p2[g_idx];
         ib += p2[b_idx];
-        p2 += screen->format->BytesPerPixel + screen->pitch;  // get pixel at x,y+1
+        p2 += format->bytes_per_pixel + screen->pitch;  // get pixel at x,y+1
         ir += p2[r_idx];
         ig += p2[g_idx];
         ib += p2[b_idx];
@@ -1328,20 +1329,21 @@ class SampleRenderer : public ITCODSDLRenderer {
   }
 
   void explode(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sample_h) {
-    int r_idx = screen->format->Rshift / 8;
-    int g_idx = screen->format->Gshift / 8;
-    int b_idx = screen->format->Bshift / 8;
+    const SDL_PixelFormatDetails* format = SDL_GetPixelFormatDetails(screen->format);
+    const int r_idx = format->Rshift / 8;
+    const int g_idx = format->Gshift / 8;
+    const int b_idx = format->Bshift / 8;
     TCODRandom* rng = TCODRandom::getInstance();
-    int dist = (int)(10 * (3.0f - delay_));
+    const int dist = (int)(10 * (3.0f - delay_));
     for (int x = sample_x; x < sample_x + sample_w; x++) {
-      uint8_t* p = (uint8_t*)screen->pixels + x * screen->format->BytesPerPixel + sample_y * screen->pitch;
+      uint8_t* p = (uint8_t*)screen->pixels + x * format->bytes_per_pixel + sample_y * screen->pitch;
       for (int y = sample_y; y < sample_y + sample_h; y++) {
         int ir = 0, ig = 0, ib = 0;
         for (int i = 0; i < 3; i++) {
-          int dx = rng->getInt(-dist, dist);
-          int dy = rng->getInt(-dist, dist);
+          const int dx = rng->getInt(-dist, dist);
+          const int dy = rng->getInt(-dist, dist);
           uint8_t* p2;
-          p2 = p + dx * screen->format->BytesPerPixel;
+          p2 = p + dx * format->bytes_per_pixel;
           p2 += dy * screen->pitch;
           ir += p2[r_idx];
           ig += p2[g_idx];
@@ -1356,14 +1358,15 @@ class SampleRenderer : public ITCODSDLRenderer {
   }
 
   void blur(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sample_h) {
+    const SDL_PixelFormatDetails* format = SDL_GetPixelFormatDetails(screen->format);
     // let's blur that sample console
     float f[3], n = 0.0f;
-    int r_idx = screen->format->Rshift / 8;
-    int g_idx = screen->format->Gshift / 8;
-    int b_idx = screen->format->Bshift / 8;
+    const int r_idx = format->Rshift / 8;
+    const int g_idx = format->Gshift / 8;
+    const int b_idx = format->Bshift / 8;
     f[2] = SDL_GetTicks() / 1000.0f;
     for (int x = sample_x; x < sample_x + sample_w; x++) {
-      uint8_t* p = (uint8_t*)screen->pixels + x * screen->format->BytesPerPixel + sample_y * screen->pitch;
+      uint8_t* p = (uint8_t*)screen->pixels + x * format->bytes_per_pixel + sample_y * screen->pitch;
       f[0] = (float)(x) / sample_w;
       for (int y = sample_y; y < sample_y + sample_h; y++) {
         int ir = 0, ig = 0, ib = 0;
@@ -1371,7 +1374,7 @@ class SampleRenderer : public ITCODSDLRenderer {
           f[1] = (float)(y) / sample_h;
           n = noise_.getFbm(f, 3.0f);
         }
-        int dec = (int)(3 * (n + 1.0f));
+        const int dec = (int)(3 * (n + 1.0f));
         int count = 0;
         switch (dec) {
           case 4:
@@ -1380,7 +1383,7 @@ class SampleRenderer : public ITCODSDLRenderer {
             ir += p[r_idx];
             ig += p[g_idx];
             ib += p[b_idx];
-            p -= 2 * screen->format->BytesPerPixel;  // get pixel at x+2,y
+            p -= 2 * format->bytes_per_pixel;  // get pixel at x+2,y
             ir += p[r_idx];
             ig += p[g_idx];
             ib += p[b_idx];
@@ -1388,7 +1391,7 @@ class SampleRenderer : public ITCODSDLRenderer {
             ir += p[r_idx];
             ig += p[g_idx];
             ib += p[b_idx];
-            p += 2 * screen->format->BytesPerPixel;  // get pixel at x,y+2
+            p += 2 * format->bytes_per_pixel;  // get pixel at x,y+2
             ir += p[r_idx];
             ig += p[g_idx];
             ib += p[b_idx];
@@ -1399,7 +1402,7 @@ class SampleRenderer : public ITCODSDLRenderer {
             ir += p[r_idx];
             ig += p[g_idx];
             ib += p[b_idx];
-            p += 2 * screen->format->BytesPerPixel;  // get pixel at x+2,y
+            p += 2 * format->bytes_per_pixel;  // get pixel at x+2,y
             ir += p[r_idx];
             ig += p[g_idx];
             ib += p[b_idx];
@@ -1407,7 +1410,7 @@ class SampleRenderer : public ITCODSDLRenderer {
             ir += p[r_idx];
             ig += p[g_idx];
             ib += p[b_idx];
-            p -= 2 * screen->format->BytesPerPixel;  // get pixel at x,y+2
+            p -= 2 * format->bytes_per_pixel;  // get pixel at x,y+2
             ir += p[r_idx];
             ig += p[g_idx];
             ib += p[b_idx];
@@ -1418,7 +1421,7 @@ class SampleRenderer : public ITCODSDLRenderer {
             ir += p[r_idx];
             ig += p[g_idx];
             ib += p[b_idx];
-            p -= screen->format->BytesPerPixel;  // get pixel at x-1,y
+            p -= format->bytes_per_pixel;  // get pixel at x-1,y
             ir += p[r_idx];
             ig += p[g_idx];
             ib += p[b_idx];
@@ -1426,7 +1429,7 @@ class SampleRenderer : public ITCODSDLRenderer {
             ir += p[r_idx];
             ig += p[g_idx];
             ib += p[b_idx];
-            p += screen->format->BytesPerPixel;  // get pixel at x,y-1
+            p += format->bytes_per_pixel;  // get pixel at x,y-1
             ir += p[r_idx];
             ig += p[g_idx];
             ib += p[b_idx];
@@ -1437,7 +1440,7 @@ class SampleRenderer : public ITCODSDLRenderer {
             ir += p[r_idx];
             ig += p[g_idx];
             ib += p[b_idx];
-            p += screen->format->BytesPerPixel;  // get pixel at x+1,y
+            p += format->bytes_per_pixel;  // get pixel at x+1,y
             ir += p[r_idx];
             ig += p[g_idx];
             ib += p[b_idx];
@@ -1445,7 +1448,7 @@ class SampleRenderer : public ITCODSDLRenderer {
             ir += p[r_idx];
             ig += p[g_idx];
             ib += p[b_idx];
-            p -= screen->format->BytesPerPixel;  // get pixel at x,y+1
+            p -= format->bytes_per_pixel;  // get pixel at x,y+1
             ir += p[r_idx];
             ig += p[g_idx];
             ib += p[b_idx];
@@ -1481,8 +1484,8 @@ class SDLSample : public Sample {
   }
   void on_event(SDL_Event& event) override {
     switch (event.type) {
-      case SDL_KEYDOWN:
-        switch (event.key.keysym.sym) {
+      case SDL_EVENT_KEY_DOWN:
+        switch (event.key.key) {
           case SDLK_TAB:
           case SDLK_KP_TAB:
             sdl_callback_enabled = !sdl_callback_enabled;
@@ -1568,7 +1571,7 @@ void main_loop() {
       TCOD_RIGHT);
   tcod::print(g_console, {2, 47}, "↑↓ : select a sample", GREY, std::nullopt);
   if (auto sdl_window = g_context.get_sdl_window(); sdl_window) {
-    const auto is_fullscreen = SDL_GetWindowFlags(sdl_window) & (SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_FULLSCREEN);
+    const bool is_fullscreen = (SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_FULLSCREEN) != 0;
     tcod::print(
         g_console,
         {2, 48},
@@ -1605,11 +1608,11 @@ void main_loop() {
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
     switch (event.type) {
-      case SDL_QUIT:
+      case SDL_EVENT_QUIT:
         std::exit(EXIT_SUCCESS);
         break;
-      case SDL_KEYDOWN:
-        switch (event.key.keysym.sym) {
+      case SDL_EVENT_KEY_DOWN:
+        switch (event.key.key) {
           case SDLK_DOWN:
             g_current_sample = (g_current_sample + 1) % static_cast<int>(g_samples.size());
             g_samples.at(g_current_sample).sample->on_enter();
@@ -1622,50 +1625,49 @@ void main_loop() {
           case SDLK_RETURN:
           case SDLK_RETURN2:
           case SDLK_KP_ENTER:
-            if (event.key.keysym.mod & KMOD_ALT) {
+            if (event.key.mod & SDL_KMOD_ALT) {
               if (auto sdl_window = g_context.get_sdl_window(); sdl_window) {
                 const auto flags = SDL_GetWindowFlags(sdl_window);
-                const auto is_fullscreen = flags & (SDL_WINDOW_FULLSCREEN | SDL_WINDOW_FULLSCREEN_DESKTOP);
+                const bool is_fullscreen = (flags & SDL_WINDOW_FULLSCREEN) != 0;
                 // Change fullscreen mode.
-                SDL_SetWindowFullscreen(sdl_window, is_fullscreen ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP);
+                SDL_SetWindowFullscreen(sdl_window, !is_fullscreen);
               }
             }
             break;
-          case SDLK_p:
+          case SDLK_P:
           case SDLK_PRINTSCREEN:
             g_context.save_screenshot();  // Save screenshot.
             break;
           default:
-            if (SDLK_F1 <= event.key.keysym.sym && event.key.keysym.sym < SDLK_F1 + RENDERERS.size()) {
+            if (SDLK_F1 <= event.key.key && event.key.key < SDLK_F1 + RENDERERS.size()) {
               if (auto sdl_window = g_context.get_sdl_window(); sdl_window) {
                 // Save fullscreen and maximized state to params, so that they are kept on the new renderer.
                 const auto current_flags = SDL_GetWindowFlags(sdl_window);
-                static constexpr auto TRACKED_FLAGS = SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_MAXIMIZED;
+                static constexpr auto TRACKED_FLAGS = SDL_WINDOW_FULLSCREEN | SDL_WINDOW_MAXIMIZED;
                 g_context_params.sdl_window_flags =
                     (g_context_params.sdl_window_flags & ~TRACKED_FLAGS) | (current_flags & TRACKED_FLAGS);
               }
-              g_context_params.renderer_type = RENDERERS.at(event.key.keysym.sym - SDLK_F1).renderer;
+              g_context_params.renderer_type = RENDERERS.at(event.key.key - SDLK_F1).renderer;
               g_context.close();
               g_context = tcod::Context(g_context_params);
             }
             break;
         }
         break;
-      case SDL_DROPFILE: {  // Change to a new tileset when one is dropped on the window.
+      case SDL_EVENT_DROP_FILE: {  // Change to a new tileset when one is dropped on the window.
         tcod::Tileset new_tileset;
-        if (str_ends_with(event.drop.file, ".bdf")) {
-          new_tileset = tcod::Tileset(tcod::load_bdf(event.drop.file));
-        } else if (str_ends_with(event.drop.file, "_tc.png")) {
-          new_tileset = tcod::load_tilesheet(event.drop.file, {32, 8}, tcod::CHARMAP_TCOD);
+        if (str_ends_with(event.drop.data, ".bdf")) {
+          new_tileset = tcod::Tileset(tcod::load_bdf(event.drop.data));
+        } else if (str_ends_with(event.drop.data, "_tc.png")) {
+          new_tileset = tcod::load_tilesheet(event.drop.data, {32, 8}, tcod::CHARMAP_TCOD);
         } else {
-          new_tileset = tcod::load_tilesheet(event.drop.file, {16, 16}, tcod::CHARMAP_CP437);
+          new_tileset = tcod::load_tilesheet(event.drop.data, {16, 16}, tcod::CHARMAP_CP437);
         }
         if (new_tileset.get()) {
           g_tileset = std::move(new_tileset);
           g_context_params.tileset = g_tileset.get();
           g_context.change_tileset(g_tileset);
         }
-        SDL_free(event.drop.file);
       } break;
       default:
         break;
@@ -1679,7 +1681,7 @@ void main_loop() {
 // ***************************
 int main(int argc, char* argv[]) {
   try {
-    SDL_LogSetAllPriority(SDL_LOG_PRIORITY_WARN);
+    SDL_SetLogPriorities(SDL_LOG_PRIORITY_WARN);
     static constexpr char* FONT = "data/fonts/dejavu12x12_gs_tc.png";
     g_tileset = tcod::load_tilesheet(FONT, {32, 8}, tcod::CHARMAP_TCOD);
 

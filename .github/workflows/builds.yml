@@ -15,6 +15,7 @@ defaults:
 
 env:
   VCPKG_FETCH_DEPTH: 1 # Depth to fetch vcpkg commits, must include the baseline.
+  SDL_LINUX_DEPENDENCIES: libltdl-dev libx11-dev libxft-dev libxext-dev libwayland-dev libxkbcommon-dev libegl1-mesa-dev libibus-1.0-dev
 
 jobs:
   CMake:
@@ -59,12 +60,12 @@ jobs:
             triplet: x64-linux
             shared: dynamic
             config: Debug
-            cmake_extra_args: "-DLIBTCOD_SAMPLES=OFF -DCMAKE_DISABLE_FIND_PACKAGE_SDL2=1 -DCMAKE_DISABLE_FIND_PACKAGE_Threads=1"
+            cmake_extra_args: "-DLIBTCOD_SAMPLES=OFF -DCMAKE_DISABLE_FIND_PACKAGE_SDL3=1 -DCMAKE_DISABLE_FIND_PACKAGE_Threads=1"
           - os: windows-2022
             triplet: x64-windows
             shared: dynamic
             config: Debug
-            cmake_extra_args: "-DLIBTCOD_SAMPLES=OFF -DCMAKE_DISABLE_FIND_PACKAGE_SDL2=1 -DCMAKE_DISABLE_FIND_PACKAGE_Threads=1"
+            cmake_extra_args: "-DLIBTCOD_SAMPLES=OFF -DCMAKE_DISABLE_FIND_PACKAGE_SDL3=1 -DCMAKE_DISABLE_FIND_PACKAGE_Threads=1"
 
           # Test libtcod without zlib.
           - os: ubuntu-24.04
@@ -92,7 +93,7 @@ jobs:
             triplet: x64-linux
             shared: dynamic
             config: Debug
-            cmake_extra_args: "-DLIBTCOD_SAMPLES=OFF -DCMAKE_DISABLE_FIND_PACKAGE_SDL2=1 -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=1 -DCMAKE_DISABLE_FIND_PACKAGE_lodepng-c=1 -DCMAKE_DISABLE_FIND_PACKAGE_utf8proc=1 -DCMAKE_DISABLE_FIND_PACKAGE_Threads=1"
+            cmake_extra_args: "-DLIBTCOD_SAMPLES=OFF -DCMAKE_DISABLE_FIND_PACKAGE_SDL3=1 -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=1 -DCMAKE_DISABLE_FIND_PACKAGE_lodepng-c=1 -DCMAKE_DISABLE_FIND_PACKAGE_utf8proc=1 -DCMAKE_DISABLE_FIND_PACKAGE_Threads=1"
 
     env:
       CMAKE_BUILD_DIR: build
@@ -110,7 +111,7 @@ jobs:
         uses: lukka/get-cmake@latest
       - name: Install APT dependencies
         if: runner.os == 'Linux'
-        run: sudo apt-get install libltdl-dev
+        run: sudo apt-get install ${{ env.SDL_LINUX_DEPENDENCIES }}
       # Restore both vcpkg and its artifacts from the GitHub cache service.
       - name: Restore vcpkg and its artifacts.
         uses: actions/cache@v4
@@ -136,7 +137,7 @@ jobs:
           cmake -S . -B ${{env.CMAKE_BUILD_DIR}} -G Ninja \
             -DVCPKG_TARGET_TRIPLET="${{ matrix.triplet }}" \
             -DCMAKE_BUILD_TYPE=${{matrix.config}} \
-            -DLIBTCOD_SDL2=find_package \
+            -DLIBTCOD_SDL3=find_package \
             -DLIBTCOD_ZLIB=find_package \
             -DLIBTCOD_LODEPNG=find_package \
             -DLIBTCOD_UTF8PROC=vcpkg \
@@ -180,7 +181,7 @@ jobs:
         uses: lukka/get-cmake@latest
       - name: Install APT dependencies
         if: runner.os == 'Linux'
-        run: sudo apt-get install libltdl-dev
+        run: sudo apt-get install ${{ env.SDL_LINUX_DEPENDENCIES }}
       - name: Restore vcpkg and its artifacts.
         uses: actions/cache@v4
         with:
@@ -198,7 +199,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=Debug \
             -DCMAKE_CXX_FLAGS="--coverage" \
             -DCMAKE_C_FLAGS="--coverage" \
-            -DLIBTCOD_SDL2=find_package \
+            -DLIBTCOD_SDL3=find_package \
             -DLIBTCOD_ZLIB=find_package \
             -DLIBTCOD_LODEPNG=find_package \
             -DLIBTCOD_UTF8PROC=vcpkg \
@@ -223,11 +224,13 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
   Autotools:
+    # Disabled until SDL3 is supported
+    if: false
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-24.04, macos-14]
+        os: [macos-14]
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python 3
@@ -238,11 +241,11 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install libsdl2-dev
+          sudo apt-get install libsdl3-dev
       - name: Install Brew dependencies
         if: runner.os == 'macOS'
         run: |
-          brew install automake sdl2 libtool
+          brew install automake sdl3 libtool
       - name: libtoolize
         run: ${{ runner.os == 'macOS' && 'glibtoolize' || 'libtoolize' }} --install
         working-directory: buildsys/autotools
@@ -261,6 +264,8 @@ jobs:
           make check
 
   SCons:
+    # Disabled until SDL3 is supported
+    if: false
     runs-on: ${{ matrix.os }}
     continue-on-error: ${{ matrix.experimental == true }}
     strategy:
@@ -294,17 +299,17 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install libsdl2-dev
+          sudo apt-get install libsdl3-dev
       - name: Install Brew dependencies
         if: runner.os == 'macOS'
         run: |
-          brew install sdl2
+          brew install sdl3
       - uses: msys2/setup-msys2@v2
         if: ${{ matrix.toolset == 'mingw' }}
         with:
           msystem: MINGW64
           update: true
-          install: git scons mingw-w64-x86_64-toolchain mingw-w64-x86_64-SDL2
+          install: git scons mingw-w64-x86_64-toolchain mingw-w64-x86_64-SDL3
       - name: Build package.
         if: ${{ matrix.toolset != 'mingw' }}
         working-directory: buildsys/scons

@@ -31,7 +31,7 @@
  */
 #include "event.h"
 #ifndef NO_SDL
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 #include <cstring>
 

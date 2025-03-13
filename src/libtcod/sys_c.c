@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #ifndef NO_SDL
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #endif  // NO_SDL
 #include <ctype.h>
 #include <stdarg.h>
@@ -279,7 +279,7 @@ TCOD_list_t TCOD_sys_get_directory_content(const char* path, const char* pattern
 
 int TCOD_sys_get_num_cores(void) {
 #ifndef NO_SDL
-  return SDL_GetCPUCount();
+  return SDL_GetNumLogicalCPUCores();
 #else
   return 1;
 #endif  // NO_SDL

@@ -1,4 +1,4 @@
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 #include <cmath>
 #include <cstdarg>
@@ -466,7 +466,7 @@ void buildGui() {
 
 int main(int argc, char* argv[]) {
   TCOD_ContextParams context_params{};
-  context_params.tcod_version = SDL_COMPILEDVERSION;
+  context_params.tcod_version = TCOD_COMPILEDVERSION;
   context_params.columns = HM_WIDTH;
   context_params.rows = HM_HEIGHT;
   context_params.argc = argc;
@@ -515,11 +515,11 @@ int main(int argc, char* argv[]) {
       context->convert_event_coordinates(tile_event);
       Widget::updateWidgets(tile_event, event);
       switch (event.type) {
-        case SDL_QUIT:
+        case SDL_EVENT_QUIT:
           std::exit(EXIT_SUCCESS);
           break;
-        case SDL_KEYDOWN:
-          switch (event.key.keysym.sym) {
+        case SDL_EVENT_KEY_DOWN:
+          switch (event.key.key) {
             case SDLK_MINUS:
               (new AddLevelOperation(-(mapmax - mapmin) / 50))->run();
               break;

@@ -23,7 +23,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <math.h>
 #include <stdio.h>
 
@@ -242,7 +242,7 @@ void get_from_UI(
   float vx = 0.0f;
   float vy = 0.0f;
 
-  const uint8_t* keyboard_state = SDL_GetKeyboardState(nullptr);
+  const bool* keyboard_state = SDL_GetKeyboardState(nullptr);
 
   stepDelay -= delta_time;
   if (stepDelay < 0.0f) {
@@ -272,10 +272,11 @@ void get_from_UI(
     velocity_u[i] = velocity_v[i] = density[i] = 0.0f;
   }
 
-  int mouse_pixel_x;
-  int mouse_pixel_y;
+  float mouse_pixel_x;
+  float mouse_pixel_y;
   uint32_t mouse_buttons = SDL_GetMouseState(&mouse_pixel_x, &mouse_pixel_y);
-  const auto mouse_tile_xy = context.pixel_to_tile_coordinates(std::array<int, 2>{mouse_pixel_x, mouse_pixel_y});
+  const auto mouse_tile_xy =
+      context.pixel_to_tile_coordinates(std::array<int, 2>{(int)mouse_pixel_x, (int)mouse_pixel_y});
 
   int subtile_x = mouse_tile_xy.at(0) * 2;
   int subtile_y = mouse_tile_xy.at(1) * 2;
@@ -346,21 +347,16 @@ int main(int argc, char* argv[]) {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
-        case SDL_QUIT:
+        case SDL_EVENT_QUIT:
           return 0;
-        case SDL_KEYDOWN:
-          switch (event.key.keysym.scancode) {
+        case SDL_EVENT_KEY_DOWN:
+          switch (event.key.scancode) {
             case SDL_SCANCODE_RETURN:
             case SDL_SCANCODE_RETURN2:
             case SDL_SCANCODE_KP_ENTER:
-              if (event.key.keysym.mod & KMOD_ALT) {
+              if (event.key.mod & SDL_KMOD_ALT) {
                 if (auto window = context.get_sdl_window(); window) {
-                  const uint32_t flags = SDL_GetWindowFlags(window);
-                  if (flags & SDL_WINDOW_FULLSCREEN_DESKTOP) {
-                    SDL_SetWindowFullscreen(window, 0);
-                  } else {
-                    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
-                  }
+                  SDL_SetWindowFullscreen(window, (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN) == 0);
                 }
               }
               break;

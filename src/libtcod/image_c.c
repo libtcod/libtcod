@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #ifndef NO_SDL
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #endif  // NO_SDL
 #include <math.h>
 #include <stdarg.h>
@@ -442,7 +442,7 @@ TCOD_Image* TCOD_image_load(const char* filename) {
       SDL_ConvertPixels(
           surface->w,
           surface->h,
-          surface->format->format,
+          surface->format,
           surface->pixels,
           surface->pitch,
           SDL_PIXELFORMAT_RGB24,
@@ -450,7 +450,7 @@ TCOD_Image* TCOD_image_load(const char* filename) {
           (int)sizeof(image->mipmaps[0].buf[0]) * surface->w);
       TCOD_image_invalidate_mipmaps(image);
     }
-    SDL_FreeSurface(surface);
+    SDL_DestroySurface(surface);
   }
   return image;
 }
@@ -459,18 +459,17 @@ TCOD_Error TCOD_image_save(const TCOD_Image* image, const char* filename) {
     TCOD_set_errorv("Image parameter must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
   }
-  struct SDL_Surface* bitmap = SDL_CreateRGBSurfaceWithFormatFrom(
-      image->mipmaps[0].buf,
+  struct SDL_Surface* bitmap = SDL_CreateSurfaceFrom(
       image->mipmaps[0].width,
       image->mipmaps[0].height,
-      24,
-      (int)sizeof(image->mipmaps[0].buf[0]) * image->mipmaps[0].width,
-      SDL_PIXELFORMAT_RGB24);
+      SDL_PIXELFORMAT_RGB24,
+      image->mipmaps[0].buf,
+      (int)sizeof(image->mipmaps[0].buf[0]) * image->mipmaps[0].width);
   if (!bitmap) {
     return TCOD_set_errorvf("SDL error: %s", SDL_GetError());
   }
   TCOD_Error err = TCOD_sys_save_bitmap(bitmap, filename);
-  SDL_FreeSurface(bitmap);
+  SDL_DestroySurface(bitmap);
   return err;
 }
 #endif  // NO_SDL

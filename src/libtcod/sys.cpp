@@ -175,7 +175,7 @@ extern "C" void TCOD_CRenderer(struct SDL_Surface* sdl_surface) {
 }
 void TCODSystem::registerSDLRenderer(ITCODSDLRenderer* renderer) {
   ::post_renderer = renderer;
-  TCOD_sys_register_SDL_renderer(TCOD_CRenderer);
+  TCOD_sys_register_SDL_renderer(renderer ? TCOD_CRenderer : nullptr);
 }
 #else
 void TCODSystem::sleepMilli(uint32_t) {}

@@ -9,7 +9,9 @@
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif  // __EMSCRIPTEN__
+#define SDL_MAIN_USE_CALLBACKS
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_main.h>
 
 #include <cmath>
 #include <cstdio>
@@ -1539,7 +1541,7 @@ static const std::vector<sample_t> g_samples = {
 #endif
 };
 
-void main_loop() {
+SDL_AppResult SDL_AppIterate(void*) {
   static auto timer = tcod::Timer();
   static bool creditsEnd = false;
   delta_time = timer.sync();
@@ -1603,110 +1605,97 @@ void main_loop() {
   // update the game screen
   g_context.present(g_console);
   g_console.clear();
-
-  // did the user hit a key ?
-  SDL_Event event;
-  while (SDL_PollEvent(&event)) {
-    switch (event.type) {
-      case SDL_EVENT_QUIT:
-        std::exit(EXIT_SUCCESS);
-        break;
-      case SDL_EVENT_KEY_DOWN:
-        switch (event.key.key) {
-          case SDLK_DOWN:
-            g_current_sample = (g_current_sample + 1) % static_cast<int>(g_samples.size());
-            g_samples.at(g_current_sample).sample->on_enter();
-            break;
-          case SDLK_UP:
-            g_current_sample =
-                (g_current_sample + static_cast<int>(g_samples.size()) - 1) % static_cast<int>(g_samples.size());
-            g_samples.at(g_current_sample).sample->on_enter();
-            break;
-          case SDLK_RETURN:
-          case SDLK_RETURN2:
-          case SDLK_KP_ENTER:
-            if (event.key.mod & SDL_KMOD_ALT) {
-              if (auto sdl_window = g_context.get_sdl_window(); sdl_window) {
-                const auto flags = SDL_GetWindowFlags(sdl_window);
-                const bool is_fullscreen = (flags & SDL_WINDOW_FULLSCREEN) != 0;
-                // Change fullscreen mode.
-                SDL_SetWindowFullscreen(sdl_window, !is_fullscreen);
-              }
-            }
-            break;
-          case SDLK_P:
-          case SDLK_PRINTSCREEN:
-            g_context.save_screenshot();  // Save screenshot.
-            break;
-          default:
-            if (SDLK_F1 <= event.key.key && event.key.key < SDLK_F1 + RENDERERS.size()) {
-              if (auto sdl_window = g_context.get_sdl_window(); sdl_window) {
-                // Save fullscreen and maximized state to params, so that they are kept on the new renderer.
-                const auto current_flags = SDL_GetWindowFlags(sdl_window);
-                static constexpr auto TRACKED_FLAGS = SDL_WINDOW_FULLSCREEN | SDL_WINDOW_MAXIMIZED;
-                g_context_params.sdl_window_flags =
-                    (g_context_params.sdl_window_flags & ~TRACKED_FLAGS) | (current_flags & TRACKED_FLAGS);
-              }
-              g_context_params.renderer_type = RENDERERS.at(event.key.key - SDLK_F1).renderer;
-              g_context.close();
-              g_context = tcod::Context(g_context_params);
-            }
-            break;
-        }
-        break;
-      case SDL_EVENT_DROP_FILE: {  // Change to a new tileset when one is dropped on the window.
-        tcod::Tileset new_tileset;
-        if (str_ends_with(event.drop.data, ".bdf")) {
-          new_tileset = tcod::Tileset(tcod::load_bdf(event.drop.data));
-        } else if (str_ends_with(event.drop.data, "_tc.png")) {
-          new_tileset = tcod::load_tilesheet(event.drop.data, {32, 8}, tcod::CHARMAP_TCOD);
-        } else {
-          new_tileset = tcod::load_tilesheet(event.drop.data, {16, 16}, tcod::CHARMAP_CP437);
-        }
-        if (new_tileset.get()) {
-          g_tileset = std::move(new_tileset);
-          g_context_params.tileset = g_tileset.get();
-          g_context.change_tileset(g_tileset);
-        }
-      } break;
-      default:
-        break;
-    }
-    g_samples.at(g_current_sample).sample->on_event(event);
-  }
+  return SDL_APP_CONTINUE;
 }
 
-// ***************************
-// the main function
-// ***************************
-int main(int argc, char* argv[]) {
-  try {
-    SDL_SetLogPriorities(SDL_LOG_PRIORITY_WARN);
-    static constexpr char* FONT = "data/fonts/dejavu12x12_gs_tc.png";
-    g_tileset = tcod::load_tilesheet(FONT, {32, 8}, tcod::CHARMAP_TCOD);
-
-    // Context parameters, this is reused when the renderer is changed.
-    g_context_params.tcod_version = TCOD_COMPILEDVERSION;
-    g_context_params.renderer_type = TCOD_RENDERER_SDL2;
-    g_context_params.tileset = g_tileset.get();
-    g_context_params.vsync = 0;
-    g_context_params.sdl_window_flags = SDL_WINDOW_RESIZABLE;
-    g_context_params.window_title = "libtcod C++ samples";
-    g_context_params.argc = argc;
-    g_context_params.argv = argv;
-    g_context_params.console = g_console.get();
-
-    g_context = tcod::Context(g_context_params);
-
-    atexit(TCOD_quit);
-#ifdef __EMSCRIPTEN__
-    emscripten_set_main_loop(main_loop, 0, 0);
-#else
-    while (true) main_loop();
-#endif
-  } catch (const std::exception& e) {
-    std::cerr << e.what() << "\n";
-    return EXIT_FAILURE;
+SDL_AppResult SDL_AppEvent(void*, SDL_Event* event) {
+  switch (event->type) {
+    case SDL_EVENT_QUIT:
+      return SDL_APP_SUCCESS;
+      break;
+    case SDL_EVENT_KEY_DOWN:
+      switch (event->key.key) {
+        case SDLK_DOWN:
+          g_current_sample = (g_current_sample + 1) % static_cast<int>(g_samples.size());
+          g_samples.at(g_current_sample).sample->on_enter();
+          break;
+        case SDLK_UP:
+          g_current_sample =
+              (g_current_sample + static_cast<int>(g_samples.size()) - 1) % static_cast<int>(g_samples.size());
+          g_samples.at(g_current_sample).sample->on_enter();
+          break;
+        case SDLK_RETURN:
+        case SDLK_RETURN2:
+        case SDLK_KP_ENTER:
+          if (event->key.mod & SDL_KMOD_ALT) {
+            if (auto sdl_window = g_context.get_sdl_window(); sdl_window) {
+              const auto flags = SDL_GetWindowFlags(sdl_window);
+              const bool is_fullscreen = (flags & SDL_WINDOW_FULLSCREEN) != 0;
+              // Change fullscreen mode.
+              SDL_SetWindowFullscreen(sdl_window, !is_fullscreen);
+            }
+          }
+          break;
+        case SDLK_P:
+        case SDLK_PRINTSCREEN:
+          g_context.save_screenshot();  // Save screenshot.
+          break;
+        default:
+          if (SDLK_F1 <= event->key.key && event->key.key < SDLK_F1 + RENDERERS.size()) {
+            if (auto sdl_window = g_context.get_sdl_window(); sdl_window) {
+              // Save fullscreen and maximized state to params, so that they are kept on the new renderer.
+              const auto current_flags = SDL_GetWindowFlags(sdl_window);
+              static constexpr auto TRACKED_FLAGS = SDL_WINDOW_FULLSCREEN | SDL_WINDOW_MAXIMIZED;
+              g_context_params.sdl_window_flags =
+                  (g_context_params.sdl_window_flags & ~TRACKED_FLAGS) | (current_flags & TRACKED_FLAGS);
+            }
+            g_context_params.renderer_type = RENDERERS.at(event->key.key - SDLK_F1).renderer;
+            g_context.close();
+            g_context = tcod::Context(g_context_params);
+          }
+          break;
+      }
+      break;
+    case SDL_EVENT_DROP_FILE: {  // Change to a new tileset when one is dropped on the window.
+      tcod::Tileset new_tileset;
+      if (str_ends_with(event->drop.data, ".bdf")) {
+        new_tileset = tcod::Tileset(tcod::load_bdf(event->drop.data));
+      } else if (str_ends_with(event->drop.data, "_tc.png")) {
+        new_tileset = tcod::load_tilesheet(event->drop.data, {32, 8}, tcod::CHARMAP_TCOD);
+      } else {
+        new_tileset = tcod::load_tilesheet(event->drop.data, {16, 16}, tcod::CHARMAP_CP437);
+      }
+      if (new_tileset.get()) {
+        g_tileset = std::move(new_tileset);
+        g_context_params.tileset = g_tileset.get();
+        g_context.change_tileset(g_tileset);
+      }
+    } break;
+    default:
+      break;
   }
-  return EXIT_SUCCESS;
+  g_samples.at(g_current_sample).sample->on_event(*event);
+  return SDL_APP_CONTINUE;
 }
+
+SDL_AppResult SDL_AppInit(void**, int argc, char** argv) {
+  SDL_SetLogPriorities(SDL_LOG_PRIORITY_WARN);
+  static constexpr char* FONT = "data/fonts/dejavu12x12_gs_tc.png";
+  g_tileset = tcod::load_tilesheet(FONT, {32, 8}, tcod::CHARMAP_TCOD);
+
+  // Context parameters, this is reused when the renderer is changed.
+  g_context_params.tcod_version = TCOD_COMPILEDVERSION;
+  g_context_params.renderer_type = TCOD_RENDERER_SDL2;
+  g_context_params.tileset = g_tileset.get();
+  g_context_params.vsync = 0;
+  g_context_params.sdl_window_flags = SDL_WINDOW_RESIZABLE;
+  g_context_params.window_title = "libtcod C++ samples";
+  g_context_params.argc = argc;
+  g_context_params.argv = argv;
+  g_context_params.console = g_console.get();
+
+  g_context = tcod::Context(g_context_params);
+  return SDL_APP_CONTINUE;
+}
+
+void SDL_AppQuit(void*, SDL_AppResult) {}

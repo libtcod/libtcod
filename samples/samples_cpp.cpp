@@ -6,9 +6,6 @@
 
 // uncomment this to disable SDL sample (might cause compilation issues on some systems)
 // #define NO_SDL_SAMPLE
-#ifdef __EMSCRIPTEN__
-#include <emscripten.h>
-#endif  // __EMSCRIPTEN__
 #define SDL_MAIN_USE_CALLBACKS
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>

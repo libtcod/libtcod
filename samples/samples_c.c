@@ -8,6 +8,7 @@
 // #define NO_SDL_SAMPLE
 
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_main.h>
 #include <libtcod.h>
 #include <math.h>
 #include <stdio.h>

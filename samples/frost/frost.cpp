@@ -1,6 +1,4 @@
-#ifdef __EMSCRIPTEN__
-#include <emscripten.h>
-#endif  // __EMSCRIPTEN__
+#define SDL_MAIN_USE_CALLBACKS
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
@@ -178,53 +176,49 @@ class FrostManager {
 static constexpr int CONSOLE_WIDTH = 80;
 static constexpr int CONSOLE_HEIGHT = 50;
 
-tcod::ContextPtr context;
+tcod::Context context;
+FrostManager frostManager{CONSOLE_WIDTH * 2, CONSOLE_HEIGHT * 2};
+uint64_t last_time_ms = SDL_GetTicks();
 
-void main_loop() {
-  static uint64_t last_time_ms = SDL_GetTicks();
-  static FrostManager frostManager{CONSOLE_WIDTH * 2, CONSOLE_HEIGHT * 2};
+SDL_AppResult SDL_AppIterate(void*) {
   static auto console = tcod::Console{CONSOLE_WIDTH, CONSOLE_HEIGHT};
   frostManager.render(console);
-  context->present(console);
+  context.present(console);
+  return SDL_APP_CONTINUE;
+}
 
-  SDL_Event event;
-  while (SDL_PollEvent(&event)) {
-    switch (event.type) {
-      case SDL_EVENT_KEY_DOWN:
-        if (event.key.key == SDLK_BACKSPACE) frostManager.clear();
-        break;
-      case SDL_EVENT_MOUSE_BUTTON_DOWN: {
-        auto tile_xy = context->pixel_to_tile_coordinates(
-            std::array<int, 2>{{static_cast<int>(event.motion.x), static_cast<int>(event.motion.y)}});
-        if (event.button.button == SDL_BUTTON_LEFT) {
-          frostManager.addFrost(tile_xy.at(0) * 2, tile_xy.at(1) * 2);
-        }
+SDL_AppResult SDL_AppEvent(void*, SDL_Event* event) {
+  switch (event->type) {
+    case SDL_EVENT_KEY_DOWN:
+      if (event->key.key == SDLK_BACKSPACE) frostManager.clear();
+      break;
+    case SDL_EVENT_MOUSE_BUTTON_DOWN: {
+      auto tile_xy = context.pixel_to_tile_coordinates(
+          std::array<int, 2>{{static_cast<int>(event->motion.x), static_cast<int>(event->motion.y)}});
+      if (event->button.button == SDL_BUTTON_LEFT) {
+        frostManager.addFrost(tile_xy.at(0) * 2, tile_xy.at(1) * 2);
       }
-      case SDL_EVENT_MOUSE_MOTION: {
-        auto tile_xy = context->pixel_to_tile_coordinates(
-            std::array<int, 2>{{static_cast<int>(event.motion.x), static_cast<int>(event.motion.y)}});
-        if (event.motion.state & SDL_BUTTON_LMASK) {
-          frostManager.addFrost(tile_xy.at(0) * 2, tile_xy.at(1) * 2);
-        }
-      } break;
-      case SDL_EVENT_QUIT:
-        std::exit(EXIT_SUCCESS);
-        break;
     }
+    case SDL_EVENT_MOUSE_MOTION: {
+      auto tile_xy = context.pixel_to_tile_coordinates(
+          std::array<int, 2>{{static_cast<int>(event->motion.x), static_cast<int>(event->motion.y)}});
+      if (event->motion.state & SDL_BUTTON_LMASK) {
+        frostManager.addFrost(tile_xy.at(0) * 2, tile_xy.at(1) * 2);
+      }
+    } break;
+    case SDL_EVENT_QUIT:
+      return SDL_APP_SUCCESS;
   }
   uint64_t current_time_ms = SDL_GetTicks();
-  int delta_time_ms = std::max<int>(0, current_time_ms - last_time_ms);
+  int64_t delta_time_ms = std::max<int64_t>(0, current_time_ms - last_time_ms);
   last_time_ms = current_time_ms;
   frostManager.update(delta_time_ms / 1000.0f);
+  return SDL_APP_CONTINUE;
 }
 
-void on_quit() {
-  context = nullptr;
-  SDL_Quit();
-}
+void SDL_AppQuit(void*, SDL_AppResult) {}
 
-int main(int argc, char** argv) {
-  std::atexit(on_quit);
+SDL_AppResult SDL_AppInit(void**, int argc, char** argv) {
   SDL_SetLogPriorities(SDL_LOG_PRIORITY_INFO);
   auto tileset = tcod::load_tilesheet("data/fonts/terminal8x8_gs_tc.png", {32, 8}, tcod::CHARMAP_TCOD);
   TCOD_ContextParams params{};
@@ -239,15 +233,10 @@ int main(int argc, char** argv) {
   params.renderer_type = TCOD_RENDERER_SDL2;
   params.vsync = true;
   try {
-    context = tcod::new_context(params);
+    context = tcod::Context(params);
   } catch (const std::exception& e) {
     std::cerr << e.what() << "\n";
-    return EXIT_FAILURE;
+    return SDL_APP_FAILURE;
   }
-#ifdef __EMSCRIPTEN__
-  emscripten_set_main_loop(main_loop, 0, 0);
-#else
-  while (true) main_loop();
-#endif
-  return EXIT_SUCCESS;
+  return SDL_APP_CONTINUE;
 }

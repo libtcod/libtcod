@@ -13,10 +13,12 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
   [#153](https://github.com/libtcod/libtcod/issues/153)
 
 ### Changed
+- Switched from SDL2 to SDL3.
 - Several functions have been moved inline, this will break the ABI.
 - Provisional gui tools moved into the `tcod::gui` namespace.
 - `TCODConsole::data` changed from protected to private.
 - Renamed utility macros such as `MAX`, `MIN`, `ABS`, `CLAMP` and `LERP` to use `TCOD_` prefix.
+- `TCOD_renderer_init_sdl2` `renderer_flags` parameter changed to just `vsync`.
 
 ### Fixed
 - `const` was missing from `TCOD_sys_update_char` image parameter.

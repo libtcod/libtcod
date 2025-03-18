@@ -82,16 +82,26 @@ struct TCOD_RendererSDL2 {
 #ifdef __cplusplus
 extern "C" {
 #endif  // __cplusplus
-/**
-    Return a libtcod rendering context using an SDL2 renderer.
+/***************************************************************************
+    @brief Return a libtcod rendering context using an SDL2 renderer.
+
+    @param x Window X position, if unsure then use `SDL_WINDOWPOS_UNDEFINED`
+    @param y Window Y position, if unsure then use `SDL_WINDOWPOS_UNDEFINED`
+    @param width Window width in pixels
+    @param height Window height in pixels
+    @param title Window title text
+    @param window_flags SDL window flags, see `SDL_WindowFlags`
+    @param vsync Enables VSync
+    @param tileset The tileset to use for this context.
+    @return The new context, will need to deleted with TCOD_context_delete when you are done with it.
  */
 TCOD_PUBLIC TCOD_NODISCARD struct TCOD_Context* TCOD_renderer_init_sdl2(
     int x, int y, int width, int height, const char* title, int window_flags, int vsync, struct TCOD_Tileset* tileset);
 /***************************************************************************
     @brief  Return a libtcod rendering context using SDL3.
 
-    @param window_props The SDL3 window properties. See SDL_CreateWindowWithProperties.
-    @param renderer_props The SDL3 rendering properties. See SDL_CreateRendererWithProperties.
+    @param window_props The SDL3 window properties. See `SDL_CreateWindowWithProperties`.
+    @param renderer_props The SDL3 rendering properties. See `SDL_CreateRendererWithProperties`.
     @param tileset The tileset to use for this renderer.
     @return The new context, will need to deleted with TCOD_context_delete when you are done with it.
  */

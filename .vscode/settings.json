@@ -97,7 +97,10 @@
         "cfloat": "cpp",
         "ciso646": "cpp",
         "climits": "cpp",
-        "coroutine": "cpp"
+        "coroutine": "cpp",
+        "csignal": "cpp",
+        "ranges": "cpp",
+        "span": "cpp"
     },
     "files.trimFinalNewlines": true,
     "files.insertFinalNewline": true,

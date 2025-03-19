@@ -37,6 +37,8 @@
 #ifndef TCOD_LEX_HPP_
 #define TCOD_LEX_HPP_
 
+#include <utility>
+
 #include "lex.h"
 
 class TCODLIB_API TCODLex {
@@ -51,6 +53,13 @@ class TCODLIB_API TCODLex {
       const char* javadocCommentStart="/**",
       const char* stringDelim="\"",
       int flags=TCOD_LEX_FLAG_NESTING_COMMENT);
+
+  TCODLex(TCODLex&& rhs) noexcept { std::swap(data, rhs.data); };
+  TCODLex& operator=(TCODLex&& rhs) noexcept {
+    std::swap(data, rhs.data);
+    return *this;
+  };
+
   ~TCODLex();
 
   void setDataBuffer(char* dat);
@@ -114,7 +123,7 @@ class TCODLIB_API TCODLex {
     return TCOD_lex_get_token_name(tokenType);
   }
  protected:
-  TCOD_lex_t* data;
+  TCOD_lex_t* data{};
 };
 #endif // TCOD_LEX_HPP_
 /// @endcond

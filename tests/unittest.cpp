@@ -319,3 +319,14 @@ TEST_CASE("FOV Benchmarks", "[.benchmark]") {
     };
   }
 }
+
+TEST_CASE("TCODPath move") {
+  {
+    auto path_inital = TCODPath(1, 1, nullptr, nullptr);
+    auto path_moved = TCODPath{std::move(path_inital)};
+  }
+  {
+    auto path_inital = TCODDijkstra(1, 1, nullptr, nullptr);
+    auto path_moved = TCODDijkstra{std::move(path_inital)};
+  }
+}

@@ -31,9 +31,11 @@
  */
 #include "path.hpp"
 
-TCODPath::TCODPath(const TCODMap* map, float diagonalCost) { data = TCOD_path_new_using_map(map->data, diagonalCost); }
+TCODPath::TCODPath(const TCODMap* map, float diagonalCost) : data{TCOD_path_new_using_map(map->data, diagonalCost)} {}
 
-TCODPath::~TCODPath() { TCOD_path_delete(data); }
+TCODPath::~TCODPath() {
+  if (data) TCOD_path_delete(data);
+}
 
 float TCOD_path_func(int xFrom, int yFrom, int xTo, int yTo, void* data) {
   TCODPath::WrapperData* cppData = static_cast<TCODPath::WrapperData*>(data);
@@ -70,7 +72,7 @@ void TCODPath::getDestination(int* x, int* y) const { TCOD_path_get_destination(
 // ----------------- //
 
 // ctor
-TCODDijkstra::TCODDijkstra(TCODMap* map, float diagonalCost) { data = TCOD_dijkstra_new(map->data, diagonalCost); }
+TCODDijkstra::TCODDijkstra(TCODMap* map, float diagonalCost) : data{TCOD_dijkstra_new(map->data, diagonalCost)} {}
 
 // another ctor
 TCODDijkstra::TCODDijkstra(
@@ -81,7 +83,9 @@ TCODDijkstra::TCODDijkstra(
 }
 
 // dtor
-TCODDijkstra::~TCODDijkstra(void) { TCOD_dijkstra_delete(data); }
+TCODDijkstra::~TCODDijkstra(void) {
+  if (data) TCOD_dijkstra_delete(data);
+}
 
 // compute distances grid
 void TCODDijkstra::compute(int rootX, int rootY) { TCOD_dijkstra_compute(data, rootX, rootY); }

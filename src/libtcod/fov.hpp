@@ -266,7 +266,7 @@ class TCODLIB_API TCODMap {
 		friend class TCODLIB_API TCODPath;
 		friend class TCODLIB_API TCODDijkstra;
 //	protected :
-		TCOD_map_t data;
+		TCOD_map_t data{};
 };
 
 #endif // TCOD_FOV_HPP_

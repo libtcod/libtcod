@@ -169,11 +169,11 @@ public :
   TCODPath& operator=(const TCODPath&) = delete;
   TCODPath(TCODPath&& rhs) noexcept {
     std::swap(data, rhs.data);
-    cppData = std::move(rhs.cppData);
+    std::swap(cppData, rhs.cppData);
   }
   TCODPath& operator=(TCODPath&& rhs) noexcept {
     std::swap(data, rhs.data);
-    cppData = std::move(rhs.cppData);
+    std::swap(cppData, rhs.cppData);
     return *this;
   }
 	/**
@@ -485,10 +485,10 @@ public :
 
 protected :
 	friend float TCOD_path_func(int xFrom, int yFrom, int xTo,int yTo, void *data);
-	TCOD_path_t data;
+	TCOD_path_t data{};
 	struct WrapperData {
-		void *userData;
-		const ITCODPathCallback *listener;
+		void *userData{};
+		const ITCODPathCallback *listener{};
 	} cppData;
 };
 
@@ -502,11 +502,11 @@ class TCODLIB_API TCODDijkstra {
         TCODDijkstra& operator=(const TCODDijkstra&) = delete;
         TCODDijkstra(TCODDijkstra&& rhs) noexcept {
           std::swap(data, rhs.data);
-          cppData = std::move(rhs.cppData);
+          std::swap(cppData, rhs.cppData);
         }
-        TCODDijkstra& operator=(TCODDijkstra&& rhs)noexcept {
+        TCODDijkstra& operator=(TCODDijkstra&& rhs) noexcept {
           std::swap(data, rhs.data);
-          cppData = std::move(rhs.cppData);
+          std::swap(cppData, rhs.cppData);
           return *this;
         }
 
@@ -576,10 +576,10 @@ class TCODLIB_API TCODDijkstra {
 		int size() const;
 		void get(int index, int *x, int *y) const;
     private:
-        TCOD_dijkstra_t data;
+        TCOD_dijkstra_t data{};
         struct WrapperData {
-            void *userData;
-            const ITCODPathCallback *listener;
+            void *userData{};
+            const ITCODPathCallback *listener{};
         } cppData;
 };
 

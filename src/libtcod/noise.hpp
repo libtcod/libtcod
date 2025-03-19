@@ -337,7 +337,7 @@ float TCOD_noise_get_turbulence_ex(TCOD_noise_t noise, float *f, float octaves, 
 
 	protected :
 		friend class TCODLIB_API TCODHeightMap;
-		TCOD_noise_t data;
+		TCOD_noise_t data{};
 };
 
 #endif // TCOD_PERLIN_HPP_

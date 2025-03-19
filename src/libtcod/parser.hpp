@@ -153,8 +153,11 @@ public :
   // Disable copy operators.
   TCODParser(const TCODParser&) = delete;
   TCODParser& operator=(const TCODParser&) = delete;
-  TCODParser(TCODParser&&) = default;
-  TCODParser& operator=(TCODParser&&) = default;
+  TCODParser(TCODParser&& rhs) noexcept { std::swap(data, rhs.data); };
+  TCODParser& operator=(TCODParser&& rhs) noexcept {
+    std::swap(data, rhs.data);
+    return *this;
+  };
 
 	/**
 	@PageName parser_str
@@ -223,7 +226,7 @@ public :
 	TCOD_list_t getListProperty(const char *name, TCOD_value_type_t type) const;
 private :
 	bool parseEntity(TCODParserStruct *def, ITCODParserListener *listener);
-	TCOD_parser_t data;
+	TCOD_parser_t data{};
 #ifdef _MSC_VER
   // Disable dll-interface warning.  This value should only used internally.
 #pragma warning(push)

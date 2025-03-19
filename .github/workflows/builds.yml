@@ -16,6 +16,8 @@ defaults:
 env:
   VCPKG_FETCH_DEPTH: 1 # Depth to fetch vcpkg commits, must include the baseline.
   SDL_LINUX_DEPENDENCIES: libltdl-dev libx11-dev libxft-dev libxext-dev libwayland-dev libxkbcommon-dev libegl1-mesa-dev libibus-1.0-dev
+  CMAKE_BUILD_DIR: build
+  VCPKG_ROOT: ${{github.workspace}}/vcpkg
 
 jobs:
   CMake:
@@ -36,6 +38,7 @@ jobs:
             triplet: x64-linux
             shared: dynamic
             config: Release
+            cpack: true
 
           - os: macos-13
             triplet: x64-osx
@@ -45,6 +48,7 @@ jobs:
             triplet: x64-osx
             shared: dynamic
             config: Release
+            cpack: true
 
           - os: windows-2022
             triplet: x64-windows
@@ -54,6 +58,7 @@ jobs:
             triplet: x64-windows
             shared: dynamic
             config: Release
+            cpack: true
 
           # Test libtcod without SDL.
           - os: ubuntu-24.04
@@ -96,8 +101,6 @@ jobs:
             cmake_extra_args: "-DLIBTCOD_SAMPLES=OFF -DCMAKE_DISABLE_FIND_PACKAGE_SDL3=1 -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=1 -DCMAKE_DISABLE_FIND_PACKAGE_lodepng-c=1 -DCMAKE_DISABLE_FIND_PACKAGE_utf8proc=1 -DCMAKE_DISABLE_FIND_PACKAGE_Threads=1"
 
     env:
-      CMAKE_BUILD_DIR: build
-      VCPKG_ROOT: ${{github.workspace}}/vcpkg
       VCPKG_LIBRARY_LINKAGE: ${{matrix.shared}}
 
     steps:
@@ -146,6 +149,7 @@ jobs:
             -DBUILD_SHARED_LIBS=${{ matrix.shared == 'dynamic' && 'TRUE' || 'FALSE' }} \
             -DLIBTCOD_SAMPLES=ON \
             -DLIBTCOD_TESTS=ON \
+            -DCPACK_SYSTEM_NAME=${{ matrix.triplet }}\
             -Wdev \
             ${{ matrix.cmake_extra_args }}
       - name: CMake build
@@ -159,8 +163,24 @@ jobs:
         run: |
           ${{env.CMAKE_BUILD_DIR}}/bin/unittest ~[!nonportable] ${{ matrix.config != 'Release' && '~[benchmark]' || '' }}
       - name: CMake test install
+        if: runner.os != 'Windows'
         run: |
           cmake --install ${{env.CMAKE_BUILD_DIR}} --config ${{matrix.config}}
+      - name: CPack
+        if: matrix.cpack
+        run: |
+          cpack --config ${{env.CMAKE_BUILD_DIR}}/CPackConfig.cmake --verbose
+      - name: Upload CPack
+        if: matrix.cpack
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpack-dist-${{ matrix.triplet }}
+          path: |
+            *.zip
+            *.tar.*
+          retention-days: 3
+          compression-level: 0
+          if-no-files-found: error
 
   coverage:
     runs-on: ${{ matrix.os }}
@@ -390,8 +410,8 @@ jobs:
           compression-level: 6
 
   release:
-    needs: [SCons]
-    if: startsWith(github.ref, 'refs/tags/')
+    needs: [CMake]
+    if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -402,7 +422,7 @@ jobs:
           scripts/get_release_description.py | tee release_body.md
       - uses: actions/download-artifact@v4
         with:
-          pattern: scons-dist-*
+          pattern: cpack-dist-*
           path: artifacts
           merge-multiple: true
       - name: Create Release

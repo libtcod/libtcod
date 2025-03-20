@@ -26,6 +26,9 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 - Fixed crash on `TCODPath` and `TCODDijkstra` move operations.
   [#159](https://github.com/libtcod/libtcod/issues/159)
 
+### Removed
+- Removed long deprecated `libtcodpy` Python package.
+
 ## [1.24.0] - 2023-05-26
 ### Added
 - New `TCODImage::getSize()` overload which returns a value instead of taking output references.

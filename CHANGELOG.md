@@ -20,6 +20,7 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 - `TCODConsole::data` changed from protected to private.
 - Renamed utility macros such as `MAX`, `MIN`, `ABS`, `CLAMP` and `LERP` to use `TCOD_` prefix.
 - `TCOD_renderer_init_sdl2` `renderer_flags` parameter changed to just `vsync`.
+- Libtcod library versions are no longer ABI compatible. Versions indicate API compatibility instead.
 
 ### Fixed
 - `const` was missing from `TCOD_sys_update_char` image parameter.

@@ -11,6 +11,7 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 ### Added
 - Cmake scripts now have the `LIBTCOD_INSTALL` option to disable installation.
   [#153](https://github.com/libtcod/libtcod/issues/153)
+- Added `TCOD_renderer_init_sdl3` which takes `SDL_PropertiesID` parameters.
 
 ### Changed
 - Switched from SDL2 to SDL3.

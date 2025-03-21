@@ -133,7 +133,6 @@ int main(int argc, char* argv[]) {
 
   // initialize the game window
   TCOD_ContextParams params{};
-  params.tcod_version = TCOD_COMPILEDVERSION;
   params.argc = argc;
   params.argv = argv;
   params.console = console.get();

@@ -13,7 +13,8 @@ For Windows [Visual Studio Community](https://visualstudio.microsoft.com/vs/comm
 Here is a simple example of setting up a libtcod context in C++ without using deprecated functions.
 Put this code at `./src/main.cpp`:
 ```cpp
-#include <SDL.h>
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_main.h>
 #include <libtcod.hpp>
 
 int main(int argc, char* argv[]) {
@@ -21,7 +22,6 @@ int main(int argc, char* argv[]) {
 
   // Configure the context.
   auto params = TCOD_ContextParams{};
-  params.tcod_version = TCOD_COMPILEDVERSION;  // This is required.
   params.console = console.get();  // Derive the window size from the console size.
   params.window_title = "Libtcod Project";
   params.sdl_window_flags = SDL_WINDOW_RESIZABLE;
@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
   auto context = tcod::Context(params);
 
   while (1) {  // Game loop.
-    TCOD_console_clear(console.get());
+    console.clear();
     tcod::print(console, {0, 0}, "Hello World", std::nullopt, std::nullopt);
     context.present(console);  // Updates the visible display.
 
@@ -98,9 +98,9 @@ else()
     target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
 endif()
 
-find_package(SDL2 CONFIG REQUIRED)
+find_package(SDL3 CONFIG REQUIRED)
 find_package(libtcod CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2 SDL2::SDL2main libtcod::libtcod)
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3 libtcod::libtcod)
 ```
 
 Since this CMake script is configured to use a Vcpkg submodule we will set that up now.
@@ -123,7 +123,7 @@ Create a `./vcpkg.json` manifest:
   "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
   "dependencies": [
     "libtcod",
-    "sdl2"
+    "sdl3"
   ]
 }
 ```

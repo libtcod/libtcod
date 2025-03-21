@@ -160,8 +160,9 @@ static const char TCOD_help_msg[] =
     @brief Parse context parameters and output to a fully defined struct.
  */
 static TCOD_Error parse_context_parameters(const TCOD_ContextParams* in, TCOD_ContextParams* out) {
+  const int tcod_version = in->tcod_version ? in->tcod_version : TCOD_COMPILEDVERSION;
   *out = (TCOD_ContextParams){
-      .tcod_version = in->tcod_version,
+      .tcod_version = tcod_version,
       .window_x = in->window_x,
       .window_y = in->window_y,
       .pixel_width = in->pixel_width,
@@ -178,7 +179,7 @@ static TCOD_Error parse_context_parameters(const TCOD_ContextParams* in, TCOD_Co
       .cli_output = in->cli_output,
       .cli_userdata = in->cli_userdata,
       .window_xy_defined = in->window_xy_defined,
-      .console = (in->tcod_version >= TCOD_VERSIONNUM(1, 19, 0) ? in->console : NULL),
+      .console = (tcod_version >= TCOD_VERSIONNUM(1, 19, 0) ? in->console : NULL),
   };
   if (!out->window_xy_defined) {
     if (!out->window_x) out->window_x = (int)SDL_WINDOWPOS_UNDEFINED;

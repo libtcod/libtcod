@@ -1681,7 +1681,6 @@ SDL_AppResult SDL_AppInit(void**, int argc, char** argv) {
   g_tileset = tcod::load_tilesheet(FONT, {32, 8}, tcod::CHARMAP_TCOD);
 
   // Context parameters, this is reused when the renderer is changed.
-  g_context_params.tcod_version = TCOD_COMPILEDVERSION;
   g_context_params.renderer_type = TCOD_RENDERER_SDL2;
   g_context_params.tileset = g_tileset.get();
   g_context_params.vsync = 0;

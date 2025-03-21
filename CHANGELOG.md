@@ -22,6 +22,9 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 - `TCOD_renderer_init_sdl2` `renderer_flags` parameter changed to just `vsync`.
 - Libtcod library versions are no longer ABI compatible. Versions indicate API compatibility instead.
 
+### Deprecated
+- `TCOD_ContextParams.tcod_version` is deprecated and should no longer be set.
+
 ### Fixed
 - `const` was missing from `TCOD_sys_update_char` image parameter.
 - Prevent key modifiers from getting stuck when the root console is reinitialized.

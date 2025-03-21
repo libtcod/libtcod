@@ -327,7 +327,6 @@ int main(int argc, char* argv[]) {
   auto tileset = tcod::load_tilesheet("data/fonts/terminal8x8_gs_tc.png", {32, 8}, tcod::CHARMAP_TCOD);
   auto console = tcod::Console{WIDTH, HEIGHT};
   TCOD_ContextParams params{};
-  params.tcod_version = TCOD_COMPILEDVERSION;
   params.argc = argc;
   params.argv = argv;
   params.console = console.get();

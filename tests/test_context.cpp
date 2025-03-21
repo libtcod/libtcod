@@ -32,7 +32,6 @@ void test_renderer_old_api(TCOD_renderer_t renderer) {
 void test_renderer_new_api(TCOD_renderer_t renderer) {
   auto console = tcod::Console{16, 12};
   TCOD_ContextParams params{};
-  params.tcod_version = TCOD_COMPILEDVERSION;
   auto tileset = new_test_tileset(25, 24);
   params.tileset = tileset.get();
   params.renderer_type = renderer;

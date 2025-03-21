@@ -222,7 +222,6 @@ SDL_AppResult SDL_AppInit(void**, int argc, char** argv) {
   SDL_SetLogPriorities(SDL_LOG_PRIORITY_INFO);
   auto tileset = tcod::load_tilesheet("data/fonts/terminal8x8_gs_tc.png", {32, 8}, tcod::CHARMAP_TCOD);
   TCOD_ContextParams params{};
-  params.tcod_version = TCOD_COMPILEDVERSION;
   params.tileset = tileset.get();
   params.argc = argc;
   params.argv = argv;

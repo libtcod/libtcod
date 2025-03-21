@@ -467,7 +467,6 @@ void buildGui() {
 
 int main(int argc, char* argv[]) {
   TCOD_ContextParams context_params{};
-  context_params.tcod_version = TCOD_COMPILEDVERSION;
   context_params.columns = HM_WIDTH;
   context_params.rows = HM_HEIGHT;
   context_params.argc = argc;

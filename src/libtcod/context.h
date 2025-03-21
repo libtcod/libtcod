@@ -66,10 +66,11 @@ typedef struct TCOD_Context TCOD_Context;
     \endrst
  */
 typedef struct TCOD_ContextParams {
-  /**
-      Must be `TCOD_COMPILEDVERSION`.
-   */
+  /// @brief Compiled libtcod version for ABI compatiblity with older versions of libtcod
+  /// @deprecated
+  /// Deprecated since 2.0. You must no longer assign anything to this.
   int tcod_version;
+
   /**
       `window_x` and `window_y` are the starting position of the window.
       These are SDL parameters so values like `SDL_WINDOWPOS_UNDEFINED` and

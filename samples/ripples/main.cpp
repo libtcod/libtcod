@@ -89,7 +89,6 @@ int main(int argc, char* argv[]) {
   auto console = tcod::Console{CON_W, CON_H};
   // initialize the game window
   TCOD_ContextParams params{};
-  params.tcod_version = TCOD_COMPILEDVERSION;
   params.argc = argc;
   params.argv = argv;
   params.console = console.get();

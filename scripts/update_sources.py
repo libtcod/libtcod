@@ -99,7 +99,7 @@ def generate_cmake() -> str:
             continue
         out += "\ninstall(FILES\n    "
         out += "\n    ".join(str(PurePosixPath(f.relative_to("src"))) for f in files)
-        out += "\n    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/%s" % group_posix
+        out += f"\n    DESTINATION ${{CMAKE_INSTALL_INCLUDEDIR}}/{group_posix}"
         out += "\n    COMPONENT IncludeFiles"
         out += "\n)"
     for group_path, files in get_sources(sources=True, includes=True):

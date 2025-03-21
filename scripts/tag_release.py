@@ -140,11 +140,14 @@ def main() -> None:
     if not args.dry_run:
         CHANGELOG_PATH.write_text(new_changelog, encoding="utf-8")
         edit = ["-e"] if args.edit else []
-        subprocess.check_call(
-            ["git", "commit", "-avm", f"Prepare {args.tag} release.", *edit],  # noqa: S603, S607
+        subprocess.run(["pre-commit", "run", "-a"], check=False)  # noqa: S603, S607
+        subprocess.run(  # noqa: S603
+            ["git", "commit", "-avm", f"Prepare {args.tag} release.", *edit],  # noqa: S607
+            check=True,
         )
-        subprocess.check_call(
-            ["git", "tag", args.tag, "-a", "-m", f"{args.tag}\n\n{changes}", *edit],  # noqa: S603, S607
+        subprocess.run(  # noqa: S603
+            ["git", "tag", args.tag, "-a", "-m", f"{args.tag}\n\n{changes}", *edit],  # noqa: S607
+            check=True,
         )
 
 

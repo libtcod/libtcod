@@ -181,6 +181,10 @@ FrostManager frostManager{CONSOLE_WIDTH * 2, CONSOLE_HEIGHT * 2};
 uint64_t last_time_ms = SDL_GetTicks();
 
 SDL_AppResult SDL_AppIterate(void*) {
+  uint64_t current_time_ms = SDL_GetTicks();
+  int64_t delta_time_ms = std::max<int64_t>(0, current_time_ms - last_time_ms);
+  last_time_ms = current_time_ms;
+  frostManager.update(delta_time_ms / 1000.0f);
   static auto console = tcod::Console{CONSOLE_WIDTH, CONSOLE_HEIGHT};
   frostManager.render(console);
   context.present(console);
@@ -209,10 +213,6 @@ SDL_AppResult SDL_AppEvent(void*, SDL_Event* event) {
     case SDL_EVENT_QUIT:
       return SDL_APP_SUCCESS;
   }
-  uint64_t current_time_ms = SDL_GetTicks();
-  int64_t delta_time_ms = std::max<int64_t>(0, current_time_ms - last_time_ms);
-  last_time_ms = current_time_ms;
-  frostManager.update(delta_time_ms / 1000.0f);
   return SDL_APP_CONTINUE;
 }
 

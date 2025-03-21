@@ -131,7 +131,7 @@ if (EMSCRIPTEN)
     foreach(project_it samples_c samples_cpp)
         target_link_options(
             ${project_it} PRIVATE
-            "SHELL:--preload-file ${CMAKE_CURRENT_SOURCE_DIR}/../data/fonts/dejavu10x10_gs_tc.png@/data/fonts/"
+            "SHELL:--preload-file ${CMAKE_CURRENT_SOURCE_DIR}/../data/fonts/dejavu12x12_gs_tc.png@/data/fonts/"
             "SHELL:--preload-file ${CMAKE_CURRENT_SOURCE_DIR}/../data/img@/data/img/"
             "SHELL:--preload-file ${CMAKE_CURRENT_SOURCE_DIR}/../data/namegen@/data/namegen/"
         )

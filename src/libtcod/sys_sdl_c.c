@@ -970,7 +970,7 @@ TCOD_event_t TCOD_sys_handle_key_event(const SDL_Event* ev, TCOD_key_t* key) {
       key->vk = TCODK_TEXT;
       key->c = 0;
       key->pressed = 1;
-      strncpy(key->text, ev->text.text, TCOD_KEY_TEXT_SIZE);
+      strncpy(key->text, ev->text.text, TCOD_KEY_TEXT_SIZE - 1);
       return TCOD_EVENT_KEY_PRESS;
     } break;
     default:

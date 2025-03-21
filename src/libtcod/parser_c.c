@@ -65,7 +65,7 @@ static TCOD_parser_listener_t default_listener = {
 
 static bool string_copy(char* dest, const char* source, int len) {
   if (source == NULL) return false;
-  strncpy(dest, source, len);
+  strncpy(dest, source, len - 1);
   dest[len - 1] = '\0';
   if (strlen(source) >= (unsigned)len) return false;
   return true;

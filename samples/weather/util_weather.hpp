@@ -65,7 +65,7 @@ class Weather {
   float noise_x_{20000.0f}, noise_y_{20000.0f};  // position in the noise space
   float dx_{20000.0f}, dy_{20000.0f};  // sub cell cloud map position
   float changeFactor_{1.0f};
-  TCODHeightMap* map_{};
+  TCODHeightMap map_{};
   std::vector<lightning_t> lightnings_{};
   TCODColor ambientColor_{};
 };

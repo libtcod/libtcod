@@ -8,6 +8,8 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 Versions since `2.0.0` only track API breaks and no longer guarantee ABI compatibility.
 
 ## [Unreleased]
+### Changed
+- `TCODHeightMap::values` now uses `std::vector`, `TCODHeightMap` is now safe to copy/move.
 
 ## [2.0.0] - 2025-03-20
 ### Added

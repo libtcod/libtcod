@@ -42,10 +42,10 @@ static constexpr auto RAIN_MED_PROB = 400;
 static constexpr auto RAIN_MAX_PROB = 10;
 
 Weather::Weather(int width, int height) {
-  map_ = new TCODHeightMap(width + 2, height + 2);
+  map_ = TCODHeightMap(width + 2, height + 2);
   // TODO : would be better with a 3d noise and slowly varying z
   // but you can notice the difference only when time is accelerated
-  map_->addFbm(&noise2d, SCALE, SCALE, 0.0f, 0.0f, OCTAVES, 0.5f, 0.5f);
+  map_.addFbm(&noise2d, SCALE, SCALE, 0.0f, 0.0f, OCTAVES, 0.5f, 0.5f);
   update(0.0f);
 }
 
@@ -94,8 +94,8 @@ void Weather::update(float elapsed) {
       if (TCODRandom::getInstance()->getInt(0, ilp) == 0) {
         // new lightning
         lightning_t l{};
-        l.pos_x = TCODRandom::getInstance()->getInt(0, map_->w);
-        l.pos_y = TCODRandom::getInstance()->getInt(0, map_->h);
+        l.pos_x = TCODRandom::getInstance()->getInt(0, map_.w);
+        l.pos_y = TCODRandom::getInstance()->getInt(0, map_.h);
         l.life = TCODRandom::getInstance()->getFloat(0.1f, LIGHTNING_LIFE);
         l.radius_squared = TCODRandom::getInstance()->getInt(LIGHTNING_RADIUS, LIGHTNING_RADIUS * 2);
         l.noise_x = TCODRandom::getInstance()->getFloat(0.0f, 1000.0f);
@@ -146,8 +146,8 @@ void Weather::update(float elapsed) {
     // TODO : should recompute only missing rows/columns
     // the world generator demo has that, but only for
     // horizontal move. Here clouds move in any direction
-    map_->clear();
-    map_->addFbm(&noise2d, SCALE, SCALE, noise_x_, noise_y_, OCTAVES, 0.5f, 0.5f);
+    map_.clear();
+    map_.addFbm(&noise2d, SCALE, SCALE, noise_x_, noise_y_, OCTAVES, 0.5f, 0.5f);
   }
 }
 
@@ -165,7 +165,7 @@ float Weather::getCloud(int x, int y) {
     y++;
   else
     cdy = dy_ + 1.0f;
-  float val = map_->getInterpolatedValue(x + cdx, y + cdy);  // between 0 and 1
+  float val = map_.getInterpolatedValue(x + cdx, y + cdy);  // between 0 and 1
   val += 2 * indicator_ - 0.5f;
   val = std::clamp(val, 0.2f, 1.0f);
   return val;
@@ -176,7 +176,7 @@ float Weather::getLightning(int x, int y) {
   if (dx_ >= 0) x++;
   if (dy_ >= 0) y++;
   float res = 0.0f;
-  float cloud = map_->getValue(x, y);
+  float cloud = map_.getValue(x, y);
   cloud = 1.0f - cloud;  // inverted cloud. 0 = sky, 1=dark cloud
   cloud -= 0.6f;  // no lightning under 0.6f. cloud is now 0 - 0.4
   if (cloud <= 0.0f) return 0.0f;

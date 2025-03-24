@@ -29,13 +29,16 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-// clang-format off
 #pragma once
 #ifndef TCOD_HEIGHTMAP_HPP_
 #define TCOD_HEIGHTMAP_HPP_
 
+#include <vector>
+
 #include "heightmap.h"
 #include "noise.hpp"
+
+// clang-format off
 /**
  @PageName heightmap
  @PageCategory Roguelike toolkits
@@ -45,9 +48,8 @@
 The code using the heightmap toolkit can be automatically generated with the heightmap tool (hmtool) included in the libtcod package.
  */
 class TCODLIB_API TCODHeightMap {
-public :
-	int w,h;
-	float *values;
+ public:
+	TCODHeightMap() = default;
 
 	/**
 	@PageName heightmap_init
@@ -72,19 +74,7 @@ public :
 		map=libtcod.heightmap_new(50,50)
 		print map.w, map.h
 	*/
-	TCODHeightMap(int width, int height);
-
-	/**
-	@PageName heightmap_init
-	@FuncTitle Destroying a heightmap
-	@FuncDesc To release the resources used by a heightmap, destroy it with :
-	@Cpp TCODHeightMap::~TCODHeightMap()
-	@C void TCOD_heightmap_delete(TCOD_heightmap_t *hm)
-	@Py heightmap_delete(hm)
-	@C# void TCODHeightMap::Dispose()
-	@Param hm	In the C version, the address of the heightmap struct returned by the creation function.
-	*/
-	virtual ~TCODHeightMap();
+	TCODHeightMap(int width, int height) : w{width}, h{height}, values(width * height) {}
 
 	/**
 	@PageName heightmap_base
@@ -105,7 +95,7 @@ public :
 	@Param value	The new value of the map cell.
 	*/
 	inline void setValue(int x, int y, float v) {
-		values[x+y*w]=v;
+		values.at(w * y + x) = v;
 	}
 
 	/**
@@ -393,7 +383,7 @@ public :
 		0 <= y < map height
 	*/
 	inline float getValue(int x, int y) const {
-		return values[x+y*w];
+		return values.at(w * y + x);
 	}
 
 	/**
@@ -501,9 +491,14 @@ public :
 	void midPointDisplacement(TCODRandom *rnd = NULL, float roughness=0.45f);
 	void islandify(float seaLevel,TCODRandom *rnd); // lowers the terrain near the heightmap borders
 	// TODO : checks island connectivity with floodfill
-private :
-//	void setMPDHeight(TCODRandom *rnd,int x,int y, float z, float offset);
-//	void setMDPHeightSquare(TCODRandom *rnd,int x, int y, int initsz, int sz,float offset);
+
+  // clang-format on
+
+  int w{};
+  int h{};
+  std::vector<float> values;
+
+ private:
 };
 
-#endif // TCOD_HEIGHTMAP_HPP_
+#endif  // TCOD_HEIGHTMAP_HPP_

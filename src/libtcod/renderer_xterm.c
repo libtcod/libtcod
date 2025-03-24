@@ -74,13 +74,13 @@ static struct {
     .out = NULL,
 };
 static struct {
-  int button_down;
-  Uint32 last_mouse_down_timestamp;
-  Uint8 num_clicks;
+  uint8_t button_down;
+  uint64_t last_mouse_down_timestamp;
+  uint8_t num_clicks;
   int last_mouse_motion_x;
   int last_mouse_motion_y;
 } g_mouse_state = {
-    .button_down = -1,
+    .button_down = 0,
     .last_mouse_down_timestamp = 0,
     .num_clicks = 1,
     .last_mouse_motion_x = -1,
@@ -236,7 +236,6 @@ static void xterm_destructor(struct TCOD_Context* __restrict self) {
 }
 /// Send keyboard and text input events to SDL.
 static void send_sdl_key_press(SDL_Keycode ch, bool shift) {
-  const bool is_ascii = ch <= (SDL_Keycode)INT_MAX && isascii(ch);
   SDL_Keycode sym = ch;
   SDL_Keymod mod = SDL_KMOD_NONE;
   if (shift) {
@@ -265,7 +264,7 @@ static int read_terminated_int(char* after) {
   *after = '\0';
   char buf[16] = "";
   for (size_t i = 0; i < sizeof(buf) - 1; i++) {
-    const int ch = getchar();
+    const char ch = (char)getchar();
     if (!isdigit(ch)) {
       *after = ch;
       buf[i] = '\0';
@@ -279,9 +278,9 @@ static int read_terminated_int(char* after) {
 static void xterm_handle_mouse_click(int cb, int x, int y) {
   const int cb_button = cb & 3;
   const uint64_t timestamp = SDL_GetTicks();
-  Uint32 type = SDL_EVENT_MOUSE_BUTTON_DOWN;
+  uint32_t type = SDL_EVENT_MOUSE_BUTTON_DOWN;
   bool down = true;
-  Uint8 button = 0;
+  uint8_t button = 0;
   switch (cb_button) {
     case 0:
       button = SDL_BUTTON_LEFT;
@@ -302,14 +301,13 @@ static void xterm_handle_mouse_click(int cb, int x, int y) {
   }
   if (type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
     // We don't get button info on mouse up, so only do one click at once.
-    if (g_mouse_state.button_down >= 0) return;
+    if (g_mouse_state.button_down > 0) return;
     g_mouse_state.button_down = button;
-    if (timestamp < g_mouse_state.last_mouse_down_timestamp + DOUBLE_CLICK_TIME && g_mouse_state.button_down < 255)
-      g_mouse_state.num_clicks += 1;
+    if (timestamp < g_mouse_state.last_mouse_down_timestamp + DOUBLE_CLICK_TIME) g_mouse_state.num_clicks += 1;
     g_mouse_state.last_mouse_down_timestamp = timestamp;
   } else {
-    if (g_mouse_state.button_down < 0) return;
-    g_mouse_state.button_down = -1;
+    if (g_mouse_state.button_down <= 0) return;
+    g_mouse_state.button_down = 0;
   }
   SDL_Event button_event = {
       .button = {
@@ -376,7 +374,7 @@ static void xterm_handle_mouse_motion(int x, int y) {
 }
 /// Parse X10 compatibility mode mouse escape sequences.
 static void xterm_handle_mouse_escape() {
-  const int cb = getchar();
+  const char cb = (char)getchar();
   const int x = getchar() - 33;
   const int y = getchar() - 33;
   if (cb & 32) {
@@ -393,7 +391,7 @@ static bool xterm_handle_input_escape_code(char* start, char* end, int* arg0, in
   *start = '\0';
   *arg0 = -1;
   *arg1 = -1;
-  *start = getchar();
+  *start = (char)getchar();
   if (*start != '[' && *start != 'O') return false;
   *arg0 = read_terminated_int(end);
   if (*end == ';') *arg1 = read_terminated_int(end);
@@ -559,9 +557,10 @@ static void xterm_handle_input_escape() {
   if (unknown) TCOD_log_debug_f("unknown input escape code '%c' '%c' %i %i\n", start, end, arg0, arg1);
 }
 /// ANSI input event loop.
-static int xterm_handle_input(void* arg) {
+static int xterm_handle_input(void* nulldata) {
+  (void)nulldata;  // Unused
   while (true) {
-    const int ch = getchar();
+    const char ch = (char)getchar();
     if (ch == '\x1b') {
       xterm_handle_input_escape();
       continue;
@@ -585,6 +584,7 @@ static TCOD_Error xterm_recommended_console_size(
 
 #ifndef _WIN32
 static void xterm_on_window_change_signal(int signum) {
+  (void)signum;  // Unused
   int columns, rows;
   xterm_recommended_console_size(NULL, 1.0, &columns, &rows);
   SDL_Event resize_event = {
@@ -601,6 +601,7 @@ static void xterm_on_window_change_signal(int signum) {
 
 #ifndef _WIN32
 static void xterm_on_hangup_signal(int signum) {
+  (void)signum;  // Unused
   SDL_Event quit_event = {
       .quit = {
           .type = SDL_EVENT_QUIT,

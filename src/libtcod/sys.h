@@ -191,7 +191,7 @@ TCODLIB_API void TCOD_sys_set_fps(int val);
 TCOD_DEPRECATED("This function is not compatible with contexts.  Use tcod::Timer or SDL timing functions instead.")
 TCODLIB_API int TCOD_sys_get_fps(void);
 /***************************************************************************
-    @brief Get the delta time between the last two frames.
+    @brief Get the delta time between the last two frames. (in seconds)
 
     \rst
     .. deprecated:: 1.19

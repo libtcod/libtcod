@@ -87,37 +87,7 @@ public :
   [[deprecated("This function is not compatible with contexts.  Use tcod::Timer instead.")]]
 	static int getFps();
 
-	/**
-	@PageName system_time
-	@FuncTitle Get the duration of the last frame
-	@FuncDesc This function returns the length in seconds of the last rendered frame.
-		You can use this value to update every time dependent object in the world.
-	@Cpp static float TCODSystem::getLastFrameLength()
-	@C float TCOD_sys_get_last_frame_length()
-	@Py sys_get_last_frame_length()
-	@C# static float TCODSystem::getLastFrameLength()
-	@Lua tcod.system.getLastFrameLength()
-	@CppEx
-		// moving an objet at 5 console cells per second
-		float x=0,y=0; // object coordinates
-		x += 5 * TCODSystem::getLastFrameLength();
-		TCODConsole::root->putChar((int)(x),(int)(y),'X');
-	@CEx
-		float x=0,y=0;
-		x += 5 * TCOD_sys_get_last_frame_length();
-		TCOD_console_put_char(NULL,(int)(x),(int)(y),'X');
-	@PyEx
-		x=0.0
-		y=0.0
-		x += 5 * libtcod.sys_get_last_frame_length()
-		libtcod.console_put_char(0,int(x),int(y),'X')
-	@LuaEx
-		-- moving an objet at 5 console cells per second
-		x=0
-		y=0 -- object coordinates
-		x = x + 5 * tcod.system.getLastFrameLength()
-		libtcod.TCODConsole_root:putChar(x,y,'X')
-	*/
+	/// Return the duration of the last frame in seconds.
   [[deprecated("This function is not compatible with contexts.  Use tcod::Timer or SDL timing functions instead.")]]
 	static float getLastFrameLength();
 

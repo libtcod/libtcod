@@ -31,5 +31,5 @@
 static constexpr auto CON_W = 80;
 static constexpr auto CON_H = 50;
 
-extern TCODNoise noise1d;
-extern TCODNoise noise2d;
+inline TCODNoise noise1d{1};
+inline TCODNoise noise2d{2};

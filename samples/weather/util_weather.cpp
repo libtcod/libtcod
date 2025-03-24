@@ -28,28 +28,25 @@
 
 #include "main.hpp"
 
-#define OCTAVES 7.0f
-#define SCALE 2.0f
-#define MAX_WIND_SPEED 4.0f
-#define LIGHTNING_LEVEL 0.4f
-#define LIGHTNING_RADIUS 500
-#define LIGHTNING_LIFE 2.0f
-#define LIGHTNING_INTENSITY_SPEED 20.0f
-#define LIGHTNING_MIN_PROB 7.0f
-#define LIGHTNING_MAX_PROB 1.0f
-#define RAIN_MIN_PROB 4000
-#define RAIN_MED_PROB 400
-#define RAIN_MAX_PROB 10
+static constexpr auto OCTAVES = 7.0f;
+static constexpr auto SCALE = 2.0f;
+static constexpr auto MAX_WIND_SPEED = 4.0f;
+static constexpr auto LIGHTNING_LEVEL = 0.4f;
+static constexpr auto LIGHTNING_RADIUS = 500;
+static constexpr auto LIGHTNING_LIFE = 2.0f;
+static constexpr auto LIGHTNING_INTENSITY_SPEED = 20.0f;
+static constexpr auto LIGHTNING_MIN_PROB = 7.0f;
+static constexpr auto LIGHTNING_MAX_PROB = 1.0f;
+static constexpr auto RAIN_MIN_PROB = 4000;
+static constexpr auto RAIN_MED_PROB = 400;
+static constexpr auto RAIN_MAX_PROB = 10;
 
-void Weather::init(int width, int height) {
+Weather::Weather(int width, int height) {
   map_ = new TCODHeightMap(width + 2, height + 2);
   // TODO : would be better with a 3d noise and slowly varying z
   // but you can notice the difference only when time is accelerated
   map_->addFbm(&noise2d, SCALE, SCALE, 0.0f, 0.0f, OCTAVES, 0.5f, 0.5f);
-  dx_ = dy_ = noise_x_ = noise_y_ = 20000.0f;
-  indicatorDelta_ = 0.0f;
-  changeFactor_ = 1.0f;
-  update(0.1f);
+  update(0.0f);
 }
 
 void Weather::move(int dx, int dy) {
@@ -57,7 +54,7 @@ void Weather::move(int dx, int dy) {
   this->dy_ += dy;
 }
 
-const char* Weather::getWeather() {
+const char* Weather::getWeather() const noexcept {
   if (indicator_ > 0.9f)
     return "The sky is completely clear.";
   else if (indicator_ > 0.7f)
@@ -82,28 +79,28 @@ void Weather::update(float elapsed) {
   float perlin_x = changeFactor_ * localElapsed / 100.0f;
   indicator_ = (1.0f + noise1d.get(&perlin_x, TCOD_NOISE_SIMPLEX)) * 0.5f + indicatorDelta_;
   indicator_ = TCOD_CLAMP(0.0f, 1.0f, indicator_);
-  float wind_speed = 1.0f - indicator_;
+  const float wind_speed = 1.0f - indicator_;
   perlin_x *= 2.0f;
-  float windDir = (2.0f * 3.1415926f * 0.5f) * (1.0f + noise1d.get(&perlin_x, TCOD_NOISE_SIMPLEX));
+  const float windDir = (2.0f * 3.1415926f * 0.5f) * (1.0f + noise1d.get(&perlin_x, TCOD_NOISE_SIMPLEX));
   dx_ += MAX_WIND_SPEED * wind_speed * cosf(windDir) * elapsed;
   dy_ += 0.5f * MAX_WIND_SPEED * wind_speed * sinf(windDir) * elapsed;
   if (indicator_ < LIGHTNING_LEVEL) {
-    float storm = (LIGHTNING_LEVEL - indicator_) / LIGHTNING_LEVEL;  // storm power 0-1
-    float lp =
+    const float storm = (LIGHTNING_LEVEL - indicator_) / LIGHTNING_LEVEL;  // storm power 0-1
+    const float lp =
         LIGHTNING_MIN_PROB + (int)((LIGHTNING_MAX_PROB - LIGHTNING_MIN_PROB) * storm);  // nb of lightning per second
-    int fps = TCODSystem::getFps();
+    const int fps = TCODSystem::getFps();
     if (fps > 0) {
-      int ilp = (int)(lp * fps);
+      const int ilp = (int)(lp * fps);
       if (TCODRandom::getInstance()->getInt(0, ilp) == 0) {
         // new lightning
-        lightning_t l;
+        lightning_t l{};
         l.pos_x = TCODRandom::getInstance()->getInt(0, map_->w);
         l.pos_y = TCODRandom::getInstance()->getInt(0, map_->h);
         l.life = TCODRandom::getInstance()->getFloat(0.1f, LIGHTNING_LIFE);
         l.radius_squared = TCODRandom::getInstance()->getInt(LIGHTNING_RADIUS, LIGHTNING_RADIUS * 2);
         l.noise_x = TCODRandom::getInstance()->getFloat(0.0f, 1000.0f);
         l.intensity = 0.0f;
-        lightnings_.push_back(l);
+        lightnings_.emplace_back(l);
       }
     }
   }
@@ -158,7 +155,8 @@ float Weather::getCloud(int x, int y) {
   // cloud layer
   // 1.0 : no cloud
   // 0 : dark cloud. This way you can easily render ground with color * cloud coef
-  float cdx = dx_, cdy = dy_;
+  float cdx = dx_;
+  float cdy = dy_;
   if (dx_ >= 0)
     x++;
   else
@@ -169,7 +167,7 @@ float Weather::getCloud(int x, int y) {
     cdy = dy_ + 1.0f;
   float val = map_->getInterpolatedValue(x + cdx, y + cdy);  // between 0 and 1
   val += 2 * indicator_ - 0.5f;
-  val = TCOD_CLAMP(0.2f, 1.0f, val);
+  val = std::clamp(val, 0.2f, 1.0f);
   return val;
 }
 
@@ -184,15 +182,14 @@ float Weather::getLightning(int x, int y) {
   if (cloud <= 0.0f) return 0.0f;
   cloud = cloud / 0.4f;  // now back to 0-1 range (but only for really cloudy zones)
   for (const lightning_t& l : lightnings_) {
-    int dx = l.pos_x - x;
-    int dy = l.pos_y - y;
-    int dist = dx * dx + dy * dy;
+    const int dx = l.pos_x - x;
+    const int dy = l.pos_y - y;
+    const int dist = dx * dx + dy * dy;
     if (dist < l.radius_squared) {
       res += l.intensity * (float)(l.radius_squared - dist) / l.radius_squared;
     }
   }
-  float ret = cloud * res;
-  return TCOD_CLAMP(0.0f, 1.0f, ret);
+  return std::clamp(cloud * res, 0.0f, 1.0f);
 }
 
 bool Weather::hasRainDrop() {
@@ -203,18 +200,18 @@ bool Weather::hasRainDrop() {
   } else {
     prob = (int)(RAIN_MED_PROB + (RAIN_MAX_PROB - RAIN_MED_PROB) * (0.3f - indicator_) * 3.33f);
   }
-  int rp = TCODRandom::getInstance()->getInt(0, prob);
+  const int rp = TCODRandom::getInstance()->getInt(0, prob);
   return rp == 0;
 }
 
 void Weather::calculateAmbient(float timeInSeconds) {
   // calculate ambient light
-  static TCODColor night(0, 0, 128);
-  static TCODColor dawn(196, 0, 0);
-  static TCODColor dawn2(220, 200, 64);
-  static TCODColor day(255, 255, 195);
+  static constexpr TCODColor night(0, 0, 128);
+  static constexpr TCODColor dawn(196, 0, 0);
+  static constexpr TCODColor dawn2(220, 200, 64);
+  static constexpr TCODColor day(255, 255, 195);
   float coef = 0.0f;
-  float hour = timeInSeconds / 3600.0f;
+  const float hour = timeInSeconds / 3600.0f;
   // TODO : should use a color gradient map for that..
   if (hour > 21.0f || hour < 6.0f) {
     ambientColor_ = night;  // night

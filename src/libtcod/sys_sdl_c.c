@@ -95,7 +95,7 @@ static int min_frame_length_backup = 0;
 static int fps = 0;
 /* current number of frames */
 static int cur_fps = 0;
-/* length of the last rendering loop */
+/* length of the last rendering loop, (in seconds) */
 static float last_frame_length = 0.0f;
 
 int oldFade = -1;

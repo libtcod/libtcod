@@ -32,19 +32,17 @@
 #include <cstdio>
 #include <string>
 
-TCODNoise noise1d(1);
-TCODNoise noise2d(2);
-Weather weather;
-float dayTime = 6 * 3600.0f;  // starts at 6.00am
-TCODColor lightningColor(220, 220, 255);
-TCODImage* ground;
+static Weather weather;
+static float dayTime = 6 * 3600.0f;  // starts at 6.00am
+static TCODColor lightningColor(220, 220, 255);
+static TCODImage ground;
 
 void update(float elapsed, TCOD_key_t k, TCOD_mouse_t) {
   if (k.c == '+') {
-    float d = weather.getIndicatorDelta();
+    const float d = weather.getIndicatorDelta();
     weather.setIndicatorDelta(d + elapsed * 0.1f);
   } else if (k.c == '-') {
-    float d = weather.getIndicatorDelta();
+    const float d = weather.getIndicatorDelta();
     weather.setIndicatorDelta(d - elapsed * 0.1f);
   } else if (k.vk == TCODK_ENTER || k.vk == TCODK_KPENTER) {
     elapsed *= 20.0f;
@@ -57,11 +55,9 @@ void update(float elapsed, TCOD_key_t k, TCOD_mouse_t) {
 }
 
 std::string getDaytime() {
-  char buf[6] = "";
-  int hour = (int)(dayTime / 3600);
-  int minute = (int)((dayTime - hour * 3600) / 60);
-  snprintf(buf, sizeof(buf), "%02d:%02d", hour, minute);
-  return buf;
+  const int hour = (int)(dayTime / 3600);
+  const int minute = (int)((dayTime - hour * 3600) / 60);
+  return tcod::stringf("%02d:%02d", hour, minute);
 }
 
 void render() {
@@ -70,31 +66,32 @@ void render() {
     for (int y = 0; y < CON_H * 2; y++) {
       // we don't use color operation to avoid 0-255 clamping at every step
       // sort of poor man's HDR...
-      int r = 0, g = 0, b = 0;
+      int r = 0;
+      int g = 0;
+      int b = 0;
 
       // default ground color
-      TCODColor groundCol = ground->getPixel(x, y);
+      TCODColor groundCol = ground.getPixel(x, y);
 
       // take cloud shadow into account
-      float cloudCoef = weather.getCloud(x, y);
+      const float cloudCoef = weather.getCloud(x, y);
       r += (int)(cloudCoef * weather.getAmbientLightColor().r);
       g += (int)(cloudCoef * weather.getAmbientLightColor().g);
       b += (int)(cloudCoef * weather.getAmbientLightColor().b);
 
       // take lightning into account
-      int lr = 0, lg = 0, lb = 0;
-      float lightning = weather.getLightning(x, y);
+      const float lightning = weather.getLightning(x, y);
       if (lightning > 0.0f) {
-        lr = (int)(2 * lightning * lightningColor.r);
-        lg = (int)(2 * lightning * lightningColor.g);
-        lb = (int)(2 * lightning * lightningColor.b);
+        const int lr = (int)(2 * lightning * lightningColor.r);
+        const int lg = (int)(2 * lightning * lightningColor.g);
+        const int lb = (int)(2 * lightning * lightningColor.b);
         r += lr;
         g += lg;
         b += lb;
       }
-      r = TCOD_MIN(255, r);
-      g = TCOD_MIN(255, g);
-      b = TCOD_MIN(255, b);
+      r = std::min(255, r);
+      g = std::min(255, g);
+      b = std::min(255, b);
       r = groundCol.r * r / 200;
       g = groundCol.g * g / 200;
       b = groundCol.b * b / 200;
@@ -103,11 +100,11 @@ void render() {
   }
   img.blit2x(TCODConsole::root, 0, 0);
   // rain drops
-  for (int x = 0; x < CON_W; x++) {
-    for (int y = 0; y < CON_H; y++) {
+  for (int y = 0; y < CON_H; ++y) {
+    for (int x = 0; x < CON_W; ++x) {
       if (weather.hasRainDrop()) {
-        float lightning = weather.getLightning(x * 2, y * 2);
-        float cloudCoef = weather.getCloud(x * 2, y * 2);
+        const float lightning = weather.getLightning(x * 2, y * 2);
+        const float cloudCoef = weather.getCloud(x * 2, y * 2);
         TCODColor col = TCODColor{0, 0, 191} * cloudCoef;
         col = col * weather.getAmbientLightColor();
         if (lightning > 0.0f) col = col + 2 * lightning * lightningColor;
@@ -134,43 +131,46 @@ void render() {
       weather.getIndicatorDelta());
 }
 
+// Generate and return a new ground texture/
+auto generate_ground_texture(int width, int height) -> TCODImage {
+  auto new_ground = TCODImage(width, height);
+  // generate some good locking ground
+  static constexpr std::array colors = {
+      tcod::ColorRGB(40, 117, 0),  // grass
+      tcod::ColorRGB(69, 125, 0),  // sparse grass
+      tcod::ColorRGB(110, 125, 0),  // withered grass
+      tcod::ColorRGB(150, 143, 92),  // dried grass
+      tcod::ColorRGB(133, 115, 71),  // bare ground
+      tcod::ColorRGB(111, 100, 73)  // dirt
+  };
+  static constexpr std::array keys = {0, 51, 102, 153, 204, 255};
+  const auto gradientMap = TCODColor::genMap<256>(colors, keys);
+  for (int y = 0; y < height; ++y) {
+    for (int x = 0; x < width; ++x) {
+      const float f[2] = {x * 3.0f / (width / 2.0f), y * 3.0f / (height / 2.0f)};
+      const float h = noise2d.getFbm(f, 6.0f, TCOD_NOISE_SIMPLEX);
+      const int ih = static_cast<int>(std::clamp(h * 256.0f, 0.0f, 255.0f));
+      float coef = 1.0f;
+      // darken the lower part (text background)
+      if (y > height - 27) coef = 0.5f;
+      TCODColor col = coef * TCODColor{gradientMap.at(ih)};
+      // add some noise
+      col = col * TCODRandom::getInstance()->getFloat(0.95f, 1.05f);
+      new_ground.putPixel(x, y, col);
+    }
+  }
+  return new_ground;
+}
+
 int main(int argc, char* argv[]) {
   // initialize the game window
   TCODConsole::initRoot(CON_W, CON_H, "Weather system", false, TCOD_RENDERER_OPENGL2);
   TCODMouse::showCursor(true);
   TCODSystem::setFps(25);
 
-  weather.init(CON_W * 2, CON_H * 2);
-  ground = new TCODImage(CON_W * 2, CON_H * 2);
-  // generate some good locking ground
-  TCODColor colors[] = {
-      TCODColor(40, 117, 0),  // grass
-      TCODColor(69, 125, 0),  // sparse grass
-      TCODColor(110, 125, 0),  // withered grass
-      TCODColor(150, 143, 92),  // dried grass
-      TCODColor(133, 115, 71),  // bare ground
-      TCODColor(111, 100, 73)  // dirt
-  };
-  int keys[] = {0, 51, 102, 153, 204, 255};
-  TCODColor gradientMap[256];
-  TCODColor::genMap(gradientMap, 6, colors, keys);
-  for (int x = 0; x < CON_W * 2; x++) {
-    for (int y = 0; y < CON_H * 2; y++) {
-      float f[2] = {x * 3.0f / CON_W, y * 3.0f / CON_H};
-      float h = noise2d.getFbm(f, 6.0f, TCOD_NOISE_SIMPLEX);
-      int ih = (int)(h * 256);
-      ih = TCOD_CLAMP(0, 255, ih);
-      float coef = 1.0f;
-      // darken the lower part (text background)
-      if (y > CON_H * 2 - 27) coef = 0.5f;
-      TCODColor col = coef * gradientMap[ih];
-      // add some noise
-      col = col * TCODRandom::getInstance()->getFloat(0.95f, 1.05f);
-      ground->putPixel(x, y, col);
-    }
-  }
-
-  // for this demo, we want the weather to evolve quite rapidely
+  weather = Weather{CON_W * 2, CON_H * 2};
+  ground = generate_ground_texture(CON_W * 2, CON_H * 2);
+  // for this demo, we want the weather to evolve quite rapidly
   weather.setChangeFactor(3.0f);
 
   bool endCredits = false;

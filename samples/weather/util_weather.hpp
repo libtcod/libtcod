@@ -24,11 +24,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <libtcod.hpp>
 #include <vector>
 
 class Weather {
  public:
-  void init(int width, int height);
+  Weather() = default;
+  Weather(int width, int height);
+
   void update(float elapsed);
   float getCloud(int x, int y);  // 0.0 : dark cloud, 1.0 : no cloud
   float getLightning(int x, int y);  // 0.0 : no lightning. 1.0 : full lightning light
@@ -36,33 +39,33 @@ class Weather {
   // when scrolling the map on the game side
   void move(int dx, int dy);
   // description of current weather
-  const char* getWeather();
-  const TCODColor& getAmbientLightColor() { return ambientColor_; }
+  const char* getWeather() const noexcept;
+  const TCODColor& getAmbientLightColor() const noexcept { return ambientColor_; }
   // timeInSecond : between 0 and 3600*24
   void calculateAmbient(float timeInSeconds);
   // how fast the weather is changing. 0 : never changes, 1 : default > 1 : faster...
   void setChangeFactor(float f) { changeFactor_ = f; }
   // 0 : bad weather. 1 : good weather
-  float getIndicator() { return indicator_; }
+  float getIndicator() const noexcept { return indicator_; }
   // to alter the weather
-  float getIndicatorDelta() { return indicatorDelta_; }
+  float getIndicatorDelta() const noexcept { return indicatorDelta_; }
   void setIndicatorDelta(float v) { indicatorDelta_ = TCOD_CLAMP(-1.0f, 1.0f, v); }
 
- protected:
-  typedef struct {
-    int pos_x, pos_y;
-    float intensity;  // 0-1
-    float life;  // in seconds
-    int radius_squared;
-    float noise_x;
-  } lightning_t;
+ private:
+  struct lightning_t {
+    int pos_x{}, pos_y{};
+    float intensity{};  // 0-1
+    float life{};  // in seconds
+    int radius_squared{};
+    float noise_x{};
+  };
 
-  float indicator_;  // 0 : bad, 1 : good
-  float indicatorDelta_;
-  float noise_x_, noise_y_;  // position in the noise space
-  float dx_, dy_;  // sub cell cloud map position
-  float changeFactor_;
-  TCODHeightMap* map_;
-  std::vector<lightning_t> lightnings_;
-  TCODColor ambientColor_;
+  float indicator_{};  // 0 : bad, 1 : good
+  float indicatorDelta_{0.0f};
+  float noise_x_{20000.0f}, noise_y_{20000.0f};  // position in the noise space
+  float dx_{20000.0f}, dy_{20000.0f};  // sub cell cloud map position
+  float changeFactor_{1.0f};
+  TCODHeightMap* map_{};
+  std::vector<lightning_t> lightnings_{};
+  TCODColor ambientColor_{};
 };

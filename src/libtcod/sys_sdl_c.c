@@ -257,25 +257,7 @@ TCOD_Error TCOD_sys_save_bitmap(SDL_Surface* bitmap, const char* filename) {
   return img->write(bitmap, filename);
 }
 
-void TCOD_sys_save_screenshot(const char* filename) {
-  char buf[128];
-  int idx = 0;
-  while (!filename) {
-    /* generate filename */
-    FILE* access_file = NULL;
-    snprintf(buf, sizeof(buf), "./screenshot%03d.png", idx);
-    access_file = fopen(buf, "rb");
-    if (!access_file) {
-      filename = buf;
-    } else {
-      idx++;
-      fclose(access_file);
-    }
-  }
-  if (TCOD_ctx.engine && TCOD_ctx.engine->c_save_screenshot_) {
-    TCOD_ctx.engine->c_save_screenshot_(TCOD_ctx.engine, filename);
-  }
-}
+void TCOD_sys_save_screenshot(const char* filename) { TCOD_context_save_screenshot(TCOD_ctx.engine, filename); }
 
 void TCOD_sys_set_fullscreen(bool fullscreen) {
   TCOD_ctx.fullscreen = fullscreen;

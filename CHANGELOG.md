@@ -11,6 +11,9 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 ### Changed
 - `TCODHeightMap::values` now uses `std::vector`, `TCODHeightMap` is now safe to copy/move.
 
+### Fixed
+- Fixed crashes on screen capture.
+
 ## [2.0.0] - 2025-03-20
 ### Added
 - Cmake scripts now have the `LIBTCOD_INSTALL` option to disable installation.

@@ -145,6 +145,7 @@ TCOD_PUBLIC TCOD_Error TCOD_context_save_screenshot(struct TCOD_Context* context
     int width = 0;
     int height = 0;
     TCOD_ColorRGBA* pixels = TCOD_context_screen_capture_alloc(context, &width, &height);
+    if (!pixels) return TCOD_E_ERROR;
     lodepng_encode32_file(filename, (const unsigned char*)pixels, (unsigned)width, (unsigned)height);
     free(pixels);
     return TCOD_E_OK;
@@ -226,7 +227,7 @@ TCOD_Error TCOD_context_screen_capture(
 TCOD_ColorRGBA* TCOD_context_screen_capture_alloc(
     struct TCOD_Context* __restrict context, int* __restrict width, int* __restrict height) {
   while (true) {
-    if (!TCOD_context_screen_capture(context, NULL, width, height)) return NULL;
+    if (TCOD_context_screen_capture(context, NULL, width, height) != TCOD_E_OK) return NULL;
     TCOD_ColorRGBA* pixels = malloc((*width) * (*height) * sizeof(*pixels));
     if (!pixels) {
       TCOD_set_errorv("Failed to allocate image for screen capture.");

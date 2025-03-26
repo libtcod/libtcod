@@ -23,6 +23,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#define SDL_MAIN_USE_CALLBACKS
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <math.h>
@@ -61,7 +62,13 @@ static constexpr auto FORCE = 12000.0f;
 static constexpr auto SOURCE = 1250000.0f;
 static float stepDelay = 0.0f;
 
-static int player_x = N / 4, player_y = N / 4;
+static int player_x = N / 4;
+static int player_y = N / 4;
+
+static auto g_console = tcod::Console{WIDTH, HEIGHT};
+static tcod::Context g_context;
+static auto g_timer = tcod::Timer();
+static int g_desired_fps = 0;
 
 // set boundary conditions
 void set_bnd(int b, std::array<float, SIZE>& x) {
@@ -322,82 +329,84 @@ void render(TCOD_Console& console) {
   console.at(player_x, player_y).fg = {0, 0, 0, 255};
 }
 
-int main(int argc, char* argv[]) {
+SDL_AppResult SDL_AppIterate(void*) {
+  // update the game
+  const float delta_time = g_timer.sync(g_desired_fps);
+  update(delta_time, g_context);
+  // render the game screen
+  render(g_console);
+  tcod::print(
+      g_console,
+      {1, HEIGHT - 2 - 6},
+      tcod::stringf(
+          "FPS:\n%6.2f mean\n%6.2f median\n%6.2f last\n%6.2f min\n%6.2f max\nlimit (F1=0,F2=30,F3=60): %2i fps",
+          g_timer.get_mean_fps(),
+          g_timer.get_median_fps(),
+          g_timer.get_last_fps(),
+          g_timer.get_min_fps(),
+          g_timer.get_max_fps(),
+          g_desired_fps),
+      TEXT_COLOR,
+      {});
+  tcod::print(g_console, {5, 49}, "Arrows to move, left mouse button to cast", TEXT_COLOR, std::nullopt);
+  // render libtcod credits
+  static bool endCredits = false;
+  if (!endCredits) endCredits = TCOD_console_credits_render_ex(g_console.get(), 4, 4, true, delta_time);
+  g_context.present(g_console);
+  return SDL_APP_CONTINUE;
+}
+
+SDL_AppResult SDL_AppEvent(void*, SDL_Event* event) {
+  switch (event->type) {
+    case SDL_EVENT_QUIT:
+      return SDL_APP_SUCCESS;
+    case SDL_EVENT_KEY_DOWN:
+      switch (event->key.scancode) {
+        case SDL_SCANCODE_RETURN:
+        case SDL_SCANCODE_RETURN2:
+        case SDL_SCANCODE_KP_ENTER:
+          if (event->key.mod & SDL_KMOD_ALT) {
+            if (auto window = g_context.get_sdl_window(); window) {
+              SDL_SetWindowFullscreen(window, (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN) == 0);
+            }
+          }
+          break;
+        case SDL_SCANCODE_F1:
+          g_desired_fps = 0;
+          break;
+        case SDL_SCANCODE_F2:
+          g_desired_fps = 30;
+          break;
+        case SDL_SCANCODE_F3:
+          g_desired_fps = 60;
+          break;
+        default:
+          break;
+      }
+      break;
+    default:
+      break;
+  }
+  return SDL_APP_CONTINUE;
+}
+
+SDL_AppResult SDL_AppInit(void**, int argc, char** argv) {
   // initialize the game window
   auto tileset = tcod::load_tilesheet("data/fonts/terminal8x8_gs_tc.png", {32, 8}, tcod::CHARMAP_TCOD);
-  auto console = tcod::Console{WIDTH, HEIGHT};
   TCOD_ContextParams params{};
   params.argc = argc;
   params.argv = argv;
-  params.console = console.get();
+  params.console = g_console.get();
   params.tileset = tileset.get();
   params.window_title = "pyromancer flame spell";
   params.sdl_window_flags = SDL_WINDOW_RESIZABLE;
   params.vsync = false;
 
-  auto context = tcod::Context(params);
+  g_context = tcod::Context(params);
 
-  bool endCredits = false;
   init();
 
-  auto timer = tcod::Timer();
-  int desired_fps = 30;
-
-  while (true) {
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-      switch (event.type) {
-        case SDL_EVENT_QUIT:
-          return 0;
-        case SDL_EVENT_KEY_DOWN:
-          switch (event.key.scancode) {
-            case SDL_SCANCODE_RETURN:
-            case SDL_SCANCODE_RETURN2:
-            case SDL_SCANCODE_KP_ENTER:
-              if (event.key.mod & SDL_KMOD_ALT) {
-                if (auto window = context.get_sdl_window(); window) {
-                  SDL_SetWindowFullscreen(window, (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN) == 0);
-                }
-              }
-              break;
-            case SDL_SCANCODE_F1:
-              desired_fps = 0;
-              break;
-            case SDL_SCANCODE_F2:
-              desired_fps = 30;
-              break;
-            case SDL_SCANCODE_F3:
-              desired_fps = 60;
-              break;
-            default:
-              break;
-          }
-          break;
-        default:
-          break;
-      }
-    }
-    // update the game
-    const float delta_time = timer.sync(desired_fps);
-    update(delta_time, context);
-    // render the game screen
-    render(console);
-    tcod::print(
-        console,
-        {1, HEIGHT - 2 - 6},
-        tcod::stringf(
-            "FPS:\n%6.2f mean\n%6.2f median\n%6.2f last\n%6.2f min\n%6.2f max\nlimit (F1=0,F2=30,F3=60): %2i fps",
-            timer.get_mean_fps(),
-            timer.get_median_fps(),
-            timer.get_last_fps(),
-            timer.get_min_fps(),
-            timer.get_max_fps(),
-            desired_fps),
-        TEXT_COLOR,
-        {});
-    tcod::print(console, {5, 49}, "Arrows to move, left mouse button to cast", TEXT_COLOR, std::nullopt);
-    // render libtcod credits
-    if (!endCredits) endCredits = TCOD_console_credits_render_ex(console.get(), 4, 4, true, delta_time);
-    context.present(console);
-  }
+  return SDL_APP_CONTINUE;
 }
+
+void SDL_AppQuit(void*, SDL_AppResult) {}

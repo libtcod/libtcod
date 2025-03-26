@@ -29,4 +29,5 @@
 static constexpr auto CONSOLE_WIDTH = 80;
 static constexpr auto CONSOLE_HEIGHT = 50;
 
-extern TCODNoise noise3d;
+inline TCODNoise noise2d(2);
+inline TCODNoise noise3d(3);

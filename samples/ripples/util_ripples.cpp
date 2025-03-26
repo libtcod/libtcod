@@ -123,7 +123,7 @@ bool RippleManager::updateRipples(float elapsed) {
   return zone.isActive;
 }
 
-void RippleManager::renderRipples(const TCODImage& ground, TCODImage& groundWithRipples) {
+void RippleManager::renderRipples(const TCODImage& ground, TCODImage& groundWithRipples) const {
   const float elCoef = SDL_GetTicks() / 1000.0f * 2.0f;
   for (int y = 1; y < height - 1; ++y) {
     for (int x = 1; x < width - 1; ++x) {

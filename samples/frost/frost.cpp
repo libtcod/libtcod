@@ -176,7 +176,7 @@ class FrostManager {
 static constexpr int CONSOLE_WIDTH = 80;
 static constexpr int CONSOLE_HEIGHT = 50;
 
-tcod::Context context;
+tcod::Context g_context;
 FrostManager frostManager{CONSOLE_WIDTH * 2, CONSOLE_HEIGHT * 2};
 uint64_t last_time_ms = SDL_GetTicks();
 
@@ -187,7 +187,7 @@ SDL_AppResult SDL_AppIterate(void*) {
   frostManager.update(delta_time_ms / 1000.0f);
   static auto console = tcod::Console{CONSOLE_WIDTH, CONSOLE_HEIGHT};
   frostManager.render(console);
-  context.present(console);
+  g_context.present(console);
   return SDL_APP_CONTINUE;
 }
 
@@ -197,14 +197,14 @@ SDL_AppResult SDL_AppEvent(void*, SDL_Event* event) {
       if (event->key.key == SDLK_BACKSPACE) frostManager.clear();
       break;
     case SDL_EVENT_MOUSE_BUTTON_DOWN: {
-      auto tile_xy = context.pixel_to_tile_coordinates(
+      auto tile_xy = g_context.pixel_to_tile_coordinates(
           std::array<int, 2>{{static_cast<int>(event->motion.x), static_cast<int>(event->motion.y)}});
       if (event->button.button == SDL_BUTTON_LEFT) {
         frostManager.addFrost(tile_xy.at(0) * 2, tile_xy.at(1) * 2);
       }
     }
     case SDL_EVENT_MOUSE_MOTION: {
-      auto tile_xy = context.pixel_to_tile_coordinates(
+      auto tile_xy = g_context.pixel_to_tile_coordinates(
           std::array<int, 2>{{static_cast<int>(event->motion.x), static_cast<int>(event->motion.y)}});
       if (event->motion.state & SDL_BUTTON_LMASK) {
         frostManager.addFrost(tile_xy.at(0) * 2, tile_xy.at(1) * 2);
@@ -232,7 +232,7 @@ SDL_AppResult SDL_AppInit(void**, int argc, char** argv) {
   params.renderer_type = TCOD_RENDERER_SDL2;
   params.vsync = true;
   try {
-    context = tcod::Context(params);
+    g_context = tcod::Context(params);
   } catch (const std::exception& e) {
     std::cerr << e.what() << "\n";
     return SDL_APP_FAILURE;

@@ -26,7 +26,7 @@
 #include <libtcod.hpp>
 
 // console size
-static constexpr auto CON_W = 80;
-static constexpr auto CON_H = 50;
+static constexpr auto CONSOLE_WIDTH = 80;
+static constexpr auto CONSOLE_HEIGHT = 50;
 
 extern TCODNoise noise3d;

@@ -35,11 +35,11 @@ static constexpr auto LIGHTNING_LEVEL = 0.4f;
 static constexpr auto LIGHTNING_RADIUS = 500;
 static constexpr auto LIGHTNING_LIFE = 2.0f;
 static constexpr auto LIGHTNING_INTENSITY_SPEED = 20.0f;
-static constexpr auto LIGHTNING_MIN_PROB = 7.0f;
+static constexpr auto LIGHTNING_MIN_PROB = 1.0f / 7.0f;
 static constexpr auto LIGHTNING_MAX_PROB = 1.0f;
-static constexpr auto RAIN_MIN_PROB = 4000;
-static constexpr auto RAIN_MED_PROB = 400;
-static constexpr auto RAIN_MAX_PROB = 10;
+static constexpr auto RAIN_MIN_PROB = 1.0f / 4000.0f;
+static constexpr auto RAIN_MED_PROB = 1.0f / 400.0f;
+static constexpr auto RAIN_MAX_PROB = 1.0f / 10.0f;
 
 Weather::Weather(int width, int height) {
   map_ = TCODHeightMap(width + 2, height + 2);
@@ -73,35 +73,29 @@ const char* Weather::getWeather() const noexcept {
     return "The storm is raging";
 }
 
-void Weather::update(float elapsed) {
-  static float localElapsed = 0.0f;
-  localElapsed += elapsed;
-  float perlin_x = changeFactor_ * localElapsed / 100.0f;
-  indicator_ = (1.0f + noise1d.get(&perlin_x, TCOD_NOISE_SIMPLEX)) * 0.5f + indicatorDelta_;
-  indicator_ = TCOD_CLAMP(0.0f, 1.0f, indicator_);
+void Weather::update(float delta_time) {
+  elapsed_time_ += delta_time;
+  float perlin_x = changeFactor_ * elapsed_time_ / 100.0f;
+  indicator_ = (1.0f + noise1d.get(&perlin_x, TCOD_NOISE_SIMPLEX)) * 0.5f + indicator_bias_;
+  indicator_ = std::clamp(indicator_, 0.0f, 1.0f);
   const float wind_speed = 1.0f - indicator_;
   perlin_x *= 2.0f;
   const float windDir = (2.0f * 3.1415926f * 0.5f) * (1.0f + noise1d.get(&perlin_x, TCOD_NOISE_SIMPLEX));
-  dx_ += MAX_WIND_SPEED * wind_speed * cosf(windDir) * elapsed;
-  dy_ += 0.5f * MAX_WIND_SPEED * wind_speed * sinf(windDir) * elapsed;
+  dx_ += MAX_WIND_SPEED * wind_speed * cosf(windDir) * delta_time;
+  dy_ += 0.5f * MAX_WIND_SPEED * wind_speed * sinf(windDir) * delta_time;
   if (indicator_ < LIGHTNING_LEVEL) {
     const float storm = (LIGHTNING_LEVEL - indicator_) / LIGHTNING_LEVEL;  // storm power 0-1
-    const float lp =
-        LIGHTNING_MIN_PROB + (int)((LIGHTNING_MAX_PROB - LIGHTNING_MIN_PROB) * storm);  // nb of lightning per second
-    const int fps = TCODSystem::getFps();
-    if (fps > 0) {
-      const int ilp = (int)(lp * fps);
-      if (TCODRandom::getInstance()->getInt(0, ilp) == 0) {
-        // new lightning
-        lightning_t l{};
-        l.pos_x = TCODRandom::getInstance()->getInt(0, map_.w);
-        l.pos_y = TCODRandom::getInstance()->getInt(0, map_.h);
-        l.life = TCODRandom::getInstance()->getFloat(0.1f, LIGHTNING_LIFE);
-        l.radius_squared = TCODRandom::getInstance()->getInt(LIGHTNING_RADIUS, LIGHTNING_RADIUS * 2);
-        l.noise_x = TCODRandom::getInstance()->getFloat(0.0f, 1000.0f);
-        l.intensity = 0.0f;
-        lightnings_.emplace_back(l);
-      }
+    const float lightning_probability =
+        LIGHTNING_MIN_PROB + ((LIGHTNING_MAX_PROB - LIGHTNING_MIN_PROB) * storm);  // nb of lightning per second
+    if (TCODRandom::getInstance()->getFloat(0, 1) < lightning_probability * delta_time) {
+      // spawn lightning
+      auto& new_lightning = lightnings_.emplace_back();
+      new_lightning.pos_x = TCODRandom::getInstance()->getInt(0, map_.w);
+      new_lightning.pos_y = TCODRandom::getInstance()->getInt(0, map_.h);
+      new_lightning.life = TCODRandom::getInstance()->getFloat(0.1f, LIGHTNING_LIFE);
+      new_lightning.radius_squared = TCODRandom::getInstance()->getInt(LIGHTNING_RADIUS, LIGHTNING_RADIUS * 2);
+      new_lightning.noise_x = TCODRandom::getInstance()->getFloat(0.0f, 1000.0f);
+      new_lightning.intensity = 0.0f;
     }
   }
 
@@ -128,16 +122,16 @@ void Weather::update(float elapsed) {
   }
   // update lightnings
   for (int i = static_cast<int>(lightnings_.size()) - 1; i >= 0; --i) {
-    lightning_t& l = lightnings_.at(i);
-    l.life -= elapsed;
-    l.noise_x += elapsed * LIGHTNING_INTENSITY_SPEED;
-    if (l.life <= 0) {
+    lightning_t& lightning = lightnings_.at(i);
+    lightning.life -= delta_time;
+    lightning.noise_x += delta_time * LIGHTNING_INTENSITY_SPEED;
+    if (lightning.life <= 0) {
       lightnings_.erase(lightnings_.begin() + i);
       continue;
     } else {
-      l.intensity = 0.5f * noise1d.get(&l.noise_x, TCOD_NOISE_SIMPLEX) + 1.0f;
-      l.pos_x -= bx;
-      l.pos_y -= by;
+      lightning.intensity = 0.5f * noise1d.get(&lightning.noise_x, TCOD_NOISE_SIMPLEX) + 1.0f;
+      lightning.pos_x -= bx;
+      lightning.pos_y -= by;
     }
   }
 
@@ -175,33 +169,32 @@ float Weather::getLightning(int x, int y) {
   if (indicator_ >= 0.3f) return 0.0f;
   if (dx_ >= 0) x++;
   if (dy_ >= 0) y++;
-  float res = 0.0f;
+  float light = 0.0f;  // accumulated light/intensity
   float cloud = map_.getValue(x, y);
-  cloud = 1.0f - cloud;  // inverted cloud. 0 = sky, 1=dark cloud
+  cloud = 1.0f - cloud;  // inverted cloud. 0=sky, 1=dark cloud
   cloud -= 0.6f;  // no lightning under 0.6f. cloud is now 0 - 0.4
   if (cloud <= 0.0f) return 0.0f;
   cloud = cloud / 0.4f;  // now back to 0-1 range (but only for really cloudy zones)
-  for (const lightning_t& l : lightnings_) {
-    const int dx = l.pos_x - x;
-    const int dy = l.pos_y - y;
-    const int dist = dx * dx + dy * dy;
-    if (dist < l.radius_squared) {
-      res += l.intensity * (float)(l.radius_squared - dist) / l.radius_squared;
+  for (const lightning_t& lightning : lightnings_) {
+    const int dx = lightning.pos_x - x;
+    const int dy = lightning.pos_y - y;
+    const int dist_squared = dx * dx + dy * dy;
+    if (dist_squared < lightning.radius_squared) {
+      light += lightning.intensity * (float)(lightning.radius_squared - dist_squared) / lightning.radius_squared;
     }
   }
-  return std::clamp(cloud * res, 0.0f, 1.0f);
+  return std::clamp(cloud * light, 0.0f, 1.0f);
 }
 
 bool Weather::hasRainDrop() {
   if (indicator_ >= 0.5f) return false;
-  int prob;
+  float rain_chance;
   if (indicator_ >= 0.3f) {
-    prob = (int)(RAIN_MIN_PROB + (RAIN_MED_PROB - RAIN_MIN_PROB) * (0.5f - indicator_) * 5);
+    rain_chance = RAIN_MIN_PROB + (RAIN_MED_PROB - RAIN_MIN_PROB) * (0.5f - indicator_) * 5;
   } else {
-    prob = (int)(RAIN_MED_PROB + (RAIN_MAX_PROB - RAIN_MED_PROB) * (0.3f - indicator_) * 3.33f);
+    rain_chance = RAIN_MED_PROB + (RAIN_MAX_PROB - RAIN_MED_PROB) * (0.3f - indicator_) * 3.33f;
   }
-  const int rp = TCODRandom::getInstance()->getInt(0, prob);
-  return rp == 0;
+  return TCODRandom::getInstance()->getFloat(0, 1) < rain_chance;
 }
 
 void Weather::calculateAmbient(float timeInSeconds) {

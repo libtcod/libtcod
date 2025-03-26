@@ -34,8 +34,8 @@
 #include "bsp_helper.hpp"
 #include "rad_shader.hpp"
 
-static constexpr auto CON_WIDTH = 80;
-static constexpr auto CON_HEIGHT = 50;
+static constexpr auto CONSOLE_WIDTH = 80;
+static constexpr auto CONSOLE_HEIGHT = 50;
 
 static constexpr auto MAP_WIDTH = 39;
 static constexpr auto MAP_HEIGHT = 50;
@@ -103,7 +103,7 @@ void init(TCOD_Console& console) {
     leftShader->addLight(lx, ly, LIGHT_RADIUS, WHITE);
     rightShader->addLight(lx, ly, LIGHT_RADIUS, WHITE);
     console.at(lx, ly).ch = '*';
-    console.at(lx + CON_WIDTH / 2, ly).ch = '*';
+    console.at(lx + CONSOLE_WIDTH / 2, ly).ch = '*';
   }
 
   // find a starting position for the player
@@ -111,7 +111,7 @@ void init(TCOD_Console& console) {
   playerBack = console.at(player_x, player_y).ch;
 
   console.at(player_x, player_y).ch = '@';
-  console.at(player_x + CON_WIDTH / 2, player_y).ch = '@';
+  console.at(player_x + CONSOLE_WIDTH / 2, player_y).ch = '@';
 
   // add the player's torch
   torchIndex = leftShader->addLight(player_x, player_y, 10, WHITE);
@@ -177,7 +177,7 @@ void render(TCOD_Console& console) {
       // render right map
       const TCODColor rightLight = rightShader->getLightColor(x, y);
       const TCODColor cellRightCol = TCODColor::lerp(darkCol, lightCol, gammaLookup[rightLight.r] / 255.0f);
-      console.at(x + CON_WIDTH / 2, y).bg = {cellRightCol.r, cellRightCol.g, cellRightCol.b, 255};
+      console.at(x + CONSOLE_WIDTH / 2, y).bg = {cellRightCol.r, cellRightCol.g, cellRightCol.b, 255};
     }
   }
   tcod::print(
@@ -190,7 +190,7 @@ void render(TCOD_Console& console) {
 
   tcod::print(
       console,
-      {3 * CON_WIDTH / 4, 0},
+      {3 * CONSOLE_WIDTH / 4, 0},
       tcod::stringf("Photon reactor %1.2fms", radLength),
       std::nullopt,
       std::nullopt,
@@ -201,14 +201,14 @@ void move(TCOD_Console& console, int dx, int dy) {
   if (map->isWalkable(player_x + dx, player_y + dy)) {
     // restore the previous map char
     console.at(player_x, player_y).ch = playerBack;
-    console.at(player_x + CON_WIDTH / 2, player_y).ch = playerBack;
+    console.at(player_x + CONSOLE_WIDTH / 2, player_y).ch = playerBack;
     // move the player
     player_x += dx;
     player_y += dy;
     playerBack = console.at(player_x, player_y).ch;
     // render the player
     console.at(player_x, player_y).ch = '@';
-    console.at(player_x + CON_WIDTH / 2, player_y).ch = '@';
+    console.at(player_x + CONSOLE_WIDTH / 2, player_y).ch = '@';
     // update the player's torch position
     leftShader->updateLight(torchIndex, player_x, player_y, LIGHT_RADIUS, WHITE);
     rightShader->updateLight(torchIndex, player_x, player_y, LIGHT_RADIUS, WHITE);

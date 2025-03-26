@@ -24,12 +24,15 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include <libtcod.hpp>
+#include <libtcod/timer.hpp>
 
 #include "util_weather.hpp"
 
 // console size
-static constexpr auto CON_W = 80;
-static constexpr auto CON_H = 50;
+static constexpr auto CONSOLE_WIDTH = 80;
+static constexpr auto CONSOLE_HEIGHT = 50;
 
 inline TCODNoise noise1d{1};
 inline TCODNoise noise2d{2};
+
+inline tcod::Timer tcod_clock{};

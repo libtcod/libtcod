@@ -32,7 +32,7 @@ class Weather {
   Weather() = default;
   Weather(int width, int height);
 
-  void update(float elapsed);
+  void update(float delta_time);
   float getCloud(int x, int y);  // 0.0 : dark cloud, 1.0 : no cloud
   float getLightning(int x, int y);  // 0.0 : no lightning. 1.0 : full lightning light
   bool hasRainDrop();  // call for each cell on the map
@@ -48,8 +48,8 @@ class Weather {
   // 0 : bad weather. 1 : good weather
   float getIndicator() const noexcept { return indicator_; }
   // to alter the weather
-  float getIndicatorDelta() const noexcept { return indicatorDelta_; }
-  void setIndicatorDelta(float v) { indicatorDelta_ = TCOD_CLAMP(-1.0f, 1.0f, v); }
+  float getIndicatorDelta() const noexcept { return indicator_bias_; }
+  void setIndicatorDelta(float v) { indicator_bias_ = std::clamp(v, -1.0f, 1.0f); }
 
  private:
   struct lightning_t {
@@ -61,11 +61,12 @@ class Weather {
   };
 
   float indicator_{};  // 0 : bad, 1 : good
-  float indicatorDelta_{0.0f};
+  float indicator_bias_{0.0f};
   float noise_x_{20000.0f}, noise_y_{20000.0f};  // position in the noise space
   float dx_{20000.0f}, dy_{20000.0f};  // sub cell cloud map position
   float changeFactor_{1.0f};
   TCODHeightMap map_{};
   std::vector<lightning_t> lightnings_{};
   TCODColor ambientColor_{};
+  float elapsed_time_{0.0f};
 };

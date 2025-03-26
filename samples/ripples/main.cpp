@@ -74,8 +74,8 @@ static constexpr std::array<TCODColor, MAX_COLOR_KEY> keyColor{
 
 void render(TCOD_Console& console) {
   // copy ground into ground_with_ripples. damn libtcod should have that...
-  for (int y = 0; y < CON_H * 2; ++y) {
-    for (int x = 0; x < CON_W * 2; ++x) {
+  for (int y = 0; y < CONSOLE_HEIGHT * 2; ++y) {
+    for (int x = 0; x < CONSOLE_WIDTH * 2; ++x) {
       ground_with_ripples->putPixel(x, y, ground->getPixel(x, y));
     }
   }
@@ -86,7 +86,7 @@ void render(TCOD_Console& console) {
 
 int main(int argc, char* argv[]) {
   auto tileset = tcod::load_tilesheet("data/fonts/terminal8x8_gs_tc.png", {32, 8}, tcod::CHARMAP_TCOD);
-  auto console = tcod::Console{CON_W, CON_H};
+  auto console = tcod::Console{CONSOLE_WIDTH, CONSOLE_HEIGHT};
   // initialize the game window
   TCOD_ContextParams params{};
   params.argc = argc;
@@ -102,18 +102,18 @@ int main(int argc, char* argv[]) {
   bool endCredits = false;
 
   // create a 2d noise
-  TCODHeightMap hm(CON_W * 2, CON_H * 2);
+  TCODHeightMap hm(CONSOLE_WIDTH * 2, CONSOLE_HEIGHT * 2);
   hm.addFbm(&noise2d, 3.0f, 3.0f, 0, 0, 7.0f, 1.0f, 0.5f);
   hm.normalize();
   // apply a color map to create a ground image
   TCODColor::genMap(&mapGradient[0], MAX_COLOR_KEY, keyColor.data(), keyIndex.data());
-  ground = std::make_unique<TCODImage>(CON_W * 2, CON_H * 2);
-  ground_with_ripples = std::make_unique<TCODImage>(CON_W * 2, CON_H * 2);
+  ground = std::make_unique<TCODImage>(CONSOLE_WIDTH * 2, CONSOLE_HEIGHT * 2);
+  ground_with_ripples = std::make_unique<TCODImage>(CONSOLE_WIDTH * 2, CONSOLE_HEIGHT * 2);
   // create a TCODMap defining water zones. Walkable = water
-  TCODMap waterMap(CON_W * 2, CON_H * 2);
+  TCODMap waterMap(CONSOLE_WIDTH * 2, CONSOLE_HEIGHT * 2);
 
-  for (int y = 0; y < CON_H * 2; ++y) {
-    for (int x = 0; x < CON_W * 2; ++x) {
+  for (int y = 0; y < CONSOLE_HEIGHT * 2; ++y) {
+    for (int x = 0; x < CONSOLE_WIDTH * 2; ++x) {
       const float h = hm.getValue(x, y);
       const bool isWater = h < sandHeight;
       waterMap.setProperties(x, y, isWater, isWater);

@@ -26,31 +26,31 @@
 
 #include "main.hpp"
 
+#define SDL_MAIN_USE_CALLBACKS
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
 #include <cstdio>
 #include <string>
 
+static tcod::Context tcod_context;
+static tcod::Console tcod_console;
 static Weather weather;
 static float dayTime = 6 * 3600.0f;  // starts at 6.00am
-static TCODColor lightningColor(220, 220, 255);
 static TCODImage ground;
+static bool endCredits = false;
 
-void update(float elapsed, TCOD_key_t k, TCOD_mouse_t) {
-  if (k.c == '+') {
-    const float d = weather.getIndicatorDelta();
-    weather.setIndicatorDelta(d + elapsed * 0.1f);
-  } else if (k.c == '-') {
-    const float d = weather.getIndicatorDelta();
-    weather.setIndicatorDelta(d - elapsed * 0.1f);
-  } else if (k.vk == TCODK_ENTER || k.vk == TCODK_KPENTER) {
-    elapsed *= 20.0f;
+static constexpr auto LIGHTNING_COLOR = TCODColor{220, 220, 255};
+
+void update(float delta_time) {
+  const auto state = SDL_GetKeyboardState(nullptr);
+  if (state[SDL_GetScancodeFromKey(SDLK_RETURN, nullptr)] || state[SDL_GetScancodeFromKey(SDLK_KP_ENTER, nullptr)]) {
+    delta_time *= 20.0f;
   }
 
-  dayTime += elapsed * 60 * 3;  // 1 real sec = 3 min
+  dayTime += delta_time * 60 * 3;  // 1 real sec = 3 min
   if (dayTime >= 24 * 3600) dayTime -= 24 * 3600;
-  weather.update(elapsed);
+  weather.update(delta_time);
   weather.calculateAmbient(dayTime);
 }
 
@@ -61,9 +61,9 @@ std::string getDaytime() {
 }
 
 void render() {
-  static TCODImage img(CON_W * 2, CON_H * 2);
-  for (int x = 0; x < CON_W * 2; x++) {
-    for (int y = 0; y < CON_H * 2; y++) {
+  static TCODImage img(tcod_console.get_width() * 2, tcod_console.get_height() * 2);
+  for (int x = 0; x < tcod_console.get_width() * 2; x++) {
+    for (int y = 0; y < tcod_console.get_height() * 2; y++) {
       // we don't use color operation to avoid 0-255 clamping at every step
       // sort of poor man's HDR...
       int r = 0;
@@ -82,9 +82,9 @@ void render() {
       // take lightning into account
       const float lightning = weather.getLightning(x, y);
       if (lightning > 0.0f) {
-        const int lr = (int)(2 * lightning * lightningColor.r);
-        const int lg = (int)(2 * lightning * lightningColor.g);
-        const int lb = (int)(2 * lightning * lightningColor.b);
+        const int lr = (int)(2 * lightning * LIGHTNING_COLOR.r);
+        const int lg = (int)(2 * lightning * LIGHTNING_COLOR.g);
+        const int lb = (int)(2 * lightning * LIGHTNING_COLOR.b);
         r += lr;
         g += lg;
         b += lb;
@@ -98,37 +98,39 @@ void render() {
       img.putPixel(x, y, TCODColor(r, g, b));
     }
   }
-  img.blit2x(TCODConsole::root, 0, 0);
+  tcod::draw_quartergraphics(tcod_console, img);
   // rain drops
-  for (int y = 0; y < CON_H; ++y) {
-    for (int x = 0; x < CON_W; ++x) {
+  for (int y = 0; y < tcod_console.get_height(); ++y) {
+    for (int x = 0; x < tcod_console.get_width(); ++x) {
       if (weather.hasRainDrop()) {
         const float lightning = weather.getLightning(x * 2, y * 2);
         const float cloudCoef = weather.getCloud(x * 2, y * 2);
-        TCODColor col = TCODColor{0, 0, 191} * cloudCoef;
-        col = col * weather.getAmbientLightColor();
-        if (lightning > 0.0f) col = col + 2 * lightning * lightningColor;
-        TCODConsole::root->setChar(x, y, '/');
-        TCODConsole::root->setCharForeground(x, y, col);
+        TCODColor color = TCODColor{0, 0, 191} * cloudCoef;
+        color = color * weather.getAmbientLightColor();
+        if (lightning > 0.0f) color = color + 2 * lightning * LIGHTNING_COLOR;
+        tcod_console.at({x, y}).ch = '/';
+        tcod_console.at({x, y}).fg = tcod::ColorRGB{color};
       }
     }
   }
-  TCODConsole::root->setDefaultForeground({255, 255, 255});
-  TCODConsole::root->printf(
-      5,
-      CON_H - 12,
-      "TCOD's weather system :\n"
-      "- wind with varying speed and direction\n"
-      "- rain\n"
-      "- lightnings\n"
-      "- day/night cycle\n"
-      "Day time : %s\n"
-      "Weather : %s\n\n"
-      "Weather evolves automatically\nbut you can alter it by holding + or - : %.1f\n"
-      "Accelerate time with ENTER",
-      getDaytime().c_str(),
-      weather.getWeather(),
-      weather.getIndicatorDelta());
+  tcod::print(
+      tcod_console,
+      {5, CONSOLE_HEIGHT - 12},
+      tcod::stringf(
+          "TCOD's weather system :\n"
+          "- wind with varying speed and direction\n"
+          "- rain\n"
+          "- lightnings\n"
+          "- day/night cycle\n"
+          "Day time : %s\n"
+          "Weather : %s\n\n"
+          "Weather evolves automatically\nbut you can alter it by holding + or - : %.1f\n"
+          "Accelerate time with ENTER",
+          getDaytime().c_str(),
+          weather.getWeather(),
+          weather.getIndicatorDelta()),
+      tcod::ColorRGB{255, 255, 255},
+      {});
 }
 
 // Generate and return a new ground texture/
@@ -162,41 +164,63 @@ auto generate_ground_texture(int width, int height) -> TCODImage {
   return new_ground;
 }
 
-int main(int argc, char* argv[]) {
-  // initialize the game window
-  TCODConsole::initRoot(CON_W, CON_H, "Weather system", false, TCOD_RENDERER_OPENGL2);
-  TCODMouse::showCursor(true);
-  TCODSystem::setFps(25);
+SDL_AppResult SDL_AppIterate(void*) {
+  float delta_time = tcod_clock.sync();
+  update(delta_time);
 
-  weather = Weather{CON_W * 2, CON_H * 2};
-  ground = generate_ground_texture(CON_W * 2, CON_H * 2);
+  render();  // render the game screen
+  if (!endCredits) endCredits = TCOD_console_credits_render_ex(tcod_console.get(), 4, 4, true, delta_time);
+  tcod_context.present(tcod_console);
+  return SDL_APP_CONTINUE;
+}
+
+SDL_AppResult SDL_AppEvent(void*, SDL_Event* event) {
+  switch (event->type) {
+    case SDL_EVENT_QUIT:
+      return SDL_APP_SUCCESS;
+    case SDL_EVENT_KEY_DOWN:
+      switch (event->key.key) {
+        case SDLK_PLUS:
+        case SDLK_EQUALS:
+        case SDLK_KP_PLUS:
+          weather.setIndicatorDelta(weather.getIndicatorDelta() + 0.1f);
+          break;
+        case SDLK_MINUS:
+        case SDLK_KP_MINUS:
+          weather.setIndicatorDelta(weather.getIndicatorDelta() - 0.1f);
+          break;
+        case SDLK_PRINTSCREEN:
+          tcod_context.save_screenshot();
+          break;
+      }
+      break;
+  }
+  return SDL_APP_CONTINUE;
+}
+
+SDL_AppResult SDL_AppInit(void**, int argc, char** argv) {
+  static constexpr char* FONT = "data/fonts/dejavu12x12_gs_tc.png";
+  auto tileset = tcod::load_tilesheet(FONT, {32, 8}, tcod::CHARMAP_TCOD);
+
+  tcod_console = tcod::Console{CONSOLE_WIDTH, CONSOLE_HEIGHT};
+
+  auto params = TCOD_ContextParams{};
+  params.argc = argc;
+  params.argv = argv;
+  params.vsync = true;
+  params.sdl_window_flags = SDL_WINDOW_RESIZABLE;
+  params.console = tcod_console.get();
+  params.window_title = "Weather system";
+  params.tileset = tileset.get();
+
+  tcod_context = tcod::Context(params);
+
+  weather = Weather{tcod_console.get_width() * 2, tcod_console.get_height() * 2};
+  ground = generate_ground_texture(tcod_console.get_width() * 2, tcod_console.get_height() * 2);
   // for this demo, we want the weather to evolve quite rapidly
   weather.setChangeFactor(3.0f);
 
-  bool endCredits = false;
-
-  while (!TCODConsole::isWindowClosed()) {
-    //	read keyboard
-    TCOD_key_t k = TCODConsole::checkForKeypress(TCOD_KEY_PRESSED | TCOD_KEY_RELEASED);
-    TCOD_mouse_t mouse = TCODMouse::getStatus();
-    if (k.vk == TCODK_PRINTSCREEN) {
-      // screenshot
-      if (!k.pressed) TCODSystem::saveScreenshot(NULL);
-      k.vk = TCODK_NONE;
-    } else if (k.lalt && (k.vk == TCODK_ENTER || k.vk == TCODK_KPENTER)) {
-      // switch fullscreen
-      if (!k.pressed) TCODConsole::setFullscreen(!TCODConsole::isFullscreen());
-      k.vk = TCODK_NONE;
-    }
-    // update the game
-    update(TCODSystem::getLastFrameLength(), k, mouse);
-
-    // render the game screen
-    render();
-    // render libtcod credits
-    if (!endCredits) endCredits = TCODConsole::renderCredits(4, 4, true);
-    // flush updates to screen
-    TCODConsole::root->flush();
-  }
-  return 0;
+  return SDL_APP_CONTINUE;
 }
+
+void SDL_AppQuit(void*, SDL_AppResult) {}

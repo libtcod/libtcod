@@ -25,6 +25,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#define SDL_MAIN_USE_CALLBACKS
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
@@ -45,6 +46,9 @@ static constexpr auto CELL_REFLECTIVITY = 1.5f;
 static constexpr auto CELL_SELF_ILLUMINATION = 0.4f;
 
 static constexpr auto WHITE = TCODColor{255, 255, 255};
+
+static tcod::Console g_console{CONSOLE_WIDTH, CONSOLE_HEIGHT};
+static tcod::Context g_context;
 
 static TCODMap* map;
 static BspHelper bsp;
@@ -83,7 +87,7 @@ void findPos(int* x, int* y) {
   }
 }
 
-void init(TCOD_Console& console) {
+void init(tcod::Console& console) {
   for (auto& tile : console) tile = {' ', {255, 255, 255, 255}, {0, 0, 0, 255}};
   // build the dungeon
   map = new TCODMap(MAP_WIDTH, MAP_HEIGHT);
@@ -215,11 +219,59 @@ void move(TCOD_Console& console, int dx, int dy) {
   }
 }
 
-int main(int argc, char* argv[]) {
-  auto console = tcod::Console{80, 50};
+SDL_AppResult SDL_AppIterate(void*) {
+  render(g_console);
+  g_context.present(g_console);
+  return SDL_APP_CONTINUE;
+}
+
+SDL_AppResult SDL_AppEvent(void*, SDL_Event* event) {
+  switch (event->type) {
+    case SDL_EVENT_QUIT:
+      return SDL_APP_SUCCESS;
+    case SDL_EVENT_KEY_DOWN:
+      switch (event->key.scancode) {
+        case SDL_SCANCODE_UP:
+        case SDL_SCANCODE_KP_8:
+        case SDL_SCANCODE_W:
+        case SDL_SCANCODE_K:
+          move(g_console, 0, -1);
+          break;
+        case SDL_SCANCODE_DOWN:
+        case SDL_SCANCODE_KP_2:
+        case SDL_SCANCODE_S:
+        case SDL_SCANCODE_J:
+          move(g_console, 0, 1);
+          break;
+        case SDL_SCANCODE_LEFT:
+        case SDL_SCANCODE_KP_4:
+        case SDL_SCANCODE_A:
+        case SDL_SCANCODE_H:
+          move(g_console, -1, 0);
+          break;
+        case SDL_SCANCODE_RIGHT:
+        case SDL_SCANCODE_KP_6:
+        case SDL_SCANCODE_D:
+        case SDL_SCANCODE_L:
+          move(g_console, 1, 0);
+          break;
+        case SDL_SCANCODE_PRINTSCREEN:
+          g_context.save_screenshot();
+          break;
+        default:
+          break;
+      }
+      break;
+    default:
+      break;
+  }
+  return SDL_APP_CONTINUE;
+}
+
+SDL_AppResult SDL_AppInit(void**, int argc, char** argv) {
   auto tileset = tcod::load_tilesheet("data/fonts/terminal8x8_gs_tc.png", {32, 8}, tcod::CHARMAP_TCOD);
   TCOD_ContextParams params{};
-  params.console = console.get();
+  params.console = g_console.get();
   params.tileset = tileset.get();
   params.vsync = true;
   params.sdl_window_flags = SDL_WINDOW_RESIZABLE;
@@ -227,55 +279,11 @@ int main(int argc, char* argv[]) {
   params.argv = argv;
   params.window_title = "Photon reactor - radiosity engine for roguelikes";
 
-  auto context = tcod::Context(params);
+  g_context = tcod::Context(params);
 
-  init(console);
-  while (true) {
-    render(console);
-    context.present(console);
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-      switch (event.type) {
-        case SDL_EVENT_QUIT:
-          return 0;
-          break;
-        case SDL_EVENT_KEY_DOWN:
-          switch (event.key.scancode) {
-            case SDL_SCANCODE_UP:
-            case SDL_SCANCODE_KP_8:
-            case SDL_SCANCODE_W:
-            case SDL_SCANCODE_K:
-              move(console, 0, -1);
-              break;
-            case SDL_SCANCODE_DOWN:
-            case SDL_SCANCODE_KP_2:
-            case SDL_SCANCODE_S:
-            case SDL_SCANCODE_J:
-              move(console, 0, 1);
-              break;
-            case SDL_SCANCODE_LEFT:
-            case SDL_SCANCODE_KP_4:
-            case SDL_SCANCODE_A:
-            case SDL_SCANCODE_H:
-              move(console, -1, 0);
-              break;
-            case SDL_SCANCODE_RIGHT:
-            case SDL_SCANCODE_KP_6:
-            case SDL_SCANCODE_D:
-            case SDL_SCANCODE_L:
-              move(console, 1, 0);
-              break;
-            case SDL_SCANCODE_PRINTSCREEN:
-              context.save_screenshot();
-              break;
-            default:
-              break;
-          }
-          break;
-        default:
-          break;
-      }
-    }
-  }
-  return 0;
+  init(g_console);
+
+  return SDL_APP_CONTINUE;
 }
+
+void SDL_AppQuit(void*, SDL_AppResult) {}

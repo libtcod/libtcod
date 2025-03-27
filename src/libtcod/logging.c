@@ -83,12 +83,7 @@ static void TCOD_logger_default(const TCOD_LogMessage* message, void* userdata) 
     return;
   }
   fprintf(
-      stderr,
-      "libtcod v" TCOD_STRVERSION ":%s:%d:%s:%s",
-      message->source,
-      message->lineno,
-      TCOD_log_level_name(message->level),
-      message->message);
+      stderr, "%s:%d:%s:%s\n", message->source, message->lineno, TCOD_log_level_name(message->level), message->message);
 }
 /***************************************************************************
     @brief The active logger callback.

@@ -13,6 +13,7 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 
 ### Fixed
 - Fixed crashes on screen capture.
+- Logged messages were missing a trailing newline.
 
 ## [2.0.0] - 2025-03-20
 ### Added

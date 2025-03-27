@@ -37,11 +37,11 @@
 
 // Return a `TCODHeightMap` as a `TCOD_heightmap_t` type.
 static auto to_struct(TCODHeightMap& heightmap) -> TCOD_heightmap_t {
-  return TCOD_heightmap_t{heightmap.w, heightmap.h, heightmap.values.data()};
+  return TCOD_heightmap_t{heightmap.w, heightmap.h, heightmap.values};
 }
 // Return a `const TCODHeightMap` as a `const TCOD_heightmap_t` type.
 static auto to_struct(const TCODHeightMap& heightmap) -> const TCOD_heightmap_t {
-  return TCOD_heightmap_t{heightmap.w, heightmap.h, const_cast<float*>(heightmap.values.data())};
+  return TCOD_heightmap_t{heightmap.w, heightmap.h, const_cast<float*>(heightmap.values)};
 }
 
 void TCODHeightMap::clear() {

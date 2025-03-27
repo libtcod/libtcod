@@ -74,8 +74,33 @@ class TCODLIB_API TCODHeightMap {
 		map=libtcod.heightmap_new(50,50)
 		print map.w, map.h
 	*/
-	TCODHeightMap(int width, int height) : w{width}, h{height}, values(width * height) {}
+	TCODHeightMap(int width, int height) : w{width}, h{height}, values{new float[width * height]{}} {}
 
+  // clang-format on
+
+  TCODHeightMap(const TCODHeightMap& rhs) : TCODHeightMap{rhs.w, rhs.h} { copy(&rhs); }
+  TCODHeightMap& operator=(const TCODHeightMap& rhs) {
+    if (w == rhs.w && h == rhs.w) {
+      copy(&rhs);
+    } else {
+      *this = TCODHeightMap(rhs);
+    }
+    return *this;
+  }
+  TCODHeightMap(TCODHeightMap&& rhs) { swap(rhs); }
+  TCODHeightMap& operator=(TCODHeightMap&& rhs) {
+    swap(rhs);
+    return *this;
+  }
+
+  ~TCODHeightMap() { delete[] values; }
+
+  void swap(TCODHeightMap& rhs) noexcept {
+    std::swap(w, rhs.w);
+    std::swap(h, rhs.h);
+    std::swap(values, rhs.values);
+  }
+  // clang-format off
 	/**
 	@PageName heightmap_base
 	@PageFather heightmap
@@ -95,7 +120,7 @@ class TCODLIB_API TCODHeightMap {
 	@Param value	The new value of the map cell.
 	*/
 	inline void setValue(int x, int y, float v) {
-		values.at(w * y + x) = v;
+		values[w * y + x] = v;
 	}
 
 	/**
@@ -383,7 +408,7 @@ class TCODLIB_API TCODHeightMap {
 		0 <= y < map height
 	*/
 	inline float getValue(int x, int y) const {
-		return values.at(w * y + x);
+		return values[w * y + x];
 	}
 
 	/**
@@ -496,7 +521,7 @@ class TCODLIB_API TCODHeightMap {
 
   int w{};
   int h{};
-  std::vector<float> values;
+  float* values{};
 
  private:
 };

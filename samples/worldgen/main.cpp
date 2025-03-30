@@ -25,6 +25,7 @@
  */
 #include "main.hpp"
 
+#define SDL_MAIN_USE_CALLBACKS
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
@@ -36,6 +37,10 @@ static constexpr auto WIDTH = 80;
 static constexpr auto HEIGHT = 50;
 
 static constexpr auto WHITE = TCOD_ColorRGB{255, 255, 255};
+
+static tcod::Context tcod_context;
+static auto console = tcod::Console{WIDTH, HEIGHT};
+static auto timer = tcod::Timer{};
 
 TCODNoise noise1d(1);
 TCODNoise noise2d(2);
@@ -54,6 +59,8 @@ void update(float elapsed) {
   cur_w_y += (world_y - cur_w_y) * elapsed;
   mx = cur_w_x + mouse_subtile_xy.at(0) * 2;
   my = cur_w_y + mouse_subtile_xy.at(1) * 2;
+  mx = std::clamp(mx, 0.0f, worldGen.getWidth() * 2.0f - 1.0f);
+  my = std::clamp(my, 0.0f, worldGen.getHeight() * 2.0f - 1.0f);
   worldGen.updateClouds(elapsed);
 }
 
@@ -108,16 +115,22 @@ void render(TCOD_Console& console) {
     // some information are irrelevant on sea
     tcod::print(
         console,
-        {5, 47},
-        tcod::stringf("Alt %5dm\n\nMove the mouse to scroll the map", (int)worldGen.getRealAltitude(mx, my)),
+        {5, 46},
+        tcod::stringf(
+            "x=%d, y=%d\nAlt %5dm\n\nMove the mouse to scroll the map",
+            (int)mx,
+            (int)my,
+            (int)worldGen.getRealAltitude(mx, my)),
         WHITE,
         {});
   } else {
     tcod::print(
         console,
-        {5, 47},
+        {5, 46},
         tcod::stringf(
-            "Alt %5dm  Prec %3dcm/sq. m/y  Temp %d deg C\nBiome : %s\nMove the mouse to scroll the map",
+            "x=%d, y=%d\nAlt %5dm  Prec %3dcm/sq. m/y  Temp %d deg C\nBiome : %s\nMove the mouse to scroll the map",
+            (int)mx,
+            (int)my,
             (int)worldGen.getRealAltitude(mx, my),
             (int)worldGen.getPrecipitations(mx, my),
             (int)worldGen.getTemperature(mx, my),
@@ -127,9 +140,8 @@ void render(TCOD_Console& console) {
   }
 }
 
-int main(int argc, char* argv[]) {
+SDL_AppResult SDL_AppInit(void**, int argc, char** argv) {
   auto tileset = tcod::load_tilesheet("data/fonts/terminal8x8_gs_tc.png", {32, 8}, tcod::CHARMAP_TCOD);
-  auto console = tcod::Console{WIDTH, HEIGHT};
 
   // initialize the game window
   TCOD_ContextParams params{};
@@ -141,46 +153,46 @@ int main(int argc, char* argv[]) {
   params.window_title = "World generator";
   params.tileset = tileset.get();
 
-  auto context = tcod::Context(params);
+  tcod_context = tcod::Context(params);
 
-  int desired_fps = 0;
-
-  bool endCredits = false;
   // generate the world with all data (rain, temperature and so on...)
   worldGen.generate(NULL);
   // compute light intensity on ground (depends on light direction and ground slope)
   static const float lightDir[3] = {1.0f, 1.0f, 0.0f};
   worldGen.computeSunLight(lightDir);
 
-  auto timer = tcod::Timer();
-
-  while (true) {
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-      switch (event.type) {
-        case SDL_EVENT_QUIT:
-          std::exit(EXIT_SUCCESS);
-          break;
-        case SDL_EVENT_MOUSE_MOTION: {
-          const auto mouse_xy_d = context.pixel_to_tile_coordinates(
-              std::array<double, 2>{static_cast<double>(event.motion.x), static_cast<double>(event.motion.y)});
-          mouse_subtile_xy = {static_cast<float>(mouse_xy_d.at(0)), static_cast<float>(mouse_xy_d.at(1))};
-        } break;
-        default:
-          break;
-      }
-    }
-
-    // update the game
-    const float delta_time = timer.sync(desired_fps);
-    update(delta_time);
-
-    // render the game screen
-    render(console);
-    // render libtcod credits
-    if (!endCredits) endCredits = TCOD_console_credits_render_ex(console.get(), 4, 4, true, delta_time);
-    // flush updates to screen
-    context.present(console);
-  }
-  return 0;
+  return SDL_APP_CONTINUE;
 }
+
+SDL_AppResult SDL_AppEvent(void*, SDL_Event* event) {
+  switch (event->type) {
+    case SDL_EVENT_QUIT:
+      return SDL_APP_SUCCESS;
+    case SDL_EVENT_MOUSE_MOTION: {
+      const auto mouse_xy_d =
+          tcod_context.pixel_to_tile_coordinates(std::array<double, 2>{event->motion.x, event->motion.y});
+      mouse_subtile_xy = {static_cast<float>(mouse_xy_d.at(0)), static_cast<float>(mouse_xy_d.at(1))};
+    } break;
+    default:
+      break;
+  }
+  return SDL_APP_CONTINUE;
+}
+
+SDL_AppResult SDL_AppIterate(void*) {
+  // update the game
+  const float delta_time = timer.sync();
+  update(delta_time);
+
+  // render the game screen
+  render(console);
+  // render libtcod credits
+  static bool endCredits = false;
+  if (!endCredits) endCredits = TCOD_console_credits_render_ex(console.get(), 4, 4, true, delta_time);
+  // flush updates to screen
+  tcod_context.present(console);
+
+  return SDL_APP_CONTINUE;
+}
+
+void SDL_AppQuit(void*, SDL_AppResult) {}

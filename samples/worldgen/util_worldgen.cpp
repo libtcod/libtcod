@@ -183,26 +183,53 @@ int WorldGenerator::getHeight() const { return HM_HEIGHT; }
 
 float WorldGenerator::getAltitude(int x, int y) const { return hm->getValue(x, y); }
 
+/// @brief Return the interpolated index of `value` in `sorted_array`.
+/// @tparam ArrayType Any std::array or std::vector type container.
+/// @param value Value to seek in `sorted_array`.
+/// @param sorted_array An array with sorted values.
+/// @return The interpolated index as a float, this result will be clamped to the array.
+template <typename ArrayType = std::array<float, 256>>
+static auto get_interpolated_index(float value, const ArrayType& sorted_array) -> float {
+  const auto upper = std::upper_bound(sorted_array.begin(), sorted_array.end(), value);
+  if (upper == sorted_array.end()) return static_cast<float>(sorted_array.size() - 1);
+  if (upper == sorted_array.begin()) return 0.0f;
+  const auto prev = upper - 1;
+  const float fractional = (value - *prev) / (*upper - *prev);
+  const float integer = static_cast<float>(prev - sorted_array.begin());
+  return fractional + integer;
+}
+/// @brief Return the interpolated value of `sorted_array` using `index`, fractional values are interpolated.
+/// @tparam ArrayType Any std::array or std::vector type container.
+/// @param index A floating point index into `sorted_array`, will be clamped.
+/// @param sorted_array An array with sorted values.
+/// @return The interpolated value of indexing `sorted_array` with `index`.
+template <typename ArrayType = std::array<float, 256>>
+static auto get_interpolated_value(float index, ArrayType sorted_array) -> float {
+  const ptrdiff_t integer = static_cast<ptrdiff_t>(index);
+  const float fractional = index - integer;
+  if (integer <= 0) return sorted_array.at(0);
+  if (integer >= static_cast<ptrdiff_t>(sorted_array.size()) - 1) return sorted_array.at(sorted_array.size() - 1);
+  return sorted_array.at(integer) + (sorted_array.at(integer + 1) - sorted_array.at(integer)) * fractional;
+}
+/// @brief Return the interpolated value of `output_array` using the index of `index_value` within `reference_array`.
+/// @tparam ArrayType1 Any std::array or std::vector type container.
+/// @tparam ArrayType2 Any std::array or std::vector type container.
+/// @param index_value A floating point index into `reference_array`, will be clamped.
+/// @param reference_array An array with sorted values used as indexes into `output_array`.
+/// @param output_array An array with sorted values used for the return value.
+/// @return The final interpolated value from `output_array`.
+template <typename ArrayType1 = std::array<float, 256>, typename ArrayType2 = std::array<float, 256>>
+static auto get_interpolated_value_from_ref(
+    float index_value, const ArrayType1& reference_array, const ArrayType2& output_array) -> float {
+  return get_interpolated_value(get_interpolated_index(index_value, reference_array), output_array);
+}
+
 float WorldGenerator::getRealAltitude(float x, float y) const {
-  int ih = (int)(256 * getInterpolatedAltitude(x, y));
-  int idx;
-  ih = TCOD_CLAMP(0, 255, ih);
-  for (idx = 0; idx < MAX_ALT_KEY - 1; ++idx) {
-    if (altIndexes.at(idx + 1) > ih) break;
-  }
-  return altitudes.at(idx) + (altitudes.at(idx + 1) - altitudes.at(idx)) * (ih - altIndexes.at(idx)) /
-                                 (altIndexes.at(idx + 1) - altIndexes.at(idx));
+  return get_interpolated_value_from_ref(256.0f * getInterpolatedAltitude(x, y), altIndexes, altitudes);
 }
 
 float WorldGenerator::getPrecipitations(float x, float y) const {
-  int i_prec = (int)(256 * precipitation->getValue((int)x, (int)y));
-  int idx;
-  i_prec = TCOD_CLAMP(0, 255, i_prec);
-  for (idx = 0; idx < MAX_PREC_KEY - 1; ++idx) {
-    if (precIndexes.at(idx + 1) > i_prec) break;
-  }
-  return precipitations.at(idx) + (precipitations.at(idx + 1) - precipitations.at(idx)) *
-                                      (i_prec - precIndexes.at(idx)) / (precIndexes.at(idx + 1) - precIndexes.at(idx));
+  return get_interpolated_value_from_ref(256.0f * getInterpolatedAltitude(x, y), precIndexes, precipitations);
 }
 
 float WorldGenerator::getTemperature(float x, float y) const { return temperature->getValue((int)x, (int)y); }

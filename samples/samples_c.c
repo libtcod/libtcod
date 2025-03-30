@@ -16,7 +16,7 @@
 #include <string.h>
 
 /* a sample has a name and a rendering function */
-typedef struct {
+typedef struct sample_t {
   const char* name;
   void (*render)(const SDL_Event* event);
 } sample_t;
@@ -32,6 +32,15 @@ typedef struct {
 #define ON_ENTER_USEREVENT (SDL_EVENT_USER + 0)
 // A custom SDL event to tell a sample to draw.
 #define ON_DRAW_USEREVENT (SDL_EVENT_USER + 1)
+
+static const TCOD_ColorRGB BLACK = {0, 0, 0};
+static const TCOD_ColorRGB WHITE = {255, 255, 255};
+static const TCOD_ColorRGB GREY = {127, 127, 127};
+static const TCOD_ColorRGB RED = {255, 0, 0};
+static const TCOD_ColorRGB GREEN = {0, 255, 0};
+static const TCOD_ColorRGB BLUE = {0, 0, 255};
+static const TCOD_ColorRGB LIGHT_BLUE = {63, 63, 255};
+static const TCOD_ColorRGB LIGHT_YELLOW = {255, 255, 63};
 
 static float delta_time = 0.0f;  // The time in seconds of the current frame.
 #define DELTA_SAMPLES_LENGTH 64
@@ -122,14 +131,14 @@ void render_colors(const SDL_Event* event) {
   for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
     for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
       TCOD_color_t col = TCOD_console_get_char_background(sample_console, x, y);
-      col = TCOD_color_lerp(col, TCOD_black, 0.5f);
+      col = TCOD_color_lerp(col, BLACK, 0.5f);
       const int c = TCOD_random_get_int(NULL, 'a', 'z');
       TCOD_console_set_default_foreground(sample_console, col);
       TCOD_console_put_char(sample_console, x, y, c, TCOD_BKGND_NONE);
     }
   }
   /* the background behind the text is slightly darkened using the BKGND_MULTIPLY flag */
-  TCOD_console_set_default_background(sample_console, TCOD_grey);
+  TCOD_console_set_default_background(sample_console, GREY);
   TCOD_console_printf_rect_ex(
       sample_console,
       SAMPLE_SCREEN_WIDTH / 2,
@@ -198,7 +207,7 @@ void render_offscreen(const SDL_Event* event) {
 static int bk_flag = TCOD_BKGND_SET; /* current blending mode */
 bool line_listener(int x, int y) {
   if (x >= 0 && y >= 0 && x < SAMPLE_SCREEN_WIDTH && y < SAMPLE_SCREEN_HEIGHT) {
-    TCOD_console_set_char_background(sample_console, x, y, TCOD_light_blue, (TCOD_bkgnd_flag_t)bk_flag);
+    TCOD_console_set_char_background(sample_console, x, y, LIGHT_BLUE, (TCOD_bkgnd_flag_t)bk_flag);
   }
   return true;
 }
@@ -262,7 +271,7 @@ void render_lines(const SDL_Event* event) {
     init = true;
   }
   if (event->type == ON_ENTER_USEREVENT) {
-    TCOD_console_set_default_foreground(sample_console, TCOD_white);
+    TCOD_console_set_default_foreground(sample_console, WHITE);
   }
   /* blit the background */
   TCOD_console_blit(bk, 0, 0, SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT, sample_console, 0, 0, 1.0f, 1.0f);
@@ -385,12 +394,12 @@ void render_noise(const SDL_Event* event) {
   TCOD_image_blit_2x(img, sample_console, 0, 0, 0, 0, -1, -1);
 
   /* draw a transparent rectangle */
-  TCOD_console_set_default_background(sample_console, TCOD_grey);
+  TCOD_console_set_default_background(sample_console, GREY);
   TCOD_console_rect(sample_console, 2, 2, 23, (func <= WAVELET ? 10 : 13), false, TCOD_BKGND_MULTIPLY);
   for (int y = 2; y < 2 + (func <= WAVELET ? 10 : 13); ++y) {
     for (int x = 2; x < 2 + 23; ++x) {
       TCOD_color_t col = TCOD_console_get_char_foreground(sample_console, x, y);
-      col = TCOD_color_multiply(col, TCOD_grey);
+      col = TCOD_color_multiply(col, GREY);
       TCOD_console_set_char_foreground(sample_console, x, y, col);
     }
   }
@@ -398,16 +407,16 @@ void render_noise(const SDL_Event* event) {
   /* draw the text */
   for (int curfunc = PERLIN; curfunc <= TURBULENCE_WAVELET; ++curfunc) {
     if (curfunc == func) {
-      TCOD_console_set_default_foreground(sample_console, TCOD_white);
-      TCOD_console_set_default_background(sample_console, TCOD_light_blue);
+      TCOD_console_set_default_foreground(sample_console, WHITE);
+      TCOD_console_set_default_background(sample_console, LIGHT_BLUE);
       TCOD_console_printf_ex(sample_console, 2, 2 + curfunc, TCOD_BKGND_SET, TCOD_LEFT, "%s", funcName[curfunc]);
     } else {
-      TCOD_console_set_default_foreground(sample_console, TCOD_grey);
+      TCOD_console_set_default_foreground(sample_console, GREY);
       TCOD_console_printf(sample_console, 2, 2 + curfunc, "%s", funcName[curfunc]);
     }
   }
   /* draw parameters */
-  TCOD_console_set_default_foreground(sample_console, TCOD_white);
+  TCOD_console_set_default_foreground(sample_console, WHITE);
   TCOD_console_printf(sample_console, 2, 11, "Y/H : zoom (%2.1f)", zoom);
   if (func > WAVELET) {
     TCOD_console_printf(sample_console, 2, 12, "E/D : hurst (%2.1f)", hurst);
@@ -552,7 +561,7 @@ void render_fov(const SDL_Event* event) {
        the rest impacts only the background color */
     /* draw the help text & player @ */
     TCOD_console_clear(sample_console);
-    TCOD_console_set_default_foreground(sample_console, TCOD_white);
+    TCOD_console_set_default_foreground(sample_console, WHITE);
     TCOD_console_printf(
         sample_console,
         1,
@@ -561,7 +570,7 @@ void render_fov(const SDL_Event* event) {
         torch ? "on " : "off",
         light_walls ? "on " : "off",
         algo_names[algonum]);
-    TCOD_console_set_default_foreground(sample_console, TCOD_black);
+    TCOD_console_set_default_foreground(sample_console, BLACK);
     TCOD_console_put_char(sample_console, px, py, '@', TCOD_BKGND_NONE);
     /* draw windows */
     for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
@@ -647,7 +656,7 @@ void render_fov(const SDL_Event* event) {
           break;
         case SDL_SCANCODE_T:
           torch = !torch;
-          TCOD_console_set_default_foreground(sample_console, TCOD_white);
+          TCOD_console_set_default_foreground(sample_console, WHITE);
           TCOD_console_printf(
               sample_console,
               1,
@@ -656,11 +665,11 @@ void render_fov(const SDL_Event* event) {
               torch ? "on " : "off",
               light_walls ? "on " : "off",
               algo_names[algonum]);
-          TCOD_console_set_default_foreground(sample_console, TCOD_black);
+          TCOD_console_set_default_foreground(sample_console, BLACK);
           break;
         case SDL_SCANCODE_W:
           light_walls = !light_walls;
-          TCOD_console_set_default_foreground(sample_console, TCOD_white);
+          TCOD_console_set_default_foreground(sample_console, WHITE);
           TCOD_console_printf(
               sample_console,
               1,
@@ -669,7 +678,7 @@ void render_fov(const SDL_Event* event) {
               torch ? "on " : "off",
               light_walls ? "on " : "off",
               algo_names[algonum]);
-          TCOD_console_set_default_foreground(sample_console, TCOD_black);
+          TCOD_console_set_default_foreground(sample_console, BLACK);
           recompute_fov = true;
           break;
         case SDL_SCANCODE_EQUALS:
@@ -682,7 +691,7 @@ void render_fov(const SDL_Event* event) {
             --algonum;
           }
           algonum = (algonum + NB_FOV_ALGORITHMS) % NB_FOV_ALGORITHMS;
-          TCOD_console_set_default_foreground(sample_console, TCOD_white);
+          TCOD_console_set_default_foreground(sample_console, WHITE);
           TCOD_console_printf(
               sample_console,
               1,
@@ -691,7 +700,7 @@ void render_fov(const SDL_Event* event) {
               torch ? "on " : "off",
               light_walls ? "on " : "off",
               algo_names[algonum]);
-          TCOD_console_set_default_foreground(sample_console, TCOD_black);
+          TCOD_console_set_default_foreground(sample_console, BLACK);
           recompute_fov = true;
           break;
         default:
@@ -707,15 +716,13 @@ void render_fov(const SDL_Event* event) {
 void render_image(const SDL_Event* event) {
   static TCOD_image_t img = NULL;
   static TCOD_image_t circle = NULL;
-  static const TCOD_color_t blue = {0, 0, 255};
-  static const TCOD_color_t green = {0, 255, 0};
   if (img == NULL) {
     img = TCOD_image_load("data/img/skull.png");
-    TCOD_image_set_key_color(img, TCOD_black);
+    TCOD_image_set_key_color(img, BLACK);
     circle = TCOD_image_load("data/img/circle.png");
   }
   if (event->type != ON_DRAW_USEREVENT) return;
-  TCOD_console_set_default_background(sample_console, TCOD_black);
+  TCOD_console_set_default_background(sample_console, BLACK);
   TCOD_console_clear(sample_console);
   const float current_time = SDL_GetTicks() / 1000.0f;
   const float x = SAMPLE_SCREEN_WIDTH / 2 + cosf(current_time) * 10.0f;
@@ -726,15 +733,15 @@ void render_image(const SDL_Event* event) {
   if ((SDL_GetTicks() / 2000) & 1) {
     /* split the color channels of circle.png */
     /* the red channel */
-    TCOD_console_set_default_background(sample_console, TCOD_red);
+    TCOD_console_set_default_background(sample_console, RED);
     TCOD_console_rect(sample_console, 0, 3, 15, 15, false, TCOD_BKGND_SET);
     TCOD_image_blit_rect(circle, sample_console, 0, 3, -1, -1, TCOD_BKGND_MULTIPLY);
     /* the green channel */
-    TCOD_console_set_default_background(sample_console, green);
+    TCOD_console_set_default_background(sample_console, GREEN);
     TCOD_console_rect(sample_console, 15, 3, 15, 15, false, TCOD_BKGND_SET);
     TCOD_image_blit_rect(circle, sample_console, 15, 3, -1, -1, TCOD_BKGND_MULTIPLY);
     /* the blue channel */
-    TCOD_console_set_default_background(sample_console, blue);
+    TCOD_console_set_default_background(sample_console, BLUE);
     TCOD_console_rect(sample_console, 30, 3, 15, 15, false, TCOD_BKGND_SET);
     TCOD_image_blit_rect(circle, sample_console, 30, 3, -1, -1, TCOD_BKGND_MULTIPLY);
   } else {
@@ -761,8 +768,8 @@ void render_mouse(const SDL_Event* event) {
   TCOD_context_screen_pixel_to_tile_i(g_context, &tile_x, &tile_y);
   switch (event->type) {
     case ON_ENTER_USEREVENT:
-      TCOD_console_set_default_background(sample_console, TCOD_grey);
-      TCOD_console_set_default_foreground(sample_console, TCOD_light_yellow);
+      TCOD_console_set_default_background(sample_console, GREY);
+      TCOD_console_set_default_foreground(sample_console, LIGHT_YELLOW);
       SDL_WarpMouseInWindow(NULL, 320, 200);
       SDL_ShowCursor();
       break;
@@ -846,7 +853,7 @@ void render_path(const SDL_Event* event) {
        the rest impacts only the background color */
     /* draw the help text & player @ */
     TCOD_console_clear(sample_console);
-    TCOD_console_set_default_foreground(sample_console, TCOD_white);
+    TCOD_console_set_default_foreground(sample_console, WHITE);
     TCOD_console_put_char(sample_console, dx, dy, '+', TCOD_BKGND_NONE);
     TCOD_console_put_char(sample_console, px, py, '@', TCOD_BKGND_NONE);
     TCOD_console_printf(sample_console, 1, 1, "IJKL / mouse :\nmove destination\nTAB : A*/dijkstra");
@@ -1239,7 +1246,7 @@ void render_bsp(const SDL_Event* event) {
     refresh = false;
   }
   TCOD_console_clear(sample_console);
-  TCOD_console_set_default_foreground(sample_console, TCOD_white);
+  TCOD_console_set_default_foreground(sample_console, WHITE);
   TCOD_console_printf(
       sample_console,
       1,
@@ -1296,7 +1303,7 @@ void render_name(const SDL_Event* event) {
   }
 
   TCOD_console_clear(sample_console);
-  TCOD_console_set_default_foreground(sample_console, TCOD_white);
+  TCOD_console_set_default_foreground(sample_console, WHITE);
   if (TCOD_list_size(sets) > 0) {
     TCOD_console_printf(
         sample_console, 1, 1, "%s\n\n+ : next generator\n- : prev generator", (char*)TCOD_list_get(sets, curSet));
@@ -1553,8 +1560,8 @@ void render_sdl(const SDL_Event* event) {
   switch (event->type) {
     case ON_ENTER_USEREVENT:
       // use noise sample as background. rendering is done in SampleRenderer
-      TCOD_console_set_default_background(sample_console, TCOD_light_blue);
-      TCOD_console_set_default_foreground(sample_console, TCOD_white);
+      TCOD_console_set_default_background(sample_console, LIGHT_BLUE);
+      TCOD_console_set_default_foreground(sample_console, WHITE);
       TCOD_console_clear(sample_console);
       TCOD_console_printf_rect_ex(
           sample_console,
@@ -1691,18 +1698,18 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < nb_samples; ++i) {
       if (i == cur_sample) {
         /* set colors for currently selected sample */
-        TCOD_console_set_default_foreground(main_console, TCOD_white);
-        TCOD_console_set_default_background(main_console, TCOD_light_blue);
+        TCOD_console_set_default_foreground(main_console, WHITE);
+        TCOD_console_set_default_background(main_console, LIGHT_BLUE);
       } else {
         /* set colors for other samples */
-        TCOD_console_set_default_foreground(main_console, TCOD_grey);
-        TCOD_console_set_default_background(main_console, TCOD_black);
+        TCOD_console_set_default_foreground(main_console, GREY);
+        TCOD_console_set_default_background(main_console, BLACK);
       }
       /* print the sample name */
       TCOD_console_printf_ex(main_console, 2, 46 - (nb_samples - i), TCOD_BKGND_SET, TCOD_LEFT, "%s", samples[i].name);
     }
     /* print the help message */
-    TCOD_console_set_default_foreground(main_console, TCOD_grey);
+    TCOD_console_set_default_foreground(main_console, GREY);
     TCOD_console_printf_ex(
         main_console,
         79,
@@ -1744,19 +1751,19 @@ int main(int argc, char* argv[]) {
     );
     /* display renderer list and current renderer */
     const TCOD_renderer_t current_renderer = TCOD_context_get_renderer_type(g_context);
-    TCOD_console_set_default_foreground(main_console, TCOD_grey);
-    TCOD_console_set_default_background(main_console, TCOD_black);
+    TCOD_console_set_default_foreground(main_console, GREY);
+    TCOD_console_set_default_background(main_console, BLACK);
     TCOD_console_printf_ex(
         main_console, 42, 46 - (RENDERER_OPTIONS_COUNT + 1), TCOD_BKGND_SET, TCOD_LEFT, "Renderer :");
     for (int i = 0; i < RENDERER_OPTIONS_COUNT; ++i) {
       if (RENDERER_OPTIONS[i].renderer == current_renderer) {
         /* set colors for current renderer */
-        TCOD_console_set_default_foreground(main_console, TCOD_white);
-        TCOD_console_set_default_background(main_console, TCOD_light_blue);
+        TCOD_console_set_default_foreground(main_console, WHITE);
+        TCOD_console_set_default_background(main_console, LIGHT_BLUE);
       } else {
         /* set colors for other renderer */
-        TCOD_console_set_default_foreground(main_console, TCOD_grey);
-        TCOD_console_set_default_background(main_console, TCOD_black);
+        TCOD_console_set_default_foreground(main_console, GREY);
+        TCOD_console_set_default_background(main_console, BLACK);
       }
       TCOD_console_printf_ex(
           main_console,

@@ -11,6 +11,22 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 ### Changed
 - `TCODHeightMap` is now safe to copy/move and can now be swapped.
 
+### Deprecated
+- These functions have been deprecated by replacements:
+  - `TCOD_console_set_char` -> `TCOD_console_put_rgb`
+  - `TCOD_console_set_char_background` -> `TCOD_console_put_rgb`
+  - `TCOD_console_set_char_foreground` -> `TCOD_console_put_rgb`
+  - `TCOD_console_put_char` -> `TCOD_console_put_rgb`
+  - `TCOD_console_put_char_ex` -> `TCOD_console_put_rgb`
+  - `TCOD_console_printf` -> `TCOD_printf_rgb`
+  - `TCOD_console_printf_ex` -> `TCOD_printf_rgb`
+  - `TCOD_console_printf_rect` -> `TCOD_printf_rgb`
+  - `TCOD_console_printf_rect_ex` -> `TCOD_printf_rgb`
+  - `TCOD_console_printf_frame` -> `TCOD_console_draw_frame_rgb` & `TCOD_printf_rgb`
+  - `TCOD_console_printn_frame` -> `TCOD_console_draw_frame_rgb` & `TCOD_printn_rgb`
+  - `TCOD_console_vprintf` -> `TCOD_vprintf_rgb`
+  - `TCOD_console_vprintf_rect` -> `TCOD_vprintf_rgb`
+
 ### Fixed
 - Fixed crashes on screen capture.
 - Logged messages were missing a trailing newline.

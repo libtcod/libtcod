@@ -26,6 +26,9 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
   - `TCOD_console_printn_frame` -> `TCOD_console_draw_frame_rgb` & `TCOD_printn_rgb`
   - `TCOD_console_vprintf` -> `TCOD_vprintf_rgb`
   - `TCOD_console_vprintf_rect` -> `TCOD_vprintf_rgb`
+  - `TCOD_console_rect` -> `TCOD_console_draw_rect_rgb`
+  - `TCOD_console_hline` -> `TCOD_console_draw_rect_rgb`
+  - `TCOD_console_vline` -> `TCOD_console_draw_rect_rgb`
 
 ### Fixed
 - Fixed crashes on screen capture.

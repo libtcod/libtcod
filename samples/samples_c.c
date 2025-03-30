@@ -47,6 +47,8 @@ static float delta_time = 0.0f;  // The time in seconds of the current frame.
 static float delta_samples[DELTA_SAMPLES_LENGTH] = {0};
 static int last_delta_sample = 0;
 
+static TCOD_Tileset* tileset = NULL;
+
 // Report an error message and abort the program.
 void fatal(const char* format, ...) {
   va_list args;
@@ -114,39 +116,39 @@ void render_colors(const SDL_Event* event) {
     for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
       const float x_coef = (float)(x) / (SAMPLE_SCREEN_WIDTH - 1);
       /* get the current cell color */
-      TCOD_color_t curColor = TCOD_color_lerp(left, right, x_coef);
-      TCOD_console_set_char_background(sample_console, x, y, curColor, TCOD_BKGND_SET);
+      TCOD_ColorRGB current_color = TCOD_color_lerp(left, right, x_coef);
+      TCOD_console_put_rgb(sample_console, x, y, 0, NULL, &current_color, TCOD_BKGND_SET);
     }
   }
 
   /* ==== print the text ==== */
+  /* put random text (for performance tests) */
+  for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
+    for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
+      TCOD_ColorRGB color = TCOD_console_get_char_background(sample_console, x, y);
+      color = TCOD_color_lerp(color, BLACK, 0.5f);
+      const int c = TCOD_random_get_int(NULL, 'a', 'z');
+      TCOD_console_put_rgb(sample_console, x, y, c, &color, NULL, TCOD_BKGND_SET);
+    }
+  }
   /* get the background color at the text position */
   TCOD_color_t textColor = TCOD_console_get_char_background(sample_console, SAMPLE_SCREEN_WIDTH / 2, 5);
   /* and invert it */
   textColor.r = 255 - textColor.r;
   textColor.g = 255 - textColor.g;
   textColor.b = 255 - textColor.b;
-  TCOD_console_set_default_foreground(sample_console, textColor);
-  /* put random text (for performance tests) */
-  for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
-    for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
-      TCOD_color_t col = TCOD_console_get_char_background(sample_console, x, y);
-      col = TCOD_color_lerp(col, BLACK, 0.5f);
-      const int c = TCOD_random_get_int(NULL, 'a', 'z');
-      TCOD_console_set_default_foreground(sample_console, col);
-      TCOD_console_put_char(sample_console, x, y, c, TCOD_BKGND_NONE);
-    }
-  }
   /* the background behind the text is slightly darkened using the BKGND_MULTIPLY flag */
-  TCOD_console_set_default_background(sample_console, GREY);
-  TCOD_console_printf_rect_ex(
+  TCOD_printf_rgb(
       sample_console,
-      SAMPLE_SCREEN_WIDTH / 2,
-      5,
-      SAMPLE_SCREEN_WIDTH - 2,
-      SAMPLE_SCREEN_HEIGHT - 1,
-      TCOD_BKGND_MULTIPLY,
-      TCOD_CENTER,
+      (TCOD_PrintParamsRGB){
+          .x = 1,
+          .y = 5,
+          .width = SAMPLE_SCREEN_WIDTH - 2,
+          .fg = &textColor,
+          .bg = &GREY,
+          .flag = TCOD_BKGND_MULTIPLY,
+          .alignment = TCOD_CENTER,
+      },
       "The Doryen library uses 24 bits colors, for both background and foreground.");
 }
 
@@ -164,16 +166,15 @@ void render_offscreen(const SDL_Event* event) {
     init = true;
     secondary = TCOD_console_new(SAMPLE_SCREEN_WIDTH / 2, SAMPLE_SCREEN_HEIGHT / 2);
     screenshot = TCOD_console_new(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
-    TCOD_console_printf_frame(
-        secondary, 0, 0, SAMPLE_SCREEN_WIDTH / 2, SAMPLE_SCREEN_HEIGHT / 2, false, TCOD_BKGND_SET, "Offscreen console");
-    TCOD_console_printf_rect_ex(
+    TCOD_console_draw_frame_rgb(secondary, 0, 0, secondary->w, secondary->h, NULL, NULL, NULL, 0, 0);
+    TCOD_printf_rgb(
         secondary,
-        SAMPLE_SCREEN_WIDTH / 4,
-        2,
-        SAMPLE_SCREEN_WIDTH / 2 - 2,
-        SAMPLE_SCREEN_HEIGHT / 2,
-        TCOD_BKGND_NONE,
-        TCOD_CENTER,
+        (TCOD_PrintParamsRGB){
+            .x = 0, .y = 0, .width = secondary->w, .fg = &BLACK, .bg = &WHITE, .alignment = TCOD_CENTER},
+        " Offscreen console ");
+    TCOD_printf_rgb(
+        secondary,
+        (TCOD_PrintParamsRGB){.x = 1, .y = 2, .width = secondary->w - 2, .alignment = TCOD_CENTER},
         "You can render to an offscreen console and blit in on another one, simulating alpha transparency.");
   }
   if (event->type == ON_ENTER_USEREVENT) {
@@ -207,7 +208,7 @@ void render_offscreen(const SDL_Event* event) {
 static int bk_flag = TCOD_BKGND_SET; /* current blending mode */
 bool line_listener(int x, int y) {
   if (x >= 0 && y >= 0 && x < SAMPLE_SCREEN_WIDTH && y < SAMPLE_SCREEN_HEIGHT) {
-    TCOD_console_set_char_background(sample_console, x, y, LIGHT_BLUE, (TCOD_bkgnd_flag_t)bk_flag);
+    TCOD_console_put_rgb(sample_console, x, y, 0, NULL, &LIGHT_BLUE, (TCOD_bkgnd_flag_t)bk_flag);
   }
   return true;
 }
@@ -261,17 +262,15 @@ void render_lines(const SDL_Event* event) {
     /* initialize the colored background */
     for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
       for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
-        TCOD_color_t col;
-        col.r = (uint8_t)(x * 255 / (SAMPLE_SCREEN_WIDTH - 1));
-        col.g = (uint8_t)((x + y) * 255 / (SAMPLE_SCREEN_WIDTH - 1 + SAMPLE_SCREEN_HEIGHT - 1));
-        col.b = (uint8_t)(y * 255 / (SAMPLE_SCREEN_HEIGHT - 1));
-        TCOD_console_set_char_background(bk, x, y, col, TCOD_BKGND_SET);
+        TCOD_ColorRGB color = {
+            .r = (uint8_t)(x * 255 / (SAMPLE_SCREEN_WIDTH - 1)),
+            .g = (uint8_t)((x + y) * 255 / (SAMPLE_SCREEN_WIDTH - 1 + SAMPLE_SCREEN_HEIGHT - 1)),
+            .b = (uint8_t)(y * 255 / (SAMPLE_SCREEN_HEIGHT - 1)),
+        };
+        TCOD_console_put_rgb(bk, x, y, 0, NULL, &color, TCOD_BKGND_SET);
       }
     }
     init = true;
-  }
-  if (event->type == ON_ENTER_USEREVENT) {
-    TCOD_console_set_default_foreground(sample_console, WHITE);
   }
   /* blit the background */
   TCOD_console_blit(bk, 0, 0, SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT, sample_console, 0, 0, 1.0f, 1.0f);
@@ -279,14 +278,12 @@ void render_lines(const SDL_Event* event) {
   /* gradient vertical position */
   const int rect_y = (int)((SAMPLE_SCREEN_HEIGHT - 2) * ((1.0f + cosf(current_time)) / 2.0f));
   for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
-    const TCOD_ColorRGB col = {
+    const TCOD_ColorRGB color = {
         (uint8_t)(x * 255 / SAMPLE_SCREEN_WIDTH),
         (uint8_t)(x * 255 / SAMPLE_SCREEN_WIDTH),
         (uint8_t)(x * 255 / SAMPLE_SCREEN_WIDTH),
     };
-    TCOD_console_set_char_background(sample_console, x, rect_y, col, (TCOD_bkgnd_flag_t)bk_flag);
-    TCOD_console_set_char_background(sample_console, x, rect_y + 1, col, (TCOD_bkgnd_flag_t)bk_flag);
-    TCOD_console_set_char_background(sample_console, x, rect_y + 2, col, (TCOD_bkgnd_flag_t)bk_flag);
+    TCOD_console_draw_rect_rgb(sample_console, x, rect_y, 1, 3, 0, NULL, &color, (TCOD_bkgnd_flag_t)bk_flag);
   }
   /* calculate the segment ends */
   const float angle = current_time * 2.0f; /* segment angle data */
@@ -394,34 +391,40 @@ void render_noise(const SDL_Event* event) {
   TCOD_image_blit_2x(img, sample_console, 0, 0, 0, 0, -1, -1);
 
   /* draw a transparent rectangle */
-  TCOD_console_set_default_background(sample_console, GREY);
-  TCOD_console_rect(sample_console, 2, 2, 23, (func <= WAVELET ? 10 : 13), false, TCOD_BKGND_MULTIPLY);
+  TCOD_console_draw_rect_rgb(
+      sample_console, 2, 2, 23, (func <= WAVELET ? 10 : 13), 0, NULL, &GREY, TCOD_BKGND_MULTIPLY);
   for (int y = 2; y < 2 + (func <= WAVELET ? 10 : 13); ++y) {
     for (int x = 2; x < 2 + 23; ++x) {
-      TCOD_color_t col = TCOD_console_get_char_foreground(sample_console, x, y);
-      col = TCOD_color_multiply(col, GREY);
-      TCOD_console_set_char_foreground(sample_console, x, y, col);
+      TCOD_ConsoleTile* tile_ref = &sample_console->tiles[y * sample_console->w + x];
+      TCOD_ColorRGB* fg_ref = (TCOD_ColorRGB*)(&tile_ref->fg);
+      *fg_ref = TCOD_color_multiply(*fg_ref, GREY);
     }
   }
 
   /* draw the text */
   for (int curfunc = PERLIN; curfunc <= TURBULENCE_WAVELET; ++curfunc) {
-    if (curfunc == func) {
-      TCOD_console_set_default_foreground(sample_console, WHITE);
-      TCOD_console_set_default_background(sample_console, LIGHT_BLUE);
-      TCOD_console_printf_ex(sample_console, 2, 2 + curfunc, TCOD_BKGND_SET, TCOD_LEFT, "%s", funcName[curfunc]);
-    } else {
-      TCOD_console_set_default_foreground(sample_console, GREY);
-      TCOD_console_printf(sample_console, 2, 2 + curfunc, "%s", funcName[curfunc]);
-    }
+    const bool is_highlighted = curfunc == func;
+    TCOD_printf_rgb(
+        sample_console,
+        (TCOD_PrintParamsRGB){
+            .x = 2,
+            .y = 2 + curfunc,
+            .fg = is_highlighted ? &WHITE : &GREY,
+            .bg = is_highlighted ? &LIGHT_BLUE : NULL,
+        },
+        "%s",
+        funcName[curfunc]);
   }
   /* draw parameters */
-  TCOD_console_set_default_foreground(sample_console, WHITE);
-  TCOD_console_printf(sample_console, 2, 11, "Y/H : zoom (%2.1f)", zoom);
+  TCOD_printf_rgb(sample_console, (TCOD_PrintParamsRGB){.x = 2, .y = 11, .fg = &WHITE}, "Y/H : zoom (%2.1f)", zoom);
   if (func > WAVELET) {
-    TCOD_console_printf(sample_console, 2, 12, "E/D : hurst (%2.1f)", hurst);
-    TCOD_console_printf(sample_console, 2, 13, "R/F : lacunarity (%2.1f)", lacunarity);
-    TCOD_console_printf(sample_console, 2, 14, "T/G : octaves (%2.1f)", octaves);
+    TCOD_printf_rgb(
+        sample_console,
+        (TCOD_PrintParamsRGB){.x = 2, .y = 12, .fg = &WHITE},
+        "E/D : hurst (%2.1f)\nR/F : lacunarity (%2.1f)\nT/G : octaves (%2.1f)",
+        hurst,
+        lacunarity,
+        octaves);
   }
   /* handle keypress */
   switch (event->type) {
@@ -514,7 +517,6 @@ static const int CHAR_WINDOW = 0x2550;  // "═" glyph.
 #define SQUARED_TORCH_RADIUS (TORCH_RADIUS * TORCH_RADIUS)
 void render_fov(const SDL_Event* event) {
   static int px = 20, py = 10; /* player position */
-  static bool recompute_fov = true;
   static bool torch = false;
   static bool light_walls = true;
   static TCOD_map_t map = NULL;
@@ -555,66 +557,59 @@ void render_fov(const SDL_Event* event) {
     }
     noise = TCOD_noise_new(1, 1.0f, 1.0f, NULL); /* 1d noise for the torch flickering */
   }
-  if (event->type == ON_ENTER_USEREVENT) {
+  if (event->type == ON_DRAW_USEREVENT) {
     /* we draw the foreground only the first time.
        during the player movement, only the @ is redrawn.
        the rest impacts only the background color */
     /* draw the help text & player @ */
     TCOD_console_clear(sample_console);
-    TCOD_console_set_default_foreground(sample_console, WHITE);
-    TCOD_console_printf(
+    TCOD_printf_rgb(
         sample_console,
-        1,
-        0,
+        (TCOD_PrintParamsRGB){.x = 1, .y = 0, .fg = &WHITE},
         "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
         torch ? "on " : "off",
         light_walls ? "on " : "off",
         algo_names[algonum]);
-    TCOD_console_set_default_foreground(sample_console, BLACK);
-    TCOD_console_put_char(sample_console, px, py, '@', TCOD_BKGND_NONE);
+    TCOD_console_put_rgb(sample_console, px, py, '@', &BLACK, NULL, 0);
     /* draw windows */
     for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
       for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
         if (SAMPLE_MAP[y][x] == '=') {
-          TCOD_console_put_char(sample_console, x, y, CHAR_WINDOW, TCOD_BKGND_NONE);  // ═
+          TCOD_console_put_rgb(sample_console, x, y, CHAR_WINDOW, &BLACK, NULL, 0);  // ═
         }
       }
     }
-  }
-  if (recompute_fov) {
-    recompute_fov = false;
     TCOD_map_compute_fov(map, px, py, torch ? (int)(TORCH_RADIUS) : 0, light_walls, (TCOD_fov_algorithm_t)algonum);
-  }
-  if (torch) {
-    /* slightly change the perlin noise parameter */
-    torch_x += 0.2f;
-    /* randomize the light position between -1.5 and 1.5 */
-    float tdx = torch_x + 20.0f;
-    dx = TCOD_noise_get(noise, &tdx) * 1.5f;
-    tdx += 30.0f;
-    dy = TCOD_noise_get(noise, &tdx) * 1.5f;
-    di = 0.2f * TCOD_noise_get(noise, &torch_x);
-  }
-  for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
-    for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
-      const bool visible = TCOD_map_is_in_fov(map, x, y);
-      const bool wall = SAMPLE_MAP[y][x] == '#';
-      if (!visible) {
-        TCOD_console_set_char_background(sample_console, x, y, wall ? dark_wall : dark_ground, TCOD_BKGND_SET);
-
-      } else {
-        if (!torch) {
-          TCOD_console_set_char_background(sample_console, x, y, wall ? light_wall : light_ground, TCOD_BKGND_SET);
+    if (torch) {
+      /* slightly change the perlin noise parameter */
+      torch_x += 0.2f;
+      /* randomize the light position between -1.5 and 1.5 */
+      float tdx = torch_x + 20.0f;
+      dx = TCOD_noise_get(noise, &tdx) * 1.5f;
+      tdx += 30.0f;
+      dy = TCOD_noise_get(noise, &tdx) * 1.5f;
+      di = 0.2f * TCOD_noise_get(noise, &torch_x);
+    }
+    for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
+      for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
+        const bool visible = TCOD_map_is_in_fov(map, x, y);
+        const bool wall = SAMPLE_MAP[y][x] == '#';
+        if (!visible) {
+          TCOD_console_put_rgb(sample_console, x, y, 0, NULL, wall ? &dark_wall : &dark_ground, TCOD_BKGND_SET);
         } else {
-          TCOD_ColorRGB base = (wall ? dark_wall : dark_ground);
-          const TCOD_ColorRGB light = (wall ? light_wall : light_ground);
-          /* cell distance to torch (squared) */
-          const float radius_squared = (x - px + dx) * (x - px + dx) + (y - py + dy) * (y - py + dy);
-          if (radius_squared < SQUARED_TORCH_RADIUS) {
-            const float l = (SQUARED_TORCH_RADIUS - radius_squared) / SQUARED_TORCH_RADIUS + di;
-            base = TCOD_color_lerp(base, light, TCOD_CLAMP(0.0f, 1.0f, l));
+          if (!torch) {
+            TCOD_console_put_rgb(sample_console, x, y, 0, NULL, wall ? &light_wall : &light_ground, TCOD_BKGND_SET);
+          } else {
+            TCOD_ColorRGB base = (wall ? dark_wall : dark_ground);
+            const TCOD_ColorRGB light = (wall ? light_wall : light_ground);
+            /* cell distance to torch (squared) */
+            const float radius_squared = (x - px + dx) * (x - px + dx) + (y - py + dy) * (y - py + dy);
+            if (radius_squared < SQUARED_TORCH_RADIUS) {
+              const float l = (SQUARED_TORCH_RADIUS - radius_squared) / SQUARED_TORCH_RADIUS + di;
+              base = TCOD_color_lerp(base, light, TCOD_CLAMP(0.0f, 1.0f, l));
+            }
+            TCOD_console_put_rgb(sample_console, x, y, 0, NULL, &base, TCOD_BKGND_SET);
           }
-          TCOD_console_set_char_background(sample_console, x, y, base, TCOD_BKGND_SET);
         }
       }
     }
@@ -624,62 +619,29 @@ void render_fov(const SDL_Event* event) {
       switch (event->key.scancode) {
         case SDL_SCANCODE_I:
           if (SAMPLE_MAP[py - 1][px] == ' ') {
-            TCOD_console_put_char(sample_console, px, py, ' ', TCOD_BKGND_NONE);
             --py;
-            TCOD_console_put_char(sample_console, px, py, '@', TCOD_BKGND_NONE);
-            recompute_fov = true;
           }
           break;
         case SDL_SCANCODE_K:
           if (SAMPLE_MAP[py + 1][px] == ' ') {
-            TCOD_console_put_char(sample_console, px, py, ' ', TCOD_BKGND_NONE);
             ++py;
-            TCOD_console_put_char(sample_console, px, py, '@', TCOD_BKGND_NONE);
-            recompute_fov = true;
           }
           break;
         case SDL_SCANCODE_J:
           if (SAMPLE_MAP[py][px - 1] == ' ') {
-            TCOD_console_put_char(sample_console, px, py, ' ', TCOD_BKGND_NONE);
             --px;
-            TCOD_console_put_char(sample_console, px, py, '@', TCOD_BKGND_NONE);
-            recompute_fov = true;
           }
           break;
         case SDL_SCANCODE_L:
           if (SAMPLE_MAP[py][px + 1] == ' ') {
-            TCOD_console_put_char(sample_console, px, py, ' ', TCOD_BKGND_NONE);
             ++px;
-            TCOD_console_put_char(sample_console, px, py, '@', TCOD_BKGND_NONE);
-            recompute_fov = true;
           }
           break;
         case SDL_SCANCODE_T:
           torch = !torch;
-          TCOD_console_set_default_foreground(sample_console, WHITE);
-          TCOD_console_printf(
-              sample_console,
-              1,
-              0,
-              "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
-              torch ? "on " : "off",
-              light_walls ? "on " : "off",
-              algo_names[algonum]);
-          TCOD_console_set_default_foreground(sample_console, BLACK);
           break;
         case SDL_SCANCODE_W:
           light_walls = !light_walls;
-          TCOD_console_set_default_foreground(sample_console, WHITE);
-          TCOD_console_printf(
-              sample_console,
-              1,
-              0,
-              "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
-              torch ? "on " : "off",
-              light_walls ? "on " : "off",
-              algo_names[algonum]);
-          TCOD_console_set_default_foreground(sample_console, BLACK);
-          recompute_fov = true;
           break;
         case SDL_SCANCODE_EQUALS:
         case SDL_SCANCODE_KP_PLUS:
@@ -691,17 +653,6 @@ void render_fov(const SDL_Event* event) {
             --algonum;
           }
           algonum = (algonum + NB_FOV_ALGORITHMS) % NB_FOV_ALGORITHMS;
-          TCOD_console_set_default_foreground(sample_console, WHITE);
-          TCOD_console_printf(
-              sample_console,
-              1,
-              0,
-              "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
-              torch ? "on " : "off",
-              light_walls ? "on " : "off",
-              algo_names[algonum]);
-          TCOD_console_set_default_foreground(sample_console, BLACK);
-          recompute_fov = true;
           break;
         default:
           break;
@@ -722,7 +673,6 @@ void render_image(const SDL_Event* event) {
     circle = TCOD_image_load("data/img/circle.png");
   }
   if (event->type != ON_DRAW_USEREVENT) return;
-  TCOD_console_set_default_background(sample_console, BLACK);
   TCOD_console_clear(sample_console);
   const float current_time = SDL_GetTicks() / 1000.0f;
   const float x = SAMPLE_SCREEN_WIDTH / 2 + cosf(current_time) * 10.0f;
@@ -733,16 +683,13 @@ void render_image(const SDL_Event* event) {
   if ((SDL_GetTicks() / 2000) & 1) {
     /* split the color channels of circle.png */
     /* the red channel */
-    TCOD_console_set_default_background(sample_console, RED);
-    TCOD_console_rect(sample_console, 0, 3, 15, 15, false, TCOD_BKGND_SET);
+    TCOD_console_draw_rect_rgb(sample_console, 0, 3, 15, 15, 0, NULL, &RED, TCOD_BKGND_SET);
     TCOD_image_blit_rect(circle, sample_console, 0, 3, -1, -1, TCOD_BKGND_MULTIPLY);
     /* the green channel */
-    TCOD_console_set_default_background(sample_console, GREEN);
-    TCOD_console_rect(sample_console, 15, 3, 15, 15, false, TCOD_BKGND_SET);
+    TCOD_console_draw_rect_rgb(sample_console, 15, 3, 15, 15, 0, NULL, &GREEN, TCOD_BKGND_SET);
     TCOD_image_blit_rect(circle, sample_console, 15, 3, -1, -1, TCOD_BKGND_MULTIPLY);
     /* the blue channel */
-    TCOD_console_set_default_background(sample_console, BLUE);
-    TCOD_console_rect(sample_console, 30, 3, 15, 15, false, TCOD_BKGND_SET);
+    TCOD_console_draw_rect_rgb(sample_console, 30, 3, 15, 15, 0, NULL, &BLUE, TCOD_BKGND_SET);
     TCOD_image_blit_rect(circle, sample_console, 30, 3, -1, -1, TCOD_BKGND_MULTIPLY);
   } else {
     /* render circle.png with normal blitting */
@@ -768,8 +715,6 @@ void render_mouse(const SDL_Event* event) {
   TCOD_context_screen_pixel_to_tile_i(g_context, &tile_x, &tile_y);
   switch (event->type) {
     case ON_ENTER_USEREVENT:
-      TCOD_console_set_default_background(sample_console, GREY);
-      TCOD_console_set_default_foreground(sample_console, LIGHT_YELLOW);
       SDL_WarpMouseInWindow(NULL, 320, 200);
       SDL_ShowCursor();
       break;
@@ -792,11 +737,11 @@ void render_mouse(const SDL_Event* event) {
       tile_motion_y = (int)event->motion.yrel;
       break;
   }
-  TCOD_console_clear(sample_console);
-  TCOD_console_printf(
+  TCOD_console_draw_rect_rgb(
+      sample_console, 0, 0, sample_console->w, sample_console->h, 0x20, &LIGHT_YELLOW, &GREY, TCOD_BKGND_SET);
+  TCOD_printf_rgb(
       sample_console,
-      1,
-      1,
+      (TCOD_PrintParamsRGB){.x = 1, .y = 1},
       "Pixel position : %4dx%4d\n"
       "Tile position  : %4dx%4d\n"
       "Tile movement  : %4dx%4d\n"
@@ -813,7 +758,7 @@ void render_mouse(const SDL_Event* event) {
       mouse_state & SDL_BUTTON_RMASK ? " ON" : "OFF",
       mouse_state & SDL_BUTTON_MMASK ? " ON" : "OFF");
 
-  TCOD_console_printf(sample_console, 1, 10, "1 : Hide cursor\n2 : Show cursor");
+  TCOD_printf_rgb(sample_console, (TCOD_PrintParamsRGB){.x = 1, .y = 10}, "1 : Hide cursor\n2 : Show cursor");
 }
 
 /* ***************************
@@ -830,9 +775,7 @@ void render_path(const SDL_Event* event) {
   static bool usingAstar = true;
   static float dijkstraDist = 0;
   static TCOD_dijkstra_t dijkstra = NULL;
-  static bool recalculatePath = false;
-  static float busy;
-  static int oldChar = ' ';
+  static float busy = 0.0f;
   if (!map) {
     /* initialize the map */
     map = TCOD_map_new(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
@@ -847,29 +790,26 @@ void render_path(const SDL_Event* event) {
     path = TCOD_path_new_using_map(map, 1.41f);
     dijkstra = TCOD_dijkstra_new(map, 1.41f);
   }
-  if (event->type == ON_ENTER_USEREVENT) {
+  if (event->type == ON_DRAW_USEREVENT) {
     /* we draw the foreground only the first time.
        during the player movement, only the @ is redrawn.
        the rest impacts only the background color */
     /* draw the help text & player @ */
     TCOD_console_clear(sample_console);
-    TCOD_console_set_default_foreground(sample_console, WHITE);
-    TCOD_console_put_char(sample_console, dx, dy, '+', TCOD_BKGND_NONE);
-    TCOD_console_put_char(sample_console, px, py, '@', TCOD_BKGND_NONE);
-    TCOD_console_printf(sample_console, 1, 1, "IJKL / mouse :\nmove destination\nTAB : A*/dijkstra");
-    TCOD_console_printf(sample_console, 1, 4, "Using : A*");
+    TCOD_console_put_rgb(sample_console, dx, dy, '+', NULL, NULL, TCOD_BKGND_NONE);
+    TCOD_console_put_rgb(sample_console, px, py, '@', NULL, NULL, TCOD_BKGND_NONE);
+    TCOD_printf_rgb(
+        sample_console, (TCOD_PrintParamsRGB){.x = 1, .y = 1}, "IJKL / mouse :\nmove destination\nTAB : A*/dijkstra");
+    TCOD_printf_rgb(
+        sample_console, (TCOD_PrintParamsRGB){.x = 1, .y = 4}, "Using : %s", usingAstar ? "A*" : "Dijkstra");
     /* draw windows */
     for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
       for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
         if (SAMPLE_MAP[y][x] == '=') {
-          TCOD_console_put_char(sample_console, x, y, CHAR_WINDOW, TCOD_BKGND_NONE);  // ═
+          TCOD_console_put_rgb(sample_console, x, y, CHAR_WINDOW, NULL, NULL, 0);  // ═
         }
       }
     }
-
-    recalculatePath = true;
-  }
-  if (recalculatePath) {
     if (usingAstar) {
       TCOD_path_compute(path, px, py, dx, dy);
     } else {
@@ -886,60 +826,49 @@ void render_path(const SDL_Event* event) {
       // compute the path
       TCOD_dijkstra_path_set(dijkstra, dx, dy);
     }
-    recalculatePath = false;
-    busy = 0.2f;
-  }
-  // draw the dungeon
-  for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
-    for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
-      const bool wall = SAMPLE_MAP[y][x] == '#';
-      TCOD_console_set_char_background(sample_console, x, y, wall ? dark_wall : dark_ground, TCOD_BKGND_SET);
-    }
-  }
-  // draw the path
-  if (usingAstar) {
-    for (int i = 0; i < TCOD_path_size(path); ++i) {
-      int x, y;
-      TCOD_path_get(path, i, &x, &y);
-      TCOD_console_set_char_background(sample_console, x, y, light_ground, TCOD_BKGND_SET);
-    }
-  } else {
+    // draw the dungeon
     for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
       for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
         const bool wall = SAMPLE_MAP[y][x] == '#';
-        if (!wall) {
-          const float d = TCOD_dijkstra_get_distance(dijkstra, x, y);
-          TCOD_console_set_char_background(
-              sample_console,
-              x,
-              y,
-              TCOD_color_lerp(light_ground, dark_ground, 0.9f * d / dijkstraDist),
-              TCOD_BKGND_SET);
-        }
+        TCOD_console_put_rgb(sample_console, x, y, 0, NULL, wall ? &dark_wall : &dark_ground, TCOD_BKGND_SET);
       }
     }
-    for (int i = 0; i < TCOD_dijkstra_size(dijkstra); ++i) {
-      int x, y;
-      TCOD_dijkstra_get(dijkstra, i, &x, &y);
-      TCOD_console_set_char_background(sample_console, x, y, light_ground, TCOD_BKGND_SET);
-    }
-  }
-  // move the creature
-  busy -= delta_time;
-  if (busy <= 0.0f) {
-    busy = 0.2f;
+    // draw the path
     if (usingAstar) {
-      if (!TCOD_path_is_empty(path)) {
-        TCOD_console_put_char(sample_console, px, py, ' ', TCOD_BKGND_NONE);
-        TCOD_path_walk(path, &px, &py, true);
-        TCOD_console_put_char(sample_console, px, py, '@', TCOD_BKGND_NONE);
+      for (int i = 0; i < TCOD_path_size(path); ++i) {
+        int x, y;
+        TCOD_path_get(path, i, &x, &y);
+        TCOD_console_put_rgb(sample_console, x, y, 0, NULL, &light_ground, TCOD_BKGND_SET);
       }
     } else {
-      if (!TCOD_dijkstra_is_empty(dijkstra)) {
-        TCOD_console_put_char(sample_console, px, py, ' ', TCOD_BKGND_NONE);
-        TCOD_dijkstra_path_walk(dijkstra, &px, &py);
-        TCOD_console_put_char(sample_console, px, py, '@', TCOD_BKGND_NONE);
-        recalculatePath = true;
+      for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
+        for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
+          const bool wall = SAMPLE_MAP[y][x] == '#';
+          if (!wall) {
+            const float d = TCOD_dijkstra_get_distance(dijkstra, x, y);
+            const TCOD_ColorRGB bg = TCOD_color_lerp(light_ground, dark_ground, 0.9f * d / dijkstraDist);
+            TCOD_console_put_rgb(sample_console, x, y, 0, NULL, &bg, TCOD_BKGND_SET);
+          }
+        }
+      }
+      for (int i = 0; i < TCOD_dijkstra_size(dijkstra); ++i) {
+        int x, y;
+        TCOD_dijkstra_get(dijkstra, i, &x, &y);
+        TCOD_console_put_rgb(sample_console, x, y, 0, NULL, &light_ground, TCOD_BKGND_SET);
+      }
+    }
+    // move the creature
+    busy -= delta_time;
+    if (busy <= 0.0f) {
+      busy = 0.2f;
+      if (usingAstar) {
+        if (!TCOD_path_is_empty(path)) {
+          TCOD_path_walk(path, &px, &py, true);
+        }
+      } else {
+        if (!TCOD_dijkstra_is_empty(dijkstra)) {
+          TCOD_dijkstra_path_walk(dijkstra, &px, &py);
+        }
       }
     }
   }
@@ -949,51 +878,18 @@ void render_path(const SDL_Event* event) {
         case SDL_SCANCODE_TAB:
         case SDL_SCANCODE_KP_TAB:
           usingAstar = !usingAstar;
-          if (usingAstar)
-            TCOD_console_printf(sample_console, 1, 4, "Using : A*      ");
-          else
-            TCOD_console_printf(sample_console, 1, 4, "Using : Dijkstra");
-          recalculatePath = true;
           break;
-        case SDL_SCANCODE_I:
-          // destination move north
-          TCOD_console_put_char(sample_console, dx, dy, oldChar, TCOD_BKGND_NONE);
+        case SDL_SCANCODE_I:  // destination move north
           dy = TCOD_MAX(0, dy - 1);
-          oldChar = TCOD_console_get_char(sample_console, dx, dy);
-          TCOD_console_put_char(sample_console, dx, dy, '+', TCOD_BKGND_NONE);
-          if (SAMPLE_MAP[dy][dx] == ' ') {
-            recalculatePath = true;
-          }
           break;
-        case SDL_SCANCODE_K:
-          // destination move south
-          TCOD_console_put_char(sample_console, dx, dy, oldChar, TCOD_BKGND_NONE);
+        case SDL_SCANCODE_K:  // destination move south
           dy = TCOD_MIN(dy + 1, SAMPLE_SCREEN_HEIGHT - 1);
-          oldChar = TCOD_console_get_char(sample_console, dx, dy);
-          TCOD_console_put_char(sample_console, dx, dy, '+', TCOD_BKGND_NONE);
-          if (SAMPLE_MAP[dy][dx] == ' ') {
-            recalculatePath = true;
-          }
           break;
-        case SDL_SCANCODE_J:
-          // destination move west
-          TCOD_console_put_char(sample_console, dx, dy, oldChar, TCOD_BKGND_NONE);
+        case SDL_SCANCODE_J:  // destination move west
           dx = TCOD_MAX(0, dx - 1);
-          oldChar = TCOD_console_get_char(sample_console, dx, dy);
-          TCOD_console_put_char(sample_console, dx, dy, '+', TCOD_BKGND_NONE);
-          if (SAMPLE_MAP[dy][dx] == ' ') {
-            recalculatePath = true;
-          }
           break;
-        case SDL_SCANCODE_L:
-          // destination move east
-          TCOD_console_put_char(sample_console, dx, dy, oldChar, TCOD_BKGND_NONE);
+        case SDL_SCANCODE_L:  // destination move east
           dx = TCOD_MIN(dx + 1, SAMPLE_SCREEN_WIDTH - 1);
-          oldChar = TCOD_console_get_char(sample_console, dx, dy);
-          TCOD_console_put_char(sample_console, dx, dy, '+', TCOD_BKGND_NONE);
-          if (SAMPLE_MAP[dy][dx] == ' ') {
-            recalculatePath = true;
-          }
           break;
         default:
           break;
@@ -1003,14 +899,8 @@ void render_path(const SDL_Event* event) {
       const int mx = (int)event->motion.x - SAMPLE_SCREEN_X;
       const int my = (int)event->motion.y - SAMPLE_SCREEN_Y;
       if (mx >= 0 && mx < SAMPLE_SCREEN_WIDTH && my >= 0 && my < SAMPLE_SCREEN_HEIGHT && (dx != mx || dy != my)) {
-        TCOD_console_put_char(sample_console, dx, dy, oldChar, TCOD_BKGND_NONE);
         dx = mx;
         dy = my;
-        oldChar = TCOD_console_get_char(sample_console, dx, dy);
-        TCOD_console_put_char(sample_console, dx, dy, '+', TCOD_BKGND_NONE);
-        if (SAMPLE_MAP[dy][dx] == ' ') {
-          recalculatePath = true;
-        }
       }
     } break;
   }
@@ -1246,21 +1136,21 @@ void render_bsp(const SDL_Event* event) {
     refresh = false;
   }
   TCOD_console_clear(sample_console);
-  TCOD_console_set_default_foreground(sample_console, WHITE);
-  TCOD_console_printf(
+  TCOD_printf_rgb(
       sample_console,
-      1,
-      1,
+      (TCOD_PrintParamsRGB){.x = 1, .y = 1},
       "ENTER : rebuild bsp\nSPACE : rebuild dungeon\n+-: bsp depth %d\n*/: room size %d\n1 : random room size %s",
       bspDepth,
       minRoomSize,
       randomRoom ? "ON" : "OFF");
-  if (randomRoom) TCOD_console_printf(sample_console, 1, 6, "2 : room walls %s", roomWalls ? "ON" : "OFF");
+  if (randomRoom)
+    TCOD_printf_rgb(
+        sample_console, (TCOD_PrintParamsRGB){.x = 1, .y = 6}, "2 : room walls %s", roomWalls ? "ON" : "OFF");
   // render the level
   for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
     for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
       const bool wall = (map[x][y] == '#');
-      TCOD_console_set_char_background(sample_console, x, y, wall ? darkWall : darkGround, TCOD_BKGND_SET);
+      TCOD_console_put_rgb(sample_console, x, y, 0, NULL, wall ? &darkWall : &darkGround, TCOD_BKGND_SET);
     }
   }
 }
@@ -1275,16 +1165,14 @@ void render_name(const SDL_Event* event) {
   static TCOD_list_t sets = NULL;
   static TCOD_list_t names = NULL;
   if (!names) {
-    TCOD_list_t files;
-    const char** it;
     names = TCOD_list_new();
-    files = TCOD_sys_get_directory_content("data/namegen", "*.cfg");
+    int file_count = 0;
+    char** files = SDL_GlobDirectory(".", "data/namegen/*.cfg", 0, &file_count);
     // parse all the files
-    for (it = (const char**)TCOD_list_begin(files); it != (const char**)TCOD_list_end(files); it++) {
-      char tmp[256] = "";
-      snprintf(tmp, sizeof(tmp), "data/namegen/%s", *it);
-      TCOD_namegen_parse(tmp, NULL);
+    for (int i = 0; i < file_count; ++i) {
+      TCOD_namegen_parse(files[i], NULL);
     }
+    SDL_free(files);
     // get the sets list
     sets = TCOD_namegen_get_sets();
     nbSets = TCOD_list_size(sets);
@@ -1302,15 +1190,22 @@ void render_name(const SDL_Event* event) {
 #endif
   }
 
-  TCOD_console_clear(sample_console);
-  TCOD_console_set_default_foreground(sample_console, WHITE);
+  TCOD_console_draw_rect_rgb(
+      sample_console, 0, 0, sample_console->w, sample_console->h, 0x20, &LIGHT_YELLOW, &GREY, TCOD_BKGND_SET);
   if (TCOD_list_size(sets) > 0) {
-    TCOD_console_printf(
-        sample_console, 1, 1, "%s\n\n+ : next generator\n- : prev generator", (char*)TCOD_list_get(sets, curSet));
+    TCOD_printf_rgb(
+        sample_console,
+        (TCOD_PrintParamsRGB){.x = 1, .y = 1},
+        "%s\n\n+ : next generator\n- : prev generator",
+        (char*)TCOD_list_get(sets, curSet));
     for (int i = 0; i < TCOD_list_size(names); ++i) {
       const char* name = (const char*)TCOD_list_get(names, i);
       if (strlen(name) < SAMPLE_SCREEN_WIDTH)
-        TCOD_console_printf_ex(sample_console, SAMPLE_SCREEN_WIDTH - 2, 2 + i, TCOD_BKGND_NONE, TCOD_RIGHT, "%s", name);
+        TCOD_printf_rgb(
+            sample_console,
+            (TCOD_PrintParamsRGB){.x = 0, .width = SAMPLE_SCREEN_WIDTH - 2, .y = 2 + i, .alignment = TCOD_RIGHT},
+            "%s",
+            name);
     }
 
     delay += delta_time;
@@ -1340,7 +1235,7 @@ void render_name(const SDL_Event* event) {
         break;
     }
   } else {
-    TCOD_console_printf(sample_console, 1, 1, "Unable to find name config data files.");
+    TCOD_printf_rgb(sample_console, (TCOD_PrintParamsRGB){.x = 1, .y = 1}, "Unable to find name config data files.");
   }
 }
 
@@ -1529,8 +1424,8 @@ void blur(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sam
 void SDL_render(SDL_Surface* screen) {
   // now we have almighty access to the screen's precious pixels !!
   // get the font character size
-  int char_w, char_h;
-  TCOD_sys_get_char_size(&char_w, &char_h);
+  const int char_w = TCOD_tileset_get_tile_width_(tileset);
+  const int char_h = TCOD_tileset_get_tile_height_(tileset);
   // compute the sample console position in pixels
   const int sample_x = SAMPLE_SCREEN_X * char_w;
   const int sample_y = SAMPLE_SCREEN_Y * char_h;
@@ -1560,22 +1455,22 @@ void render_sdl(const SDL_Event* event) {
   switch (event->type) {
     case ON_ENTER_USEREVENT:
       // use noise sample as background. rendering is done in SampleRenderer
-      TCOD_console_set_default_background(sample_console, LIGHT_BLUE);
-      TCOD_console_set_default_foreground(sample_console, WHITE);
-      TCOD_console_clear(sample_console);
-      TCOD_console_printf_rect_ex(
+      TCOD_console_draw_rect_rgb(
+          sample_console, 0, 0, sample_console->w, sample_console->h, 0x20, &WHITE, &LIGHT_BLUE, TCOD_BKGND_SET);
+      TCOD_printf_rgb(
           sample_console,
-          SAMPLE_SCREEN_WIDTH / 2,
-          3,
-          SAMPLE_SCREEN_WIDTH,
-          0,
-          TCOD_BKGND_NONE,
-          TCOD_CENTER,
+          (TCOD_PrintParamsRGB){
+              .x = 0,
+              .y = 3,
+              .width = SAMPLE_SCREEN_WIDTH,
+              .fg = &WHITE,
+              .bg = &LIGHT_BLUE,
+              .alignment = TCOD_CENTER,
+          },
           "The SDL callback gives you access to the screen surface so that you can alter the pixels one by one using "
-          "SDL "
-          "API or any API on top of SDL. SDL is used here to blur the sample console.\n\nHit TAB to enable/disable the "
-          "callback. While enabled, it will be active on other samples too.\n\nNote that the SDL callback only works "
-          "with SDL renderer.");
+          "SDL API or any API on top of SDL. SDL is used here to blur the sample console.\n\nHit TAB to enable/disable "
+          "the callback. While enabled, it will be active on other samples too.\n\nNote that the SDL callback only "
+          "works with SDL renderer.");
       break;
     case SDL_EVENT_KEY_DOWN:
       switch (event->key.scancode) {
@@ -1656,7 +1551,7 @@ int main(int argc, char* argv[]) {
   static const SDL_Event on_enter_event = {.type = ON_ENTER_USEREVENT};
   static const SDL_Event on_draw_event = {.type = ON_DRAW_USEREVENT};
   static const char* FONT = "data/fonts/dejavu12x12_gs_tc.png";
-  TCOD_Tileset* tileset = TCOD_tileset_load(FONT, 32, 8, 256, TCOD_CHARMAP_TCOD);
+  tileset = TCOD_tileset_load(FONT, 32, 8, 256, TCOD_CHARMAP_TCOD);
   if (!tileset) fatal("Could not load font %s: %s", FONT, TCOD_get_error());
   TCOD_Console* main_console = TCOD_console_new(80, 50);  // The main console to be presented.
   if (!main_console) fatal("Could not allocate console: %s", TCOD_get_error());
@@ -1674,7 +1569,6 @@ int main(int argc, char* argv[]) {
   if (TCOD_context_new(&params, &g_context) < 0) fatal("Could not open context: %s", TCOD_get_error());
   atexit(TCOD_quit);
 
-  bool credits_end = false;
   uint64_t last_time = SDL_GetTicks();
 
   /* initialize the offscreen console for the samples */
@@ -1691,50 +1585,47 @@ int main(int argc, char* argv[]) {
     delta_samples[last_delta_sample] = delta_time;
     last_delta_sample = (last_delta_sample + 1) % DELTA_SAMPLES_LENGTH;
 
+    TCOD_console_clear(main_console);
+
+    static bool credits_end = false;
     if (!credits_end) {
       credits_end = TCOD_console_credits_render_ex(main_console, 56, 43, false, delta_time);
     }
     /* print the list of samples */
     for (int i = 0; i < nb_samples; ++i) {
-      if (i == cur_sample) {
-        /* set colors for currently selected sample */
-        TCOD_console_set_default_foreground(main_console, WHITE);
-        TCOD_console_set_default_background(main_console, LIGHT_BLUE);
-      } else {
-        /* set colors for other samples */
-        TCOD_console_set_default_foreground(main_console, GREY);
-        TCOD_console_set_default_background(main_console, BLACK);
-      }
-      /* print the sample name */
-      TCOD_console_printf_ex(main_console, 2, 46 - (nb_samples - i), TCOD_BKGND_SET, TCOD_LEFT, "%s", samples[i].name);
+      const bool is_highlighted = i == cur_sample;  // Hightligt colors for the active sample
+      // Print the sample name
+      TCOD_printf_rgb(
+          main_console,
+          (TCOD_PrintParamsRGB){
+              .x = 2,
+              .y = 46 - (nb_samples - i),
+              .fg = is_highlighted ? &WHITE : &GREY,
+              .bg = is_highlighted ? &LIGHT_BLUE : &BLACK,
+          },
+          "%s",
+          samples[i].name);
     }
     /* print the help message */
-    TCOD_console_set_default_foreground(main_console, GREY);
-    TCOD_console_printf_ex(
+    TCOD_printf_rgb(
         main_console,
-        79,
-        46,
-        TCOD_BKGND_NONE,
-        TCOD_RIGHT,
+        (TCOD_PrintParamsRGB){.x = 0, .width = main_console->w, .y = 46, .fg = &GREY, .alignment = TCOD_RIGHT},
         "last frame : %3d ms (%3.0f fps)",
         delta_time_ms,
         get_framerate());
-    TCOD_console_printf_ex(
+    TCOD_printf_rgb(
         main_console,
-        79,
-        47,
-        TCOD_BKGND_NONE,
-        TCOD_RIGHT,
+        (TCOD_PrintParamsRGB){.x = 0, .width = main_console->w, .y = 47, .fg = &GREY, .alignment = TCOD_RIGHT},
         "elapsed : %5dms %5.2fs",
         SDL_GetTicks(),
         SDL_GetTicks() / 1000.0f);
-    TCOD_console_printf(main_console, 2, 47, "↑↓ : select a sample");
-    TCOD_console_printf(
+    TCOD_printf_rgb(main_console, (TCOD_PrintParamsRGB){.x = 2, .y = 47, .fg = &GREY}, "↑↓ : select a sample");
+    TCOD_printf_rgb(
         main_console,
-        2,
-        48,
+        (TCOD_PrintParamsRGB){.x = 2, .y = 48, .fg = &GREY},
         "ALT-ENTER : switch to %s",
-        TCOD_console_is_fullscreen() ? "windowed mode  " : "fullscreen mode");
+        SDL_GetWindowFlags(TCOD_context_get_sdl_window(g_context)) & SDL_WINDOW_FULLSCREEN ? "windowed mode"
+                                                                                           : "fullscreen mode");
 
     /* blit the sample console on the root console */
     TCOD_console_blit(
@@ -1751,26 +1642,21 @@ int main(int argc, char* argv[]) {
     );
     /* display renderer list and current renderer */
     const TCOD_renderer_t current_renderer = TCOD_context_get_renderer_type(g_context);
-    TCOD_console_set_default_foreground(main_console, GREY);
-    TCOD_console_set_default_background(main_console, BLACK);
-    TCOD_console_printf_ex(
-        main_console, 42, 46 - (RENDERER_OPTIONS_COUNT + 1), TCOD_BKGND_SET, TCOD_LEFT, "Renderer :");
+    TCOD_printf_rgb(
+        main_console,
+        (TCOD_PrintParamsRGB){.x = 42, .y = 46 - (RENDERER_OPTIONS_COUNT + 1), .fg = &GREY, .bg = &BLACK},
+        "Renderer :");
     for (int i = 0; i < RENDERER_OPTIONS_COUNT; ++i) {
-      if (RENDERER_OPTIONS[i].renderer == current_renderer) {
-        /* set colors for current renderer */
-        TCOD_console_set_default_foreground(main_console, WHITE);
-        TCOD_console_set_default_background(main_console, LIGHT_BLUE);
-      } else {
-        /* set colors for other renderer */
-        TCOD_console_set_default_foreground(main_console, GREY);
-        TCOD_console_set_default_background(main_console, BLACK);
-      }
-      TCOD_console_printf_ex(
+      // Highlight colors for selected renderer
+      const bool is_highlighted = RENDERER_OPTIONS[i].renderer == current_renderer;
+      TCOD_printf_rgb(
           main_console,
-          42,
-          46 - (RENDERER_OPTIONS_COUNT - i),
-          TCOD_BKGND_SET,
-          TCOD_LEFT,
+          (TCOD_PrintParamsRGB){
+              .x = 42,
+              .y = 46 - (RENDERER_OPTIONS_COUNT - i),
+              .fg = is_highlighted ? &WHITE : &GREY,
+              .bg = is_highlighted ? &LIGHT_BLUE : &BLACK,
+          },
           "F%d %s",
           i + 1,
           RENDERER_OPTIONS[i].name);

@@ -52,6 +52,7 @@ extern "C" {
  *  \param clear If true the drawing region will be filled with spaces.
  *  \param flag The blending flag to use.
  */
+TCOD_DEPRECATED("Use TCOD_console_draw_rect_rgb instead.")
 TCOD_PUBLIC void TCOD_console_rect(TCOD_Console* con, int x, int y, int rw, int rh, bool clear, TCOD_bkgnd_flag_t flag);
 /**
  *  Draw a horizontal line using the default colors.
@@ -65,6 +66,7 @@ TCOD_PUBLIC void TCOD_console_rect(TCOD_Console* con, int x, int y, int rw, int 
  *  This function makes assumptions about the fonts character encoding.
  *  It will fail if the font encoding is not `cp437`.
  */
+TCOD_DEPRECATED("Use TCOD_console_draw_rect_rgb instead.")
 TCOD_PUBLIC void TCOD_console_hline(TCOD_Console* con, int x, int y, int l, TCOD_bkgnd_flag_t flag);
 /**
  *  Draw a vertical line using the default colors.
@@ -78,6 +80,7 @@ TCOD_PUBLIC void TCOD_console_hline(TCOD_Console* con, int x, int y, int l, TCOD
  *  This function makes assumptions about the fonts character encoding.
  *  It will fail if the font encoding is not `cp437`.
  */
+TCOD_DEPRECATED("Use TCOD_console_draw_rect_rgb instead.")
 TCOD_PUBLIC void TCOD_console_vline(TCOD_Console* con, int x, int y, int l, TCOD_bkgnd_flag_t flag);
 // Next functions are provisional unless given an added version.
 /**

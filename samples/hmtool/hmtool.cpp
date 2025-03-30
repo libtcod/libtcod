@@ -1,3 +1,4 @@
+#define SDL_MAIN_USE_CALLBACKS
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
@@ -465,7 +466,7 @@ void buildGui() {
   vbox->addWidget(history);
 }
 
-int main(int argc, char* argv[]) {
+SDL_AppResult SDL_AppInit(void**, int argc, char** argv) {
   TCOD_ContextParams context_params{};
   context_params.columns = HM_WIDTH;
   context_params.rows = HM_HEIGHT;
@@ -479,64 +480,67 @@ int main(int argc, char* argv[]) {
   guicon = new TCODConsole(HM_WIDTH, HM_HEIGHT);
   guicon->setKeyColor(TCODColor(255, 0, 255));
   Widget::setConsole(guicon);
-  int desired_fps = 25;
   initColors();
   buildGui();
   hm = new TCODHeightMap(HM_WIDTH, HM_HEIGHT);
   hm_old = new TCODHeightMap(HM_WIDTH, HM_HEIGHT);
   rnd = new TCODRandom(seed);
   noise = new TCODNoise(2, rnd);
-  uint8_t fade = 50;
-  bool creditsEnd = false;
-  auto timer = tcod::Timer();
+  return SDL_APP_CONTINUE;
+}
 
-  while (true) {
-    auto context = TCOD_sys_get_internal_context();
-    auto console = TCOD_sys_get_internal_console();
-    const float delta_time = timer.sync(desired_fps);
-    render(*console, delta_time);
-    guicon->setDefaultBackground(TCODColor(255, 0, 255));
-    guicon->clear();
-    Widget::renderWidgets();
-    if (!creditsEnd) {
-      creditsEnd = TCOD_console_credits_render_ex(console, HM_WIDTH - 20, HM_HEIGHT - 7, true, delta_time);
-    }
-    if (Widget::focus) {
-      if (fade < 200) fade += 20;
-    } else {
-      if (fade > 80) fade -= 20;
-    }
-    TCODConsole::blit(guicon, 0, 0, HM_WIDTH, HM_HEIGHT, TCODConsole::root, 0, 0, fade / 255.0f, fade / 255.0f);
-    context->present(*console);
+SDL_AppResult SDL_AppIterate(void*) {
+  static auto timer = tcod::Timer();
+  auto tcod_context = TCOD_sys_get_internal_context();
+  auto console = TCOD_sys_get_internal_console();
+  int desired_fps = 25;
+  const float delta_time = timer.sync(desired_fps);
+  render(*console, delta_time);
+  guicon->setDefaultBackground(TCODColor(255, 0, 255));
+  guicon->clear();
+  Widget::renderWidgets();
+  static bool creditsEnd = false;
+  if (!creditsEnd) {
+    creditsEnd = TCOD_console_credits_render_ex(console, HM_WIDTH - 20, HM_HEIGHT - 7, true, delta_time);
+  }
+  static uint8_t fade = 50;
+  if (Widget::focus) {
+    if (fade < 200) fade += 20;
+  } else {
+    if (fade > 80) fade -= 20;
+  }
+  TCODConsole::blit(guicon, 0, 0, HM_WIDTH, HM_HEIGHT, TCODConsole::root, 0, 0, fade / 255.0f, fade / 255.0f);
+  tcod_context->present(*console);
+  return SDL_APP_CONTINUE;
+}
 
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-      SDL_Event tile_event = event;
-      context->convert_event_coordinates(tile_event);
-      Widget::updateWidgets(tile_event, event);
-      switch (event.type) {
-        case SDL_EVENT_QUIT:
-          std::exit(EXIT_SUCCESS);
+SDL_AppResult SDL_AppEvent(void*, SDL_Event* event) {
+  auto tcod_context = TCOD_sys_get_internal_context();
+  SDL_Event tile_event = *event;
+  tcod_context->convert_event_coordinates(tile_event);
+  Widget::updateWidgets(tile_event, *event);
+  switch (event->type) {
+    case SDL_EVENT_QUIT:
+      return SDL_APP_SUCCESS;
+    case SDL_EVENT_KEY_DOWN:
+      switch (event->key.key) {
+        case SDLK_MINUS:
+          (new AddLevelOperation(-(mapmax - mapmin) / 50))->run();
           break;
-        case SDL_EVENT_KEY_DOWN:
-          switch (event.key.key) {
-            case SDLK_MINUS:
-              (new AddLevelOperation(-(mapmax - mapmin) / 50))->run();
-              break;
-            case SDLK_EQUALS:
-              (new AddLevelOperation((mapmax - mapmin) / 50))->run();
-              break;
-            case SDLK_PRINTSCREEN:
-              context->save_screenshot(nullptr);
-              break;
-            default:
-              break;
-          }
+        case SDLK_EQUALS:
+          (new AddLevelOperation((mapmax - mapmin) / 50))->run();
+          break;
+        case SDLK_PRINTSCREEN:
+          tcod_context->save_screenshot(nullptr);
           break;
         default:
           break;
       }
-    }
+      break;
+    default:
+      break;
   }
-  return 0;
+  return SDL_APP_CONTINUE;
 }
+
+void SDL_AppQuit(void*, SDL_AppResult) {}

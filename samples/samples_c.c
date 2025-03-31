@@ -7,6 +7,7 @@
 // uncomment this to disable SDL sample (might cause compilation issues on some systems)
 // #define NO_SDL_SAMPLE
 
+#define SDL_MAIN_USE_CALLBACKS
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <libtcod.h>
@@ -30,8 +31,10 @@ typedef struct sample_t {
 
 // A custom SDL event for when a sample is switched to.
 #define ON_ENTER_USEREVENT (SDL_EVENT_USER + 0)
+static const SDL_Event ON_ENTER_EVENT = {.type = ON_ENTER_USEREVENT};
 // A custom SDL event to tell a sample to draw.
 #define ON_DRAW_USEREVENT (SDL_EVENT_USER + 1)
+static const SDL_Event ON_DRAW_EVENT = {.type = ON_DRAW_USEREVENT};
 
 static const TCOD_ColorRGB BLACK = {0, 0, 0};
 static const TCOD_ColorRGB WHITE = {255, 255, 255};
@@ -46,8 +49,6 @@ static float delta_time = 0.0f;  // The time in seconds of the current frame.
 #define DELTA_SAMPLES_LENGTH 64
 static float delta_samples[DELTA_SAMPLES_LENGTH] = {0};
 static int last_delta_sample = 0;
-
-static TCOD_Tileset* tileset = NULL;
 
 // Report an error message and abort the program.
 void fatal(const char* format, ...) {
@@ -67,12 +68,13 @@ bool str_ends_with(const char* string, const char* suffix) {
   return strcmp(string + str_len - suffix_len, suffix) == 0;
 }
 
-/* ***************************
- * samples rendering functions
- * ***************************/
-
-TCOD_Context* g_context;
+static TCOD_Context* g_context;
+static TCOD_Tileset* tileset;
 static TCOD_Console* sample_console;  // the offscreen console in which the samples are rendered.
+static TCOD_Console* main_console;
+static TCOD_ContextParams params;
+static int current_sample = 0;  // index of the current sample
+static uint64_t last_time = 0;
 
 /* ***************************
  * true colors sample
@@ -1541,21 +1543,17 @@ void print_log(const TCOD_LogMessage* message, void* userdata) {
   printf("%s:%d:%d:%s\n", message->source, message->lineno, message->level, message->message);
 }
 
-/* ***************************
- * the main function
- * ***************************/
-int main(int argc, char* argv[]) {
+SDL_AppResult SDL_AppInit(void** userdata, int argc, char** argv) {
+  (void)userdata;  // Ignored
   SDL_SetLogPriorities(SDL_LOG_PRIORITY_VERBOSE);
   TCOD_set_log_callback(print_log, NULL);
   TCOD_set_log_level(TCOD_LOG_DEBUG);
-  static const SDL_Event on_enter_event = {.type = ON_ENTER_USEREVENT};
-  static const SDL_Event on_draw_event = {.type = ON_DRAW_USEREVENT};
   static const char* FONT = "data/fonts/dejavu12x12_gs_tc.png";
   tileset = TCOD_tileset_load(FONT, 32, 8, 256, TCOD_CHARMAP_TCOD);
   if (!tileset) fatal("Could not load font %s: %s", FONT, TCOD_get_error());
-  TCOD_Console* main_console = TCOD_console_new(80, 50);  // The main console to be presented.
+  main_console = TCOD_console_new(80, 50);  // The main console to be presented.
   if (!main_console) fatal("Could not allocate console: %s", TCOD_get_error());
-  TCOD_ContextParams params = {
+  params = (TCOD_ContextParams){
       .console = main_console,
       .window_title = "libtcod C sample",
       .sdl_window_flags = SDL_WINDOW_RESIZABLE,
@@ -1567,177 +1565,182 @@ int main(int argc, char* argv[]) {
   };
 
   if (TCOD_context_new(&params, &g_context) < 0) fatal("Could not open context: %s", TCOD_get_error());
-  atexit(TCOD_quit);
-
-  uint64_t last_time = SDL_GetTicks();
 
   /* initialize the offscreen console for the samples */
   sample_console = TCOD_console_new(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
   if (!sample_console) fatal("Could not allocate console: %s", TCOD_get_error());
-  int cur_sample = 0; /* index of the current sample */
-  samples[cur_sample].render(&on_enter_event);
-  while (true) {
-    const uint64_t current_time = SDL_GetTicks();
-    const int64_t delta_time_ms = TCOD_MAX(0, (int64_t)(current_time - last_time));
-    last_time = current_time;
-    delta_time = (float)(delta_time_ms) / 1000.0f;
+  samples[current_sample].render(&ON_ENTER_EVENT);
+  return SDL_APP_CONTINUE;
+}
 
-    delta_samples[last_delta_sample] = delta_time;
-    last_delta_sample = (last_delta_sample + 1) % DELTA_SAMPLES_LENGTH;
+SDL_AppResult SDL_AppIterate(void* userdata) {
+  (void)userdata;  // Ignored
+  const uint64_t current_time = SDL_GetTicks();
+  const int64_t delta_time_ms = TCOD_MAX(0, (int64_t)(current_time - last_time));
+  last_time = current_time;
+  delta_time = (float)(delta_time_ms) / 1000.0f;
 
-    TCOD_console_clear(main_console);
+  delta_samples[last_delta_sample] = delta_time;
+  last_delta_sample = (last_delta_sample + 1) % DELTA_SAMPLES_LENGTH;
 
-    static bool credits_end = false;
-    if (!credits_end) {
-      credits_end = TCOD_console_credits_render_ex(main_console, 56, 43, false, delta_time);
-    }
-    /* print the list of samples */
-    for (int i = 0; i < nb_samples; ++i) {
-      const bool is_highlighted = i == cur_sample;  // Hightligt colors for the active sample
-      // Print the sample name
-      TCOD_printf_rgb(
-          main_console,
-          (TCOD_PrintParamsRGB){
-              .x = 2,
-              .y = 46 - (nb_samples - i),
-              .fg = is_highlighted ? &WHITE : &GREY,
-              .bg = is_highlighted ? &LIGHT_BLUE : &BLACK,
-          },
-          "%s",
-          samples[i].name);
-    }
-    /* print the help message */
+  TCOD_console_clear(main_console);
+
+  static bool credits_end = false;
+  if (!credits_end) {
+    credits_end = TCOD_console_credits_render_ex(main_console, 56, 43, false, delta_time);
+  }
+  /* print the list of samples */
+  for (int i = 0; i < nb_samples; ++i) {
+    const bool is_highlighted = i == current_sample;  // Hightligt colors for the active sample
+    // Print the sample name
     TCOD_printf_rgb(
         main_console,
-        (TCOD_PrintParamsRGB){.x = 0, .width = main_console->w, .y = 46, .fg = &GREY, .alignment = TCOD_RIGHT},
-        "last frame : %3d ms (%3.0f fps)",
-        delta_time_ms,
-        get_framerate());
+        (TCOD_PrintParamsRGB){
+            .x = 2,
+            .y = 46 - (nb_samples - i),
+            .fg = is_highlighted ? &WHITE : &GREY,
+            .bg = is_highlighted ? &LIGHT_BLUE : &BLACK,
+        },
+        "%s",
+        samples[i].name);
+  }
+  /* print the help message */
+  TCOD_printf_rgb(
+      main_console,
+      (TCOD_PrintParamsRGB){.x = 0, .width = main_console->w, .y = 46, .fg = &GREY, .alignment = TCOD_RIGHT},
+      "last frame : %3d ms (%3.0f fps)",
+      delta_time_ms,
+      get_framerate());
+  TCOD_printf_rgb(
+      main_console,
+      (TCOD_PrintParamsRGB){.x = 0, .width = main_console->w, .y = 47, .fg = &GREY, .alignment = TCOD_RIGHT},
+      "elapsed : %5dms %5.2fs",
+      SDL_GetTicks(),
+      SDL_GetTicks() / 1000.0f);
+  TCOD_printf_rgb(main_console, (TCOD_PrintParamsRGB){.x = 2, .y = 47, .fg = &GREY}, "↑↓ : select a sample");
+  TCOD_printf_rgb(
+      main_console,
+      (TCOD_PrintParamsRGB){.x = 2, .y = 48, .fg = &GREY},
+      "ALT-ENTER : switch to %s",
+      SDL_GetWindowFlags(TCOD_context_get_sdl_window(g_context)) & SDL_WINDOW_FULLSCREEN ? "windowed mode"
+                                                                                         : "fullscreen mode");
+
+  /* blit the sample console on the root console */
+  TCOD_console_blit(
+      sample_console,
+      0,
+      0,
+      SAMPLE_SCREEN_WIDTH,
+      SAMPLE_SCREEN_HEIGHT, /* the source console & zone to blit */
+      main_console,
+      SAMPLE_SCREEN_X,
+      SAMPLE_SCREEN_Y, /* the destination console & position */
+      1.0f,
+      1.0f /* alpha coefficients */
+  );
+  /* display renderer list and current renderer */
+  const TCOD_renderer_t current_renderer = TCOD_context_get_renderer_type(g_context);
+  TCOD_printf_rgb(
+      main_console,
+      (TCOD_PrintParamsRGB){.x = 42, .y = 46 - (RENDERER_OPTIONS_COUNT + 1), .fg = &GREY, .bg = &BLACK},
+      "Renderer :");
+  for (int i = 0; i < RENDERER_OPTIONS_COUNT; ++i) {
+    // Highlight colors for selected renderer
+    const bool is_highlighted = RENDERER_OPTIONS[i].renderer == current_renderer;
     TCOD_printf_rgb(
         main_console,
-        (TCOD_PrintParamsRGB){.x = 0, .width = main_console->w, .y = 47, .fg = &GREY, .alignment = TCOD_RIGHT},
-        "elapsed : %5dms %5.2fs",
-        SDL_GetTicks(),
-        SDL_GetTicks() / 1000.0f);
-    TCOD_printf_rgb(main_console, (TCOD_PrintParamsRGB){.x = 2, .y = 47, .fg = &GREY}, "↑↓ : select a sample");
-    TCOD_printf_rgb(
-        main_console,
-        (TCOD_PrintParamsRGB){.x = 2, .y = 48, .fg = &GREY},
-        "ALT-ENTER : switch to %s",
-        SDL_GetWindowFlags(TCOD_context_get_sdl_window(g_context)) & SDL_WINDOW_FULLSCREEN ? "windowed mode"
-                                                                                           : "fullscreen mode");
+        (TCOD_PrintParamsRGB){
+            .x = 42,
+            .y = 46 - (RENDERER_OPTIONS_COUNT - i),
+            .fg = is_highlighted ? &WHITE : &GREY,
+            .bg = is_highlighted ? &LIGHT_BLUE : &BLACK,
+        },
+        "F%d %s",
+        i + 1,
+        RENDERER_OPTIONS[i].name);
+  }
 
-    /* blit the sample console on the root console */
-    TCOD_console_blit(
-        sample_console,
-        0,
-        0,
-        SAMPLE_SCREEN_WIDTH,
-        SAMPLE_SCREEN_HEIGHT, /* the source console & zone to blit */
-        main_console,
-        SAMPLE_SCREEN_X,
-        SAMPLE_SCREEN_Y, /* the destination console & position */
-        1.0f,
-        1.0f /* alpha coefficients */
-    );
-    /* display renderer list and current renderer */
-    const TCOD_renderer_t current_renderer = TCOD_context_get_renderer_type(g_context);
-    TCOD_printf_rgb(
-        main_console,
-        (TCOD_PrintParamsRGB){.x = 42, .y = 46 - (RENDERER_OPTIONS_COUNT + 1), .fg = &GREY, .bg = &BLACK},
-        "Renderer :");
-    for (int i = 0; i < RENDERER_OPTIONS_COUNT; ++i) {
-      // Highlight colors for selected renderer
-      const bool is_highlighted = RENDERER_OPTIONS[i].renderer == current_renderer;
-      TCOD_printf_rgb(
-          main_console,
-          (TCOD_PrintParamsRGB){
-              .x = 42,
-              .y = 46 - (RENDERER_OPTIONS_COUNT - i),
-              .fg = is_highlighted ? &WHITE : &GREY,
-              .bg = is_highlighted ? &LIGHT_BLUE : &BLACK,
-          },
-          "F%d %s",
-          i + 1,
-          RENDERER_OPTIONS[i].name);
-    }
+  samples[current_sample].render(&ON_DRAW_EVENT);
 
-    samples[cur_sample].render(&on_draw_event);
+  /* update the game screen */
+  TCOD_context_present(g_context, main_console, NULL);
+  return SDL_APP_CONTINUE;
+}
 
-    /* update the game screen */
-    TCOD_context_present(g_context, main_console, NULL);
-
-    // Check for events.
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-      TCOD_context_convert_event_coordinates(g_context, &event);
-      switch (event.type) {
-        case SDL_EVENT_KEY_DOWN:
-          switch (event.key.scancode) {
-            case SDL_SCANCODE_DOWN:  // Next sample.
-              if (++cur_sample >= nb_samples) cur_sample = 0;
-              samples[cur_sample].render(&on_enter_event);
-              break;
-            case SDL_SCANCODE_UP:  // Previous sample.
-              if (--cur_sample < 0) cur_sample = nb_samples - 1;
-              samples[cur_sample].render(&on_enter_event);
-              break;
-            case SDL_SCANCODE_RETURN:  // Toggle fullscreen with Alt+Enter.
-            case SDL_SCANCODE_RETURN2:
-            case SDL_SCANCODE_KP_ENTER:
-              if (event.key.mod & SDL_KMOD_ALT) {
-                SDL_Window* sdl_window = TCOD_context_get_sdl_window(g_context);
-                if (sdl_window) {
-                  const bool is_fullscreen = (SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_FULLSCREEN) != 0;
-                  SDL_SetWindowFullscreen(sdl_window, !is_fullscreen);
-                }
-              }
-              break;
-            case SDL_SCANCODE_PRINTSCREEN:  // Save screenshot.
-              TCOD_context_save_screenshot(g_context, NULL);
-              break;
-            default: {
-              // Switch renderers with the function keys.
-              const int renderer_pick = event.key.scancode - SDL_SCANCODE_F1;
-              if (0 <= renderer_pick && renderer_pick < RENDERER_OPTIONS_COUNT) {
-                // Preserve window flags and position during context switching.
-                SDL_Window* sdl_window = TCOD_context_get_sdl_window(g_context);
-                if (sdl_window) {
-                  params.sdl_window_flags = (int)SDL_GetWindowFlags(sdl_window);
-                  if ((params.sdl_window_flags & (SDL_WINDOW_MAXIMIZED | SDL_WINDOW_FULLSCREEN)) == 0) {
-                    // Don't track window size/position when fullscreen.
-                    SDL_GetWindowSize(sdl_window, &params.pixel_width, &params.pixel_height);
-                    SDL_GetWindowPosition(sdl_window, &params.window_x, &params.window_y);
-                    params.window_xy_defined = true;
-                  }
-                }
-                params.renderer_type = RENDERER_OPTIONS[renderer_pick].renderer;
-                TCOD_context_delete(g_context);
-                if (TCOD_context_new(&params, &g_context) < 0) fatal("Could not open context: %s", TCOD_get_error());
-              }
-            } break;
+SDL_AppResult SDL_AppEvent(void* userdata, SDL_Event* event) {
+  (void)userdata;  // Ignored
+  TCOD_context_convert_event_coordinates(g_context, event);
+  switch (event->type) {
+    case SDL_EVENT_KEY_DOWN:
+      switch (event->key.scancode) {
+        case SDL_SCANCODE_DOWN:  // Next sample.
+          if (++current_sample >= nb_samples) current_sample = 0;
+          samples[current_sample].render(&ON_ENTER_EVENT);
+          break;
+        case SDL_SCANCODE_UP:  // Previous sample.
+          if (--current_sample < 0) current_sample = nb_samples - 1;
+          samples[current_sample].render(&ON_ENTER_EVENT);
+          break;
+        case SDL_SCANCODE_RETURN:  // Toggle fullscreen with Alt+Enter.
+        case SDL_SCANCODE_RETURN2:
+        case SDL_SCANCODE_KP_ENTER:
+          if (event->key.mod & SDL_KMOD_ALT) {
+            SDL_Window* sdl_window = TCOD_context_get_sdl_window(g_context);
+            if (sdl_window) {
+              const bool is_fullscreen = (SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_FULLSCREEN) != 0;
+              SDL_SetWindowFullscreen(sdl_window, !is_fullscreen);
+            }
           }
           break;
-        case SDL_EVENT_DROP_FILE: {  // Change to a new tileset when one is dropped on the window.
-          TCOD_Tileset* new_tileset = NULL;
-          if (str_ends_with(event.drop.data, ".bdf")) {
-            new_tileset = TCOD_load_bdf(event.drop.data);
-          } else if (str_ends_with(event.drop.data, "_tc.png")) {
-            new_tileset = TCOD_tileset_load(event.drop.data, 32, 8, 256, TCOD_CHARMAP_TCOD);
-          } else {
-            new_tileset = TCOD_tileset_load(event.drop.data, 16, 16, 256, TCOD_CHARMAP_CP437);
-          }
-          if (new_tileset) {
-            TCOD_tileset_delete(tileset);
-            params.tileset = tileset = new_tileset;
-            TCOD_context_change_tileset(g_context, tileset);
+        case SDL_SCANCODE_PRINTSCREEN:  // Save screenshot.
+          TCOD_context_save_screenshot(g_context, NULL);
+          break;
+        default: {
+          // Switch renderers with the function keys.
+          const int renderer_pick = event->key.scancode - SDL_SCANCODE_F1;
+          if (0 <= renderer_pick && renderer_pick < RENDERER_OPTIONS_COUNT) {
+            // Preserve window flags and position during context switching.
+            SDL_Window* sdl_window = TCOD_context_get_sdl_window(g_context);
+            if (sdl_window) {
+              params.sdl_window_flags = (int)SDL_GetWindowFlags(sdl_window);
+              if ((params.sdl_window_flags & (SDL_WINDOW_MAXIMIZED | SDL_WINDOW_FULLSCREEN)) == 0) {
+                // Don't track window size/position when fullscreen.
+                SDL_GetWindowSize(sdl_window, &params.pixel_width, &params.pixel_height);
+                SDL_GetWindowPosition(sdl_window, &params.window_x, &params.window_y);
+                params.window_xy_defined = true;
+              }
+            }
+            params.renderer_type = RENDERER_OPTIONS[renderer_pick].renderer;
+            TCOD_context_delete(g_context);
+            if (TCOD_context_new(&params, &g_context) < 0) fatal("Could not open context: %s", TCOD_get_error());
           }
         } break;
-        case SDL_EVENT_QUIT:
-          return EXIT_SUCCESS;  // Exit program by returning from main.
       }
-      /* render current sample */
-      samples[cur_sample].render(&event);
-    }
+      break;
+    case SDL_EVENT_DROP_FILE: {  // Change to a new tileset when one is dropped on the window.
+      TCOD_Tileset* new_tileset = NULL;
+      if (str_ends_with(event->drop.data, ".bdf")) {
+        new_tileset = TCOD_load_bdf(event->drop.data);
+      } else if (str_ends_with(event->drop.data, "_tc.png")) {
+        new_tileset = TCOD_tileset_load(event->drop.data, 32, 8, 256, TCOD_CHARMAP_TCOD);
+      } else {
+        new_tileset = TCOD_tileset_load(event->drop.data, 16, 16, 256, TCOD_CHARMAP_CP437);
+      }
+      if (new_tileset) {
+        TCOD_tileset_delete(tileset);
+        params.tileset = tileset = new_tileset;
+        TCOD_context_change_tileset(g_context, tileset);
+      }
+    } break;
+    case SDL_EVENT_QUIT:
+      return SDL_APP_SUCCESS;  // Exit program by returning status
   }
+  /* render current sample */
+  samples[current_sample].render(event);
+  return SDL_APP_CONTINUE;
+}
+
+void SDL_AppQuit(void* userdata, SDL_AppResult result) {
+  (void)userdata;  // Ignored
+  (void)result;  // Ignored
 }

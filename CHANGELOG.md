@@ -29,6 +29,7 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
   - `TCOD_console_rect` -> `TCOD_console_draw_rect_rgb`
   - `TCOD_console_hline` -> `TCOD_console_draw_rect_rgb`
   - `TCOD_console_vline` -> `TCOD_console_draw_rect_rgb`
+- `TCODHeightMap::copy` was replaced by value assignment.
 
 ### Fixed
 - Fixed crashes on screen capture.

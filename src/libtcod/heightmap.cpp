@@ -68,12 +68,6 @@ void TCODHeightMap::digHill(float hx, float hy, float h_radius, float height) {
   TCOD_heightmap_dig_hill(&hm, hx, hy, h_radius, height);
 }
 
-void TCODHeightMap::copy(const TCODHeightMap* source) {
-  const TCOD_heightmap_t hm_source = to_struct(*source);
-  TCOD_heightmap_t hm_dest = to_struct(*this);
-  TCOD_heightmap_copy(&hm_source, &hm_dest);
-}
-
 void TCODHeightMap::addFbm(
     TCODNoise* noise, float mul_x, float mul_y, float add_x, float add_y, float octaves, float delta, float scale) {
   TCOD_heightmap_t hm = to_struct(*this);

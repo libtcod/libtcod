@@ -100,7 +100,8 @@
         "coroutine": "cpp",
         "csignal": "cpp",
         "ranges": "cpp",
-        "span": "cpp"
+        "span": "cpp",
+        "resumable": "cpp"
     },
     "files.trimFinalNewlines": true,
     "files.insertFinalNewline": true,

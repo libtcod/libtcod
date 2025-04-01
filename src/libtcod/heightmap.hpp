@@ -78,10 +78,10 @@ class TCODLIB_API TCODHeightMap {
 
   // clang-format on
 
-  TCODHeightMap(const TCODHeightMap& rhs) : TCODHeightMap{rhs.w, rhs.h} { copy(&rhs); }
+  TCODHeightMap(const TCODHeightMap& rhs) : TCODHeightMap{rhs.w, rhs.h} { *this = rhs; }
   TCODHeightMap& operator=(const TCODHeightMap& rhs) {
     if (w == rhs.w && h == rhs.w) {
-      copy(&rhs);
+      for (ptrdiff_t i = 0; i < w * h; ++i) values[i] = rhs.values[i];
     } else {
       *this = TCODHeightMap(rhs);
     }
@@ -182,7 +182,10 @@ class TCODLIB_API TCODHeightMap {
 		The source and destination heightmap must have the same width and height.
 	@Param dest	In the C and Python versions, the address of the destination heightmap.
 	*/
-	void copy(const TCODHeightMap *source);
+  [[deprecated("Copy by value instead: 'x = y;'")]]
+  void copy(const TCODHeightMap *source) {
+    if (source) *this = *source;
+  }
 
 	/**
 	@PageName heightmap_base

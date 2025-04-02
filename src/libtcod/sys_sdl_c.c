@@ -347,7 +347,7 @@ static void TCOD_sys_convert_event(const SDL_Event* ev, TCOD_key_t* ret) {
           are expected to write their own key mapping editing code for the user.  */
   if (SDLK_SCANCODE_MASK == (kev->key & SDLK_SCANCODE_MASK)) {
     ret->c = 0;
-  } else if (kev->key < 0 || kev->key >= 256) {
+  } else if (kev->key >= 256) {
     TCOD_set_errorvf("Old event API does not support key: %s", SDL_GetKeyName(kev->key));
     ret->c = 0;
   } else {
@@ -1212,7 +1212,7 @@ TCOD_Error TCOD_sys_get_current_resolution(int* w, int* h) {
   SDL_DisplayID monitor_index = 0;
   if (window) {
     monitor_index = SDL_GetDisplayForWindow(window);
-    if (monitor_index < 0) {
+    if (monitor_index == 0) {
       return TCOD_set_errorvf("SDL error: %s", SDL_GetError());
     }
   }

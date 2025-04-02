@@ -2,6 +2,7 @@
 #include <array>
 #include <catch2/catch_all.hpp>
 #include <cstdio>
+#include <filesystem>
 #include <libtcod/console.hpp>
 #include <libtcod/console_rexpaint.hpp>
 #include <utility>
@@ -40,7 +41,7 @@ TEST_CASE("REXPaint in-memory.") {
 }
 
 TEST_CASE("REXPaint bad data.") {
-  char tmp_file[L_tmpnam];
+  char tmp_file[L_tmpnam]{};
   std::tmpnam(tmp_file);
   TCOD_Console bad_console = {};
   bad_console.w = -1;
@@ -48,10 +49,11 @@ TEST_CASE("REXPaint bad data.") {
   TCOD_Console* bad_console_ptr = &bad_console;
   REQUIRE(TCOD_save_xp_to_memory(1, &bad_console_ptr, 0, nullptr, COMPRESSION_LEVEL) == TCOD_E_ERROR);
   REQUIRE(TCOD_save_xp(1, &bad_console_ptr, tmp_file, COMPRESSION_LEVEL) == TCOD_E_ERROR);
+  REQUIRE_FALSE(std::filesystem::exists(tmp_file));
 }
 
 TEST_CASE("REXPaint to file.") {
-  char tmp_file[L_tmpnam];
+  char tmp_file[L_tmpnam]{};
   std::tmpnam(tmp_file);
   const uint8_t WIDTH = 3;
   const uint8_t HEIGHT = 2;
@@ -65,7 +67,7 @@ TEST_CASE("REXPaint to file.") {
   }
   tcod::save_xp({console1.get(), console2.get()}, tmp_file, 0);
   auto consoles = tcod::load_xp(tmp_file);
-  REQUIRE(std::remove(tmp_file) == 0);
+  REQUIRE(std::filesystem::remove(tmp_file));
   for (int i = 0; i < WIDTH * HEIGHT; ++i) {
     REQUIRE(console1.begin()[i] == consoles.at(0)->tiles[i]);
     REQUIRE(console2.begin()[i] == consoles.at(1)->tiles[i]);

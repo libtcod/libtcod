@@ -1,5 +1,6 @@
 #include <catch2/catch_all.hpp>
 #include <cstddef>
+#include <filesystem>
 #include <libtcod.hpp>
 #include <utility>
 
@@ -41,6 +42,12 @@ void test_renderer_new_api(TCOD_renderer_t renderer) {
   context.present(console);
 
   context.set_mouse_transform(TCOD_MouseTransform{0, 0, 1, 1});
+  {
+    char tmp_file[L_tmpnam]{};
+    std::tmpnam(tmp_file);
+    context.save_screenshot(tmp_file);
+    REQUIRE(std::filesystem::remove(tmp_file));
+  }
 #if 0
   // Check for division by zero errors:
   TCOD_Tileset* tileset = new_test_tileset(0, 0);

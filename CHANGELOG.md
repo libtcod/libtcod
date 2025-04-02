@@ -8,8 +8,10 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 Versions since `2.0.0` only track API breaks and no longer guarantee ABI compatibility.
 
 ## [Unreleased]
+
+## [2.1.0] - 2025-04-01
 ### Changed
-- `TCODHeightMap` is now safe to copy/move and can now be swapped.
+- `TCODHeightMap` is now safe to copy/move and can be swapped.
 
 ### Deprecated
 - These functions have been deprecated by replacements:

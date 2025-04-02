@@ -706,7 +706,6 @@ void render_image(const SDL_Event* event) {
  * mouse sample
  * ***************************/
 void render_mouse(const SDL_Event* event) {
-  static TCOD_mouse_t mouse = {0};
   static int tile_motion_x = 0;
   static int tile_motion_y = 0;
   float pixel_x;
@@ -750,8 +749,8 @@ void render_mouse(const SDL_Event* event) {
       "Left button    : %s\n"
       "Right button   : %s\n"
       "Middle button  : %s\n",
-      pixel_x,
-      pixel_y,
+      (int)pixel_x,
+      (int)pixel_y,
       tile_x,
       tile_y,
       tile_motion_x,
@@ -1609,12 +1608,12 @@ SDL_AppResult SDL_AppIterate(void* userdata) {
       main_console,
       (TCOD_PrintParamsRGB){.x = 0, .width = main_console->w, .y = 46, .fg = &GREY, .alignment = TCOD_RIGHT},
       "last frame : %3d ms (%3.0f fps)",
-      delta_time_ms,
+      (int)delta_time_ms,
       get_framerate());
   TCOD_printf_rgb(
       main_console,
       (TCOD_PrintParamsRGB){.x = 0, .width = main_console->w, .y = 47, .fg = &GREY, .alignment = TCOD_RIGHT},
-      "elapsed : %5dms %5.2fs",
+      "elapsed : %5lldms %5.2fs",
       SDL_GetTicks(),
       SDL_GetTicks() / 1000.0f);
   TCOD_printf_rgb(main_console, (TCOD_PrintParamsRGB){.x = 2, .y = 47, .fg = &GREY}, "↑↓ : select a sample");

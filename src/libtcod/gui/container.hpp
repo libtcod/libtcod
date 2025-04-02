@@ -32,6 +32,7 @@
 #pragma once
 #ifndef TCOD_GUI_CONTAINER_HPP
 #define TCOD_GUI_CONTAINER_HPP
+#ifndef NO_SDL
 #ifndef TCOD_NO_UNICODE
 #include <memory>
 
@@ -79,4 +80,5 @@ class Container : public Widget {
 };
 }  // namespace tcod::gui
 #endif  // TCOD_NO_UNICODE
+#endif  // NO_SDL
 #endif /* TCOD_GUI_CONTAINER_HPP */

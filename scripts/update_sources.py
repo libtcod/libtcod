@@ -91,17 +91,20 @@ def generate_cmake() -> str:
     """Returns a CMake script with libtcod's sources."""
     out = f"{BANNER}"
     out += "\ntarget_sources(${PROJECT_NAME} PRIVATE\n    "
-    out += "\n    ".join(str(PurePosixPath(f.relative_to("src"))) for f in all_sources(includes=True))
+    out += "\n    ".join(str(PurePosixPath(f.relative_to("src"))) for f in all_sources(includes=False))
     out += "\n)"
-    for group_path, files in get_sources(sources=False, includes=True, directory=Path("src/")):
+    out += "\ntarget_sources(${PROJECT_NAME} PUBLIC"
+    out += "\n    FILE_SET ${PROJECT_NAME}_header_set"
+    out += "\n    TYPE HEADERS"
+    out += "\n    BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/."
+    out += "\n    FILES\n    "
+    headers = [Path("src/libtcod.h"), Path("src/libtcod.hpp"), *all_sources(sources=False, includes=True)]
+    out += "\n    ".join(str(PurePosixPath(path.relative_to("src"))) for path in headers)
+    out += "\n)"
+    for group_path, _files in get_sources(sources=False, includes=True, directory=Path("src/")):
         group_posix = PurePosixPath(group_path)
         if str(group_posix).startswith("vendor"):
             continue
-        out += "\ninstall(FILES\n    "
-        out += "\n    ".join(str(PurePosixPath(f.relative_to("src"))) for f in files)
-        out += f"\n    DESTINATION ${{CMAKE_INSTALL_INCLUDEDIR}}/{group_posix}"
-        out += "\n    COMPONENT IncludeFiles"
-        out += "\n)"
     for group_path, files in get_sources(sources=True, includes=True):
         group_str = str(PurePosixPath(group_path)).replace("/", r"\\")
         out += f"\nsource_group({group_str} FILES\n    "

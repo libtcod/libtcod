@@ -32,6 +32,7 @@
 #pragma once
 #ifndef TCOD_GUI_WIDGET_HPP
 #define TCOD_GUI_WIDGET_HPP
+#ifndef NO_SDL
 #include <SDL3/SDL_events.h>
 
 #include <functional>
@@ -242,4 +243,5 @@ class Widget {
   bool visible{true};
 };
 }  // namespace tcod::gui
+#endif  // NO_SDL
 #endif /* TCOD_GUI_WIDGET_HPP */

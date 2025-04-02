@@ -1,10 +1,13 @@
-cmake_minimum_required (VERSION 3.13...4.0)
+cmake_minimum_required (VERSION 3.23...4.0)
 
 target_compile_features(${PROJECT_NAME} PUBLIC c_std_99 cxx_std_17)
-set_property(TARGET ${PROJECT_NAME} PROPERTY C_STANDARD 99)
-set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
-set_property(TARGET ${PROJECT_NAME} PROPERTY C_STANDARD_REQUIRED TRUE)
-set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD_REQUIRED TRUE)
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    C_STANDARD 99
+    CXX_STANDARD 17
+    C_STANDARD_REQUIRED TRUE
+    CXX_STANDARD_REQUIRED TRUE
+    VERIFY_INTERFACE_HEADER_SETS TRUE
+)
 
 set(LIBTCOD_THREADS ON CACHE BOOL "If true then older thread functions are enabled by libtcod.")
 set(LIBTCOD_SDL3 "find_package" CACHE STRING "How this library will be linked.")
@@ -140,6 +143,7 @@ if(LIBTCOD_INSTALL)
     install(
         TARGETS ${PROJECT_NAME}
         EXPORT ${PROJECT_NAME}Targets
+        FILE_SET ${PROJECT_NAME}_header_set
         RUNTIME LIBRARY ARCHIVE
         COMPONENT Library
     )

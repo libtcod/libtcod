@@ -32,6 +32,7 @@
 #pragma once
 #ifndef LIBTCOD_TIMER_HPP_
 #define LIBTCOD_TIMER_HPP_
+#ifndef NO_SDL
 #include <SDL3/SDL_timer.h>
 
 #include <algorithm>
@@ -166,4 +167,5 @@ class [[nodiscard]] Timer {
   std::deque<float> samples_;  // The most recent delta time samples in seconds.
 };
 }  // namespace tcod
+#endif  // NO_SDL
 #endif  // LIBTCOD_TIMER_HPP_

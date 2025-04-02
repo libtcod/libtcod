@@ -160,6 +160,9 @@ jobs:
       - name: CMake build
         run: |
           cmake --build ${{env.CMAKE_BUILD_DIR}}
+      - name: CMake verify headers
+        run: |
+          cmake --build ${{env.CMAKE_BUILD_DIR}} --target all_verify_interface_header_sets
       - name: List build files
         run: find ${{env.CMAKE_BUILD_DIR}}
       - name: Run tests

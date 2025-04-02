@@ -32,6 +32,7 @@
 #pragma once
 #ifndef TCOD_GUI_TEXTBOX_HPP
 #define TCOD_GUI_TEXTBOX_HPP
+#ifndef NO_SDL
 #ifndef TCOD_NO_UNICODE
 #include <SDL3/SDL_timer.h>
 #include <stdio.h>
@@ -229,4 +230,5 @@ class TextBox : public Widget {
 };
 }  // namespace tcod::gui
 #endif  // TCOD_NO_UNICODE
+#endif  // NO_SDL
 #endif /* TCOD_GUI_TEXTBOX_HPP */

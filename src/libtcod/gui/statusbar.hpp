@@ -32,6 +32,7 @@
 #pragma once
 #ifndef TCOD_GUI_STATUSBAR_HPP
 #define TCOD_GUI_STATUSBAR_HPP
+#ifndef NO_SDL
 #ifndef TCOD_NO_UNICODE
 #include "../console_printing.hpp"
 #include "widget.hpp"
@@ -51,4 +52,5 @@ class StatusBar : public Widget {
 };
 }  // namespace tcod::gui
 #endif  // TCOD_NO_UNICODE
+#endif  // NO_SDL
 #endif /* TCOD_GUI_STATUSBAR_HPP */

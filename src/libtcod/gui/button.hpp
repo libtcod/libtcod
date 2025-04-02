@@ -32,6 +32,7 @@
 #pragma once
 #ifndef TCOD_GUI_BUTTON_HPP
 #define TCOD_GUI_BUTTON_HPP
+#ifndef NO_SDL
 #ifndef TCOD_NO_UNICODE
 #include <string.h>
 
@@ -100,4 +101,5 @@ class Button : public Widget {
 };
 }  // namespace tcod::gui
 #endif  // TCOD_NO_UNICODE
+#endif  // NO_SDL
 #endif /* TCOD_GUI_BUTTON_HPP */

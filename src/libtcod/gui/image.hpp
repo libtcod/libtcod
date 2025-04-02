@@ -32,6 +32,7 @@
 #pragma once
 #ifndef TCOD_GUI_IMAGE_HPP
 #define TCOD_GUI_IMAGE_HPP
+#ifndef NO_SDL
 #include "widget.hpp"
 
 namespace tcod::gui {
@@ -55,4 +56,5 @@ class Image : public Widget {
   TCODColor back{0, 0, 0};
 };
 }  // namespace tcod::gui
+#endif  // NO_SDL
 #endif /* TCOD_GUI_IMAGE_HPP */

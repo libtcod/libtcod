@@ -33,6 +33,8 @@
 #ifndef TCOD_HEIGHTMAP_HPP_
 #define TCOD_HEIGHTMAP_HPP_
 
+#include <stddef.h>
+
 #include <vector>
 
 #include "heightmap.h"

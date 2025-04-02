@@ -32,6 +32,7 @@
 #pragma once
 #ifndef TCOD_GUI_FLATLIST_HPP
 #define TCOD_GUI_FLATLIST_HPP
+#ifndef NO_SDL
 #ifndef TCOD_NO_UNICODE
 #include <math.h>
 #include <stdio.h>
@@ -146,4 +147,5 @@ class FlatList : public TextBox {
 };
 }  // namespace tcod::gui
 #endif  // TCOD_NO_UNICODE
+#endif  // NO_SDL
 #endif /* TCOD_GUI_FLATLIST_HPP */

@@ -32,6 +32,7 @@
 #pragma once
 #ifndef TCOD_GUI_VBOX_HPP
 #define TCOD_GUI_VBOX_HPP
+#ifndef NO_SDL
 #ifndef TCOD_NO_UNICODE
 #include "container.hpp"
 
@@ -64,4 +65,5 @@ class VBox : public Container {
 };
 }  // namespace tcod::gui
 #endif  // TCOD_NO_UNICODE
+#endif  // NO_SDL
 #endif /* TCOD_GUI_VBOX_HPP */

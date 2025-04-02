@@ -32,6 +32,7 @@
 #pragma once
 #ifndef TCOD_GUI_TOOLBAR_HPP
 #define TCOD_GUI_TOOLBAR_HPP
+#ifndef NO_SDL
 #ifndef TCOD_NO_UNICODE
 #include <string.h>
 
@@ -138,4 +139,5 @@ class ToolBar : public Container {
 };
 }  // namespace tcod::gui
 #endif  // TCOD_NO_UNICODE
+#endif  // NO_SDL
 #endif /* TCOD_GUI_TOOLBAR_HPP */

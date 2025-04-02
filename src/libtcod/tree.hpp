@@ -33,6 +33,8 @@
 #ifndef TCOD_TREE_HPP_
 #define TCOD_TREE_HPP_
 
+#include <utility>
+
 #include "tree.h"
 
 class TCODLIB_API TCODTree {

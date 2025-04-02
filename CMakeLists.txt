@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.13...4.0)
+cmake_minimum_required (VERSION 3.23...4.0)
 
 if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
     set(CMAKE_TOOLCHAIN_FILE

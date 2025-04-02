@@ -32,6 +32,7 @@
 #pragma once
 #ifndef TCOD_GUI_SLIDER_HPP
 #define TCOD_GUI_SLIDER_HPP
+#ifndef NO_SDL
 #ifndef TCOD_NO_UNICODE
 #include <cstdio>
 #include <cstdlib>
@@ -180,4 +181,5 @@ class Slider : public TextBox {
 };
 }  // namespace tcod::gui
 #endif  // TCOD_NO_UNICODE
+#endif  // NO_SDL
 #endif /* TCOD_GUI_SLIDER_HPP */

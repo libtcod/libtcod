@@ -19,3 +19,7 @@ TEST_CASE("TCODImage") {
     REQUIRE(img.getSize() == std::array{w, h});
   }
 }
+
+#ifndef NO_SDL
+TEST_CASE("TCODImage load png") { auto img = TCODImage{"data/img/circle.png"}; }
+#endif  // NO_SDL

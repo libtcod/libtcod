@@ -91,8 +91,8 @@ SDL_Surface* TCOD_sys_read_png(const char* filename) {
     bitmap = SDL_CreateSurface(width, height, SDL_PIXELFORMAT_RGB24);
   }
   if (bitmap) {
-    if (SDL_ConvertPixels(
-            width, height, bitmap->format, image, width * bpp / 8, bitmap->format, bitmap->pixels, bitmap->pitch) < 0) {
+    if (!SDL_ConvertPixels(
+            width, height, bitmap->format, image, width * bpp / 8, bitmap->format, bitmap->pixels, bitmap->pitch)) {
       SDL_DestroySurface(bitmap);
       bitmap = NULL;
       TCOD_set_errorvf("SDL Error: %s", SDL_GetError());

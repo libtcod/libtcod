@@ -201,6 +201,7 @@ typedef enum TCOD_keycode_t {
     In its current state it exists only for backwards compatibility.
     These issues should be resolved by using SDL directly for keyboard events.
  */
+TCOD_DEPRECATED("The libtcod event API has been deprecated, switch to using SDL event types exclusively")
 typedef struct TCOD_key_t {
   /***************************************************************************
       @brief The TCOD_keycode_t enum of the current key.

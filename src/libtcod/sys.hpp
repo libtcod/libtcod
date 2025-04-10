@@ -131,6 +131,7 @@ public :
   [[deprecated("Use SDL_GetTicks instead.")]]
 	static float getElapsedSeconds();
 
+  TCODLIB_BEGIN_IGNORE_DEPRECATIONS
 	/**
 	@PageName console_blocking_input
 	@FuncTitle Waiting for any event (mouse or keyboard)
@@ -203,6 +204,7 @@ public :
 	*/
   [[deprecated("This API is deprecated, use SDL_PollEvent instead.")]]
 	static TCOD_event_t checkForEvent(int eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse);
+  TCODLIB_END_IGNORE_DEPRECATIONS
 
 	/**
 	@PageName system_screenshots

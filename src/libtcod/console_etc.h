@@ -108,6 +108,7 @@ TCODLIB_API bool TCOD_console_save_asc(TCOD_console_t con, const char* filename)
 TCODLIB_API bool TCOD_console_save_apf(TCOD_console_t con, const char* filename);
 
 #ifndef NO_SDL
+TCODLIB_BEGIN_IGNORE_DEPRECATIONS
 /**
     Return immediately with a recently pressed key.
 
@@ -135,6 +136,7 @@ TCOD_DEPRECATED("This function does not support contexts.")
 TCODLIB_API void TCOD_console_credits_reset(void);
 TCOD_DEPRECATED("This function does not support contexts.  Consider using `TCOD_console_credits_render_ex`.")
 TCODLIB_API bool TCOD_console_credits_render(int x, int y, bool alpha);
+TCODLIB_END_IGNORE_DEPRECATIONS
 /*****************************************************************************
     @brief Render a libtcod credit animation to a console.
 

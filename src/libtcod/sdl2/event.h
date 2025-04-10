@@ -38,6 +38,8 @@
 #include "../sys.h"
 
 union SDL_Event;
+
+TCODLIB_BEGIN_IGNORE_DEPRECATIONS
 #ifdef __cplusplus
 namespace tcod {
 namespace sdl2 {
@@ -49,8 +51,8 @@ namespace sdl2 {
  *  .. versionadded:: 1.11
  *  \endrst
  */
-TCODLIB_API
-TCOD_event_t process_event(const union SDL_Event& in, TCOD_key_t& out) noexcept;
+[[deprecated("This function should only be used to migrate away from libtcod events.")]] TCODLIB_API TCOD_event_t
+process_event(const union SDL_Event& in, TCOD_key_t& out) noexcept;
 /**
  *  Parse an SDL_Event into a mouse event and return the relevant TCOD_event_t.
  *
@@ -59,10 +61,11 @@ TCOD_event_t process_event(const union SDL_Event& in, TCOD_key_t& out) noexcept;
  *  .. versionadded:: 1.11
  *  \endrst
  */
-TCODLIB_API
-TCOD_event_t process_event(const union SDL_Event& in, TCOD_mouse_t& out) noexcept;
+[[deprecated("This function should only be used to migrate away from libtcod events.")]] TCODLIB_API TCOD_event_t
+process_event(const union SDL_Event& in, TCOD_mouse_t& out) noexcept;
 }  // namespace sdl2
 }  // namespace tcod
+extern "C" {
 #endif  // __cplusplus
 /**
  *  Parse an SDL_Event into a key event and return the relevant TCOD_event_t.
@@ -72,7 +75,8 @@ TCOD_event_t process_event(const union SDL_Event& in, TCOD_mouse_t& out) noexcep
  *  .. versionadded:: 1.11
  *  \endrst
  */
-TCODLIB_CAPI
+TCOD_DEPRECATED("This function should only be used to migrate away from libtcod events.")
+TCODLIB_API
 TCOD_event_t TCOD_sys_process_key_event(const union SDL_Event* in, TCOD_key_t* out);
 /**
  *  Parse an SDL_Event into a mouse event and return the relevant TCOD_event_t.
@@ -82,6 +86,11 @@ TCOD_event_t TCOD_sys_process_key_event(const union SDL_Event* in, TCOD_key_t* o
  *  .. versionadded:: 1.11
  *  \endrst
  */
-TCODLIB_CAPI
+TCOD_DEPRECATED("This function should only be used to migrate away from libtcod events.")
+TCODLIB_API
 TCOD_event_t TCOD_sys_process_mouse_event(const union SDL_Event* in, TCOD_mouse_t* out);
+TCODLIB_END_IGNORE_DEPRECATIONS
+#ifdef __cplusplus
+}  // extern "C"
+#endif  // __cplusplus
 #endif  // LIBTCOD_SDL2_EVENT_H_

@@ -150,6 +150,7 @@ inline int print_rect(
 inline int get_height_rect(int width, std::string_view str) {
   return check_throw_error(TCOD_console_get_height_rect_wn(width, str.size(), str.data()));
 }
+TCODLIB_BEGIN_IGNORE_DEPRECATIONS
 [[deprecated("It is recommended that you print your own banners for frames.")]] inline void print_frame(
     struct TCOD_Console& console,
     const std::array<int, 4>& rect,
@@ -161,6 +162,7 @@ inline int get_height_rect(int width, std::string_view str) {
   check_throw_error(TCOD_console_printn_frame(
       &console, rect.at(0), rect.at(1), rect.at(2), rect.at(3), title.size(), title.data(), fg, bg, flag, clear));
 }
+TCODLIB_END_IGNORE_DEPRECATIONS
 #endif  // TCOD_NO_UNICODE
 /*****************************************************************************
     @brief Return a formatted string as a std::string object.

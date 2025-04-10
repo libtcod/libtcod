@@ -38,7 +38,8 @@
 #include "mouse_types.h"
 #include "portability.h"
 
-typedef enum {
+TCOD_DEPRECATED("The libtcod event API has been deprecated, switch to using SDL event types exclusively")
+typedef enum TCOD_event_t {
   TCOD_EVENT_NONE = 0,
   TCOD_EVENT_KEY_PRESS = 1,
   TCOD_EVENT_KEY_RELEASE = 2,
@@ -236,10 +237,12 @@ TCODLIB_API void TCOD_sys_update_char(int asciiCode, int font_x, int font_y, con
 TCODLIB_API struct SDL_Window* TCOD_sys_get_SDL_window(void);
 TCODLIB_API struct SDL_Renderer* TCOD_sys_get_SDL_renderer(void);
 
+TCODLIB_BEGIN_IGNORE_DEPRECATIONS
 TCOD_DEPRECATED("This API is deprecated, use SDL_WaitEvent instead.")
 TCODLIB_API TCOD_event_t TCOD_sys_wait_for_event(int eventMask, TCOD_key_t* key, TCOD_mouse_t* mouse, bool flush);
 TCOD_DEPRECATED("This API is deprecated, use SDL_PollEvent instead.")
 TCODLIB_API TCOD_event_t TCOD_sys_check_for_event(int eventMask, TCOD_key_t* key, TCOD_mouse_t* mouse);
+TCODLIB_END_IGNORE_DEPRECATIONS
 
 /* clipboard */
 TCOD_DEPRECATED("Use the SDL API to handle the clipboard.")

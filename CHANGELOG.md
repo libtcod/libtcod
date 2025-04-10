@@ -8,6 +8,9 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 Versions since `2.0.0` only track API breaks and no longer guarantee ABI compatibility.
 
 ## [Unreleased]
+### Deprecated
+- Outdated libtcod event types have been deprecated to help track their usage.
+- Event functions intended to help migrate away from libtcod events have been deprecated to indicate that they're not a permanent solution.
 
 ## [2.1.1] - 2025-04-02
 ### Fixed

@@ -42,8 +42,10 @@ extern "C" {
 TCOD_DEPRECATED("Use SDL_ShowCursor to handle the mouse cursor.")
 TCODLIB_API void TCOD_mouse_show_cursor(bool visible);
 
+TCODLIB_BEGIN_IGNORE_DEPRECATIONS
 TCOD_DEPRECATED("Use SDL_GetMouseState to check the mouse state.")
 TCODLIB_API TCOD_mouse_t TCOD_mouse_get_status(void);
+TCODLIB_END_IGNORE_DEPRECATIONS
 
 TCOD_DEPRECATED("Use SDL_ShowCursor to check the mouse cursor.")
 TCODLIB_API bool TCOD_mouse_is_cursor_visible(void);

@@ -46,6 +46,7 @@
     In its current state it exists only for backwards compatibility.
     These issues should be resolved by using SDL directly for mouse and keyboard events.
  */
+TCOD_DEPRECATED("The libtcod event API has been deprecated, switch to using SDL event types exclusively")
 typedef struct TCOD_mouse_t {
   /***************************************************************************
       @brief The mouse absolute pixel position, according to SDL.

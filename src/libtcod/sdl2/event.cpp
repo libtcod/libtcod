@@ -31,7 +31,7 @@
  */
 #include "event.h"
 #ifndef NO_SDL
-#include <SDL3/SDL.h>
+#include <SDL3/SDL_events.h>
 
 #include <cstring>
 
@@ -47,15 +47,11 @@ TCOD_event_t process_event(const union SDL_Event& ev, TCOD_mouse_t& mouse) noexc
 }  // namespace sdl2
 }  // namespace tcod
 TCOD_event_t TCOD_sys_process_key_event(const union SDL_Event* in, TCOD_key_t* out) {
-  if (!in || !out) {
-    return TCOD_EVENT_NONE;
-  }
-  return tcod::sdl2::process_event(*in, *out);
+  if (!in || !out) return TCOD_EVENT_NONE;
+  return TCOD_sys_handle_key_event(in, out);
 }
 TCOD_event_t TCOD_sys_process_mouse_event(const union SDL_Event* in, TCOD_mouse_t* out) {
-  if (!in || !out) {
-    return TCOD_EVENT_NONE;
-  }
-  return tcod::sdl2::process_event(*in, *out);
+  if (!in || !out) return TCOD_EVENT_NONE;
+  return TCOD_sys_handle_mouse_event(in, out);
 }
 #endif  // NO_SDL

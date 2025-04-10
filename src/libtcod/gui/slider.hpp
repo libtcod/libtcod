@@ -156,14 +156,19 @@ class Slider : public TextBox {
       drag = true;
       drag_y = -1;
       dragValue = value;
+      float mouse_x{};
+      float mouse_y{};
+      SDL_GetMouseState(&mouse_x, &mouse_y);
+      const SDL_Rect mouse_rect{static_cast<int>(mouse_x), static_cast<int>(mouse_y), 1, 1};
       SDL_SetWindowRelativeMouseMode(SDL_GetMouseFocus(), true);
+      SDL_SetWindowMouseRect(SDL_GetMouseFocus(), &mouse_rect);
     }
   }
   void onButtonRelease() override {
     if (drag) {
       drag = false;
-      SDL_WarpMouseInWindow(nullptr, (x + w - 2) * 8, y * 8);
-      SDL_SetWindowRelativeMouseMode(SDL_GetGrabbedWindow(), false);
+      SDL_SetWindowMouseRect(SDL_GetMouseFocus(), nullptr);
+      SDL_SetWindowRelativeMouseMode(SDL_GetMouseFocus(), false);
     }
   }
 

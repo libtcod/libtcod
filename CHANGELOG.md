@@ -12,6 +12,9 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 - Outdated libtcod event types have been deprecated to help track their usage.
 - Event functions intended to help migrate away from libtcod events have been deprecated to indicate that they're not a permanent solution.
 
+### Fixed
+- `TCODHeightMap` copy constructor where width and height are different would cause an infinite loop.
+
 ## [2.1.1] - 2025-04-02
 ### Fixed
 - Fixed headers which were not self-contained.

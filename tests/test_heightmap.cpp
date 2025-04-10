@@ -14,11 +14,12 @@ TEST_CASE("TCODHeightmap") {
   hm = hm2;  // Test same-size copy
   REQUIRE(hm.getValue(0, 0) == 3.0f);
 
-  hm2 = TCODHeightMap(2, 2);
+  hm2 = TCODHeightMap(2, 3);
   hm2.setValue(0, 0, 4.0f);
   hm = std::move(hm2);  // Test move
   REQUIRE(hm.getValue(0, 0) == 4.0f);
   REQUIRE(hm.w == 2);
+  REQUIRE(hm.h == 3);
 
   hm.clear();
   REQUIRE(hm.getValue(0, 0) == 0.0f);

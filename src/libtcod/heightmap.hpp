@@ -82,7 +82,7 @@ class TCODLIB_API TCODHeightMap {
 
   TCODHeightMap(const TCODHeightMap& rhs) : TCODHeightMap{rhs.w, rhs.h} { *this = rhs; }
   TCODHeightMap& operator=(const TCODHeightMap& rhs) {
-    if (w == rhs.w && h == rhs.w) {
+    if (w == rhs.w && h == rhs.h) {
       for (ptrdiff_t i = 0; i < w * h; ++i) values[i] = rhs.values[i];
     } else {
       *this = TCODHeightMap(rhs);

@@ -45,56 +45,46 @@
 namespace tcod::gui {
 class ToolBar : public Container {
  public:
-  ToolBar(int x, int y, const char* name, const char* tip = nullptr) : Container{x, y, 0, 2} {
-    if (name) {
-      this->name = TCOD_strdup(name);
-      w = static_cast<int>(strlen(name) + 4);
-    }
-    if (tip) setTip(tip);
+  ToolBar(int x, int y, const char* name, const char* tip = nullptr) : Container{x, y, 0, 2}, title_{name ? name : ""} {
+    if (title_.size()) w = static_cast<int>(title_.size() + 4);
+    setTip(tip);
   }
-  ToolBar(int x, int y, int w, const char* name, const char* tip = nullptr) : Container{x, y, w, 2}, fixedWidth{w} {
-    if (name) {
-      this->name = TCOD_strdup(name);
-      fixedWidth = w = std::max<int>(static_cast<int>(strlen(name) + 4), w);
-    }
-    if (tip) setTip(tip);
-  }
-  ~ToolBar() override {
-    if (name) free(name);
+  ToolBar(int x, int y, int w, const char* name, const char* tip = nullptr)
+      : Container{x, y, w, 2}, title_{name ? name : ""}, fixed_width_{w} {
+    if (title_.size()) fixed_width_ = w = std::max<int>(static_cast<int>(title_.size() + 4), w);
+    setTip(tip);
   }
   void render() {
-    con->setDefaultBackground(back);
-    con->setDefaultForeground(fore);
-    if (name) {
-      TCOD_console_printf_frame(con->get_data(), x, y, w, h, true, TCOD_BKGND_SET, "%s", name);
+    static constexpr auto FRAME_SINGLE_PIPE =
+        std::array{0x250C, 0x2500, 0x2510, 0x2502, 0x20, 0x2502, 0x2514, 0x2500, 0x2518};
+    const auto fg = tcod::ColorRGB(fore);
+    const auto bg = tcod::ColorRGB(back);
+    tcod::draw_frame(*con, {x, y, w, h}, FRAME_SINGLE_PIPE, fg, bg, TCOD_BKGND_SET, true);
+    if (title_.size()) {
+      tcod::print_rect(*con, {x, y, w, 1}, tcod::stringf(" %s ", title_.c_str()), bg, fg, TCOD_CENTER);
     }
     Container::render();
   }
-  void setName(const char* name_) {
-    if (this->name) free(this->name);
-    if (name_) {
-      this->name = TCOD_strdup(name_);
-      fixedWidth = std::max<int>(static_cast<int>(strlen(name_) + 4), fixedWidth);
-    } else {
-      this->name = nullptr;
-    }
+  void setName(const char* name) {
+    title_ = name ? name : "";
+    if (title_.size()) fixed_width_ = std::max(static_cast<int>(title_.size() + 4), fixed_width_);
   }
 
   void addSeparator(const char* txt, const char* tip = nullptr) { addWidget(std::make_unique<Separator>(txt, tip)); }
   void computeSize() override {
-    int cury = y + 1;
-    w = name ? static_cast<int>(strlen(name) + 4) : 2;
+    int current_y = y + 1;
+    w = title_.size() ? static_cast<int>(title_.size() + 4) : 2;
     for (auto& wid : content_) {
       if (wid->isVisible()) {
         wid->x = x + 1;
-        wid->y = cury;
+        wid->y = current_y;
         wid->computeSize();
         if (wid->w + 2 > w) w = wid->w + 2;
-        cury += wid->h;
+        current_y += wid->h;
       }
     }
-    if (w < fixedWidth) w = fixedWidth;
-    h = cury - y + 1;
+    if (w < fixed_width_) w = fixed_width_;
+    h = current_y - y + 1;
     for (auto& wid : content_) {
       if (wid->isVisible()) {
         wid->expand(w - 2, wid->h);
@@ -103,23 +93,13 @@ class ToolBar : public Container {
   }
 
  protected:
-  char* name{};
-  int fixedWidth{0};
+  std::string title_{};  // Title bar text of this toolbar
+  int fixed_width_{0};
 
  private:
   struct Separator : public Widget {
-    Separator(const char* txt, const char* tip = nullptr) : Widget{0, 0, 0, 1} {
-      if (txt) {
-        this->txt = TCOD_strdup(txt);
-      }
-      if (tip) setTip(tip);
-    }
-    virtual ~Separator() override {
-      if (txt) {
-        free(txt);
-      }
-    }
-    void computeSize() override { w = txt ? static_cast<int>(strlen(txt) + 2) : 0; }
+    Separator(const char* txt, const char* tip = nullptr) : Widget{0, 0, 0, 1}, text_{txt ? txt : ""} { setTip(tip); }
+    void computeSize() override { w = text_.size() ? static_cast<int>(text_.size() + 2) : 0; }
     void expand(int width, int) override { w = std::max(w, width); }
     void render() override {
       auto& console = static_cast<TCOD_Console&>(*con);
@@ -132,9 +112,9 @@ class ToolBar : public Container {
       if (console.in_bounds({x + w, y})) {
         console.at({x + w, y}) = {0x2524, {fg.r, fg.g, fg.b, 255}, {bg.r, bg.g, bg.b, 255}};  // ┤
       }
-      tcod::print(console, {x + w / 2, y}, tcod::stringf(" %s ", txt), bg, fg, TCOD_CENTER);
+      tcod::print_rect(console, {x, y, w, 1}, tcod::stringf(" %s ", text_.c_str()), bg, fg, TCOD_CENTER);
     }
-    char* txt{};
+    std::string text_{};  // Text displayed over separator
   };
 };
 }  // namespace tcod::gui

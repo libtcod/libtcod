@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.13...4.0)
+cmake_minimum_required(VERSION 3.23...4.0)
 
 project (libtcod_samples C CXX)
 
@@ -150,5 +150,25 @@ if (EMSCRIPTEN)
         samples_c samples_cpp frost hmtool navier rad ripples weather worldgen
         PROPERTIES
             SUFFIX ".html"
+    )
+endif()
+
+if (LIBTCOD_INSTALL AND NOT EMSCRIPTEN)
+    install(
+        TARGETS samples_c samples_cpp frost hmtool navier rad ripples weather worldgen libtcod
+        RUNTIME_DEPENDENCIES
+            PRE_EXCLUDE_REGEXES "api-ms-win-crt-"
+            POST_EXCLUDE_REGEXES
+                [[.*system32.*\.dll]]
+        RUNTIME
+        FRAMEWORK DESTINATION ${CMAKE_INSTALL_BINDIR}  # No clue what the correct path is for this is
+    )
+    install(DIRECTORY
+        ${CMAKE_CURRENT_SOURCE_DIR}/../data
+        DESTINATION ${CMAKE_INSTALL_BINDIR}
+    )
+    install(FILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/../terminal.png
+        DESTINATION ${CMAKE_INSTALL_BINDIR}
     )
 endif()

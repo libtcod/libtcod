@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.23...4.0)
 
-project (libtcod_samples C CXX)
+project(libtcod_samples C CXX)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake OPTIONAL RESULT_VARIABLE CONAN_FILE)
 if(CONAN_FILE)
@@ -12,7 +12,7 @@ else()
 endif()
 
 # This and KEEP_RPATHS is required to handle RPATH's on MacOS.
-if (APPLE)
+if(APPLE)
     set(CMAKE_INSTALL_RPATH "@executable_path")
 else()
     set(CMAKE_INSTALL_RPATH "$ORIGIN")
@@ -45,7 +45,7 @@ endif()
 
 add_executable(samples_c samples_c.c)
 target_link_libraries(samples_c ${LINK_TCOD})
-if (CONAN_FILE)
+if(CONAN_FILE)
     add_dependencies(samples_c copy_data_dir)
 endif()
 # Suppress MSVC warnings for POSIX C functions such as strdup.  This is only for the C samples.
@@ -53,13 +53,13 @@ target_compile_definitions(samples_c PRIVATE "$<$<C_COMPILER_ID:MSVC>:_CRT_NONST
 
 add_executable(samples_cpp samples_cpp.cpp)
 target_link_libraries(samples_cpp ${LINK_TCOD})
-if (CONAN_FILE)
+if(CONAN_FILE)
     add_dependencies(samples_cpp copy_data_dir)
 endif()
 
 add_executable(frost frost/frost.cpp)
 target_link_libraries(frost ${LINK_TCOD})
-if (CONAN_FILE)
+if(CONAN_FILE)
     add_dependencies(frost copy_font)
 endif()
 
@@ -67,13 +67,13 @@ add_executable(hmtool
     hmtool/hmtool.cpp hmtool/operation.cpp hmtool/operation.hpp
 )
 target_link_libraries(hmtool ${LINK_TCOD})
-if (CONAN_FILE)
+if(CONAN_FILE)
     add_dependencies(hmtool copy_font)
 endif()
 
 add_executable(navier navier/main.cpp)
 target_link_libraries(navier ${LINK_TCOD})
-if (CONAN_FILE)
+if(CONAN_FILE)
     add_dependencies(navier copy_font)
 endif()
 
@@ -87,7 +87,7 @@ add_executable(rad
     rad/rad_shader_standard.cpp
 )
 target_link_libraries(rad ${LINK_TCOD})
-if (CONAN_FILE)
+if(CONAN_FILE)
     add_dependencies(rad copy_font)
 endif()
 
@@ -98,7 +98,7 @@ add_executable(ripples
     ripples/util_ripples.hpp
 )
 target_link_libraries(ripples ${LINK_TCOD})
-if (CONAN_FILE)
+if(CONAN_FILE)
     add_dependencies(ripples copy_font)
 endif()
 
@@ -109,7 +109,7 @@ add_executable(weather
     weather/util_weather.hpp
 )
 target_link_libraries(weather ${LINK_TCOD})
-if (CONAN_FILE)
+if(CONAN_FILE)
     add_dependencies(weather copy_font)
 endif()
 
@@ -120,11 +120,11 @@ add_executable(worldgen
     worldgen/util_worldgen.hpp
 )
 target_link_libraries(worldgen ${LINK_TCOD})
-if (CONAN_FILE)
+if(CONAN_FILE)
     add_dependencies(worldgen copy_font)
 endif()
 
-if (EMSCRIPTEN)
+if(EMSCRIPTEN)
     # Attach data to Emscripten builds.
     foreach(project_it samples_c samples_cpp)
         target_link_options(
@@ -153,7 +153,7 @@ if (EMSCRIPTEN)
     )
 endif()
 
-if (LIBTCOD_INSTALL AND NOT EMSCRIPTEN)
+if(LIBTCOD_INSTALL AND NOT EMSCRIPTEN)
     install(
         TARGETS samples_c samples_cpp frost hmtool navier rad ripples weather worldgen libtcod
         RUNTIME_DEPENDENCIES

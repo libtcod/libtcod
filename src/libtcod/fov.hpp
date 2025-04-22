@@ -152,8 +152,7 @@ class TCODLIB_API TCODMap {
 			* FOV_SHADOW : based on <a href="http://roguebasin.roguelikedevelopment.org/index.php?title=FOV_using_recursive_shadowcasting">this</a> algorithm
 			* FOV_PERMISSIVE_x : based on <a href="http://roguebasin.roguelikedevelopment.org/index.php?title=Precise_Permissive_Field_of_View">this</a> algorithm
 			Permissive has a variable permissiveness parameter. You can either use the constants FOV_PERMISSIVE_x, x between 0 (the less permissive) and 8 (the more permissive), or using the macro FOV_PERMISSIVE(x).
-			* FOV_RESTRICTIVE : Mingos' Restrictive Precise Angle Shadowcasting (MRPAS). Original implementation <a href="http://umbrarumregnum.110mb.com/download/mrpas">here</a>. Comparison of the algorithms :
-			Check <a href="http://roguecentral.org/libtcod/fov/fov.pdf">this</a>.
+			* FOV_RESTRICTIVE : Mingos' Restrictive Precise Angle Shadowcasting (MRPAS).
 		@Cpp void TCODMap::computeFov(int playerX,int playerY, int maxRadius=0,bool light_walls = true, TCOD_fov_algorithm_t algo = FOV_BASIC)
 		@C void TCOD_map_compute_fov(TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls, TCOD_fov_algorithm_t algo)
 		@Py map_compute_fov(map, player_x, player_y, max_radius=0, light_walls=True, algo=FOV_BASIC )

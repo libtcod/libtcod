@@ -219,47 +219,7 @@ bool TCOD_sys_check_magic_number(const char* filename, size_t size, uint8_t* dat
 /* TCOD_list nonpublic methods */
 void TCOD_list_set_size(TCOD_list_t l, int size);
 
-/*
-        SDL12/SDL2 abstraction layer
-*/
-typedef struct TCOD_SDL_driver_t {
-  float scale_xc;
-  float scale_yc;
-
-  /* get a fullscreen mode suitable for the console */
-  void (*get_closest_mode)(int* w, int* h);
-  /* render the console on a surface/texture */
-  void (*render)(const struct TCOD_SDL_driver_t* sdl, void* vbitmap, struct TCOD_Console* console);
-  /* create a new surface */
-  struct SDL_Surface* (*create_surface)(int width, int height, bool with_alpha);
-  /* create the game window */
-  void (*create_window)(int w, int h, bool fullscreen);
-  /* destroy the game window */
-  void (*destroy_window)(void);
-  /* switch fullscreen on/off */
-  void (*set_fullscreen)(bool fullscreen);
-  /* change the game window title */
-  void (*set_window_title)(const char* title);
-  /* save game screenshot */
-  void (*save_screenshot)(const char* filename);
-  /* get desktop resolution */
-  void (*get_current_resolution)(int* w, int* h);
-  /* change the mouse cursor position */
-  void (*set_mouse_position)(int x, int y);
-  /* clipboard */
-  const char* (*get_clipboard_text)(void);
-  bool (*set_clipboard_text)(const char* text);
-  /* android compatible file access functions */
-  bool (*file_read)(const char* filename, unsigned char** buf, size_t* size);
-  bool (*file_exists)(const char* filename);
-  bool (*file_write)(const char* filename, unsigned char* buf, uint32_t size);
-  /* clean stuff */
-  void (*shutdown)(void);
-  /* get root cache */
-  struct TCOD_Console* (*get_root_console_cache)(void);
-} TCOD_SDL_driver_t;
-
-typedef struct {
+typedef struct scale_data_t {
   float force_recalc;
   float last_scale_xc, last_scale_yc;
   float last_scale_factor;

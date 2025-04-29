@@ -48,7 +48,9 @@ struct SDL_Window;
 struct SDL_Renderer;
 struct SDL_Texture;
 /**
-    An SDL2 tileset atlas.  This prepares a tileset for use with SDL2.
+    An SDL tileset atlas.  This prepares a tileset for use with SDL.
+
+    This works for SDL3 despite the name.
     \rst
     .. versionadded:: 1.16
     \endrst
@@ -66,12 +68,12 @@ typedef struct TCOD_TilesetAtlasSDL2 {
   int texture_columns;
 } TCOD_TilesetAtlasSDL2;
 /**
-    The renderer data for an SDL2 rendering context.
+    The renderer data for an SDL rendering context.
     Internal use only.
  */
 struct TCOD_RendererSDL2 {
-  struct SDL_Window* window;  // Owning power to an SDL2 window.
-  struct SDL_Renderer* renderer;  // Owning pointer to an SDL2 renderer.
+  struct SDL_Window* window;  // Owning power to an SDL window.
+  struct SDL_Renderer* renderer;  // Owning pointer to an SDL renderer.
   struct TCOD_TilesetAtlasSDL2* __restrict atlas;  // Owning atlas pointer.
   struct TCOD_Console* __restrict cache_console;  // Tracks the data from the last console presented.
   struct SDL_Texture* __restrict cache_texture;  // Cached console rendering output.
@@ -83,7 +85,9 @@ struct TCOD_RendererSDL2 {
 extern "C" {
 #endif  // __cplusplus
 /***************************************************************************
-    @brief Return a libtcod rendering context using an SDL2 renderer.
+    @brief Return a libtcod rendering context using an SDL renderer.
+
+    Despite the name this returns a context for SDL3.
 
     @param x Window X position, if unsure then use `SDL_WINDOWPOS_UNDEFINED`
     @param y Window Y position, if unsure then use `SDL_WINDOWPOS_UNDEFINED`
@@ -108,25 +112,23 @@ TCOD_PUBLIC TCOD_NODISCARD struct TCOD_Context* TCOD_renderer_init_sdl2(
 TCOD_PUBLIC TCOD_NODISCARD TCOD_Context* TCOD_renderer_init_sdl3(
     SDL_PropertiesID window_props, SDL_PropertiesID renderer_props, struct TCOD_Tileset* tileset);
 /**
-    Return a new SDL2 atlas created from a tileset for an SDL2 renderer.
+    Return a new SDL atlas created from a tileset for an SDL3 renderer.
 
     You may delete the tileset if you no longer have use for it.
 
-    Will return NULL on an error, you can check the error with
-    `TCOD_get_error`.
+    Will return NULL on an error, you can check the error with `TCOD_get_error`.
  */
 TCOD_PUBLIC TCOD_NODISCARD struct TCOD_TilesetAtlasSDL2* TCOD_sdl2_atlas_new(
     struct SDL_Renderer* renderer, struct TCOD_Tileset* tileset);
 /**
-    Delete an SDL2 tileset atlas.
+    Delete an SDL tileset atlas.
  */
 TCOD_PUBLIC void TCOD_sdl2_atlas_delete(struct TCOD_TilesetAtlasSDL2* atlas);
 /**
     Setup a cache and target texture for rendering.
 
-    `atlas` is an SDL2 atlas created with `TCOD_sdl2_atlas_new`.
-    The renderer used to make this `atlas` must support
-    `SDL_RENDERER_TARGETTEXTURE`.
+    `atlas` is an SDL atlas created with `TCOD_sdl2_atlas_new`.
+    The renderer used to make this `atlas` must support `SDL_RENDERER_TARGETTEXTURE`.
 
     `console` is a non-NULL pointer to the libtcod console you want to render.
 
@@ -140,7 +142,7 @@ TCOD_PUBLIC void TCOD_sdl2_atlas_delete(struct TCOD_TilesetAtlasSDL2* atlas);
     is successful then the texture at `*target` will be non-NULL and will be
     exactly fitted to the size of `console` and the tile size of `atlas`.
 
-    If SDL2 ever provides a `SDL_RENDER_TARGETS_RESET` event then the console
+    If SDL ever provides a `SDL_EVENT_RENDER_TARGETS_RESET` event then the console
     at `*cache` must be deleted and set to NULL, or else the next render will
     only partially update the texture at `*target`.
 
@@ -162,7 +164,7 @@ TCOD_PUBLIC TCOD_Error TCOD_sdl2_render_texture_setup(
     You can use `TCOD_sdl2_render_texture_setup` to automatically prepare these
     objects for use with this function.
 
-    `atlas` is an SDL2 atlas created with `TCOD_sdl2_atlas_new`.
+    `atlas` is an SDL atlas created with `TCOD_sdl2_atlas_new`.
     The renderer used to make this `atlas` must support
     `SDL_RENDERER_TARGETTEXTURE`, unless `target` is NULL.
 
@@ -170,14 +172,14 @@ TCOD_PUBLIC TCOD_Error TCOD_sdl2_render_texture_setup(
 
     `cache` can be NULL, or point to a console the same size as `console`.
 
-    `target` can be NULL, or be pointer an SDL2 texture used as the output.
+    `target` can be NULL, or be pointer an SDL texture used as the output.
     If `target` is not NULL then it should be the size of the console times the
     size of the individual tiles to fit the entire output.
 
     If `target` is NULL then the current render target is used instead, the
     drawn area will not be scaled to fit the render target.
 
-    If SDL2 ever provides a `SDL_RENDER_TARGETS_RESET` event then the console
+    If SDL3 ever provides a `SDL_EVENT_RENDER_TARGETS_RESET` event then the console
     at `cache` must be cleared, or else the next render will only partially
     update the texture of `target`.
 

@@ -585,14 +585,13 @@ TCOD_Error TCOD_sdl2_render_texture(
   return err;
 }
 // ----------------------------------------------------------------------------
-// SDL2 Rendering
+// SDL Rendering
 /**
-    Handle events from SDL2.
+    Handle events from SDL.
 
-    Target textures need to be reset on an SDL_RENDER_TARGETS_RESET event.
+    Target textures need to be reset on an SDL_EVENT_RENDER_TARGETS_RESET  event.
 
-    This is sometimes called while the renderer is holding a reference to the
-    cache console.
+    This is sometimes called while the renderer is holding a reference to the cache console.
  */
 static bool sdl2_handle_event(void* userdata, SDL_Event* event) {
   struct TCOD_RendererSDL2* context = userdata;
@@ -822,13 +821,13 @@ static TCOD_Error sdl2_screen_capture(
   return err;
 }
 /**
- *  Return a pointer to the SDL2 window.
+ *  Return a pointer to the SDL window.
  */
 static struct SDL_Window* sdl2_get_window(struct TCOD_Context* __restrict self) {
   return ((struct TCOD_RendererSDL2*)self->contextdata_)->window;
 }
 /**
- *  Return a pointer to the SDL2 renderer.
+ *  Return a pointer to the SDL renderer.
  */
 static struct SDL_Renderer* sdl2_get_renderer(struct TCOD_Context* __restrict self) {
   return ((struct TCOD_RendererSDL2*)self->contextdata_)->renderer;

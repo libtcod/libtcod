@@ -32,7 +32,7 @@
 #include "sys.h"
 #ifndef NO_SDL
 #ifndef TCOD_NO_PNG
-#if !defined(__HAIKU__) && !defined(__ANDROID__)
+#if !defined(__HAIKU__)
 #include <stdio.h>
 #include <stdlib.h>
 #endif

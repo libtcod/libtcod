@@ -14,6 +14,7 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 
 ### Fixed
 - `TCODHeightMap` copy constructor where width and height are different would cause an infinite loop.
+- Fixed variable names in `renderer_xterm.c` that caused a compilation fail with GLIBC 2.42.
 
 ## [2.1.1] - 2025-04-02
 ### Fixed

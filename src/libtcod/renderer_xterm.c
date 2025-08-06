@@ -93,10 +93,10 @@ struct TCOD_RendererXterm {
 };
 
 static char* ucs4_to_utf8(int ucs4, char out[5]) {
-  static const unsigned char B10000000 = 128;
-  static const unsigned char B11000000 = 192;
-  static const unsigned char B11100000 = 224;
-  static const unsigned char B11110000 = 240;
+  static const unsigned char BYTE_10000000 = 128;
+  static const unsigned char BYTE_11000000 = 192;
+  static const unsigned char BYTE_11100000 = 224;
+  static const unsigned char BYTE_11110000 = 240;
   static const int B000_000000_000000_111111 = 63;
   static const int B000_000000_011111_000000 = 1984;
   static const int B000_000000_111111_000000 = 4032;
@@ -109,21 +109,21 @@ static char* ucs4_to_utf8(int ucs4, char out[5]) {
     out[1] = '\0';
     return out;
   } else if (ucs4 <= 0x07FF) {
-    out[0] = B11000000 | (unsigned char)((ucs4 & B000_000000_011111_000000) >> 6);
-    out[1] = B10000000 | (unsigned char)((ucs4 & B000_000000_000000_111111) >> 0);
+    out[0] = BYTE_11000000 | (unsigned char)((ucs4 & B000_000000_011111_000000) >> 6);
+    out[1] = BYTE_10000000 | (unsigned char)((ucs4 & B000_000000_000000_111111) >> 0);
     out[2] = '\0';
     return out;
   } else if (ucs4 <= 0xFFFF) {
-    out[0] = B11100000 | (unsigned char)((ucs4 & B000_001111_000000_000000) >> 12);
-    out[1] = B10000000 | (unsigned char)((ucs4 & B000_000000_111111_000000) >> 6);
-    out[2] = B10000000 | (unsigned char)((ucs4 & B000_000000_000000_111111) >> 0);
+    out[0] = BYTE_11100000 | (unsigned char)((ucs4 & B000_001111_000000_000000) >> 12);
+    out[1] = BYTE_10000000 | (unsigned char)((ucs4 & B000_000000_111111_000000) >> 6);
+    out[2] = BYTE_10000000 | (unsigned char)((ucs4 & B000_000000_000000_111111) >> 0);
     out[3] = '\0';
     return out;
   } else if (ucs4 <= 0x10FFFF) {
-    out[0] = B11110000 | (unsigned char)((ucs4 & B111_000000_000000_000000) >> 18);
-    out[1] = B10000000 | (unsigned char)((ucs4 & B000_111111_000000_000000) >> 12);
-    out[2] = B10000000 | (unsigned char)((ucs4 & B000_000000_111111_000000) >> 6);
-    out[3] = B10000000 | (unsigned char)((ucs4 & B000_000000_000000_111111) >> 0);
+    out[0] = BYTE_11110000 | (unsigned char)((ucs4 & B111_000000_000000_000000) >> 18);
+    out[1] = BYTE_10000000 | (unsigned char)((ucs4 & B000_111111_000000_000000) >> 12);
+    out[2] = BYTE_10000000 | (unsigned char)((ucs4 & B000_000000_111111_000000) >> 6);
+    out[3] = BYTE_10000000 | (unsigned char)((ucs4 & B000_000000_000000_111111) >> 0);
     out[4] = '\0';
     return out;
   }

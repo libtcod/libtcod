@@ -7,7 +7,6 @@ on:
     tags:
       - "*.*.*"
   pull_request:
-    types: [opened, reopened]
 
 defaults:
   run:

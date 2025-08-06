@@ -12,7 +12,7 @@ libtcod is a free, fast, portable and uncomplicated API for roguelike developers
 
 # How do I get set up?
 
-## Using Vcpkg
+## Using Vcpkg:
 
 This is the easiest way to get the latest stable version of libtcod for any project.
 

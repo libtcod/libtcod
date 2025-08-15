@@ -116,6 +116,9 @@ jobs:
         run: git fetch --depth=${{env.VCPKG_FETCH_DEPTH}}
       - name: Install latest CMake
         uses: lukka/get-cmake@latest
+      - name: Update APT packages
+        if: runner.os == 'Linux'
+        run: sudo apt-get update
       - name: Install APT dependencies
         if: runner.os == 'Linux'
         run: sudo apt-get install ${{ env.SDL_LINUX_DEPENDENCIES }}
@@ -206,6 +209,9 @@ jobs:
         run: git fetch --depth=${{env.VCPKG_FETCH_DEPTH}}
       - name: Install the latest CMake
         uses: lukka/get-cmake@latest
+      - name: Update APT packages
+        if: runner.os == 'Linux'
+        run: sudo apt-get update
       - name: Install APT dependencies
         if: runner.os == 'Linux'
         run: sudo apt-get install ${{ env.SDL_LINUX_DEPENDENCIES }}

@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.23...4.0)
 
+include(GNUInstallDirs)
+
 target_compile_features(${PROJECT_NAME} PUBLIC c_std_99 cxx_std_17)
 set_target_properties(${PROJECT_NAME} PROPERTIES
     C_STANDARD 99
@@ -104,6 +106,7 @@ endif()
 
 target_include_directories(${PROJECT_NAME} INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
 if(LIBTCOD_THREADS AND NOT CMAKE_DISABLE_FIND_PACKAGE_Threads)
@@ -148,11 +151,6 @@ if(LIBTCOD_INSTALL)
         COMPONENT Library
     )
     include(CMakePackageConfigHelpers)
-    get_filename_component(
-        INSTALL_FULL_INCLUDEDIR
-        ${CMAKE_INSTALL_INCLUDEDIR}
-        REALPATH BASE_DIR ${CMAKE_CURRENT_BINARY_DIR}
-    )
     install(
         EXPORT ${PROJECT_NAME}Targets
         DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}
@@ -161,7 +159,7 @@ if(LIBTCOD_INSTALL)
     configure_package_config_file(${PROJECT_NAME}Config.cmake.in
         ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
         INSTALL_DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}
-        PATH_VARS INSTALL_FULL_INCLUDEDIR)
+        PATH_VARS CMAKE_INSTALL_INCLUDEDIR)
     write_basic_package_version_file(
         ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
         COMPATIBILITY SameMajorVersion

@@ -154,6 +154,7 @@ if(EMSCRIPTEN)
 endif()
 
 if(LIBTCOD_INSTALL AND NOT EMSCRIPTEN)
+    include(GNUInstallDirs)
     install(
         TARGETS samples_c samples_cpp frost hmtool navier rad ripples weather worldgen libtcod
         RUNTIME_DEPENDENCIES

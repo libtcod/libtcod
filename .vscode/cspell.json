@@ -419,6 +419,7 @@
         "runtimes",
         "RWIN",
         "rwops",
+        "SCALEMODE",
         "scoef",
         "scons",
         "SCROLLLOCK",

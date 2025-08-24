@@ -8,6 +8,9 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 Versions since `2.0.0` only track API breaks and no longer guarantee ABI compatibility.
 
 ## [Unreleased]
+### Changed
+- `TCOD_sdl2_render_texture_setup` now preserves texture scale mode on the target texture.
+
 ### Deprecated
 - Outdated libtcod event types have been deprecated to help track their usage.
 - Event functions intended to help migrate away from libtcod events have been deprecated to indicate that they're not a permanent solution.
@@ -15,6 +18,7 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 ### Fixed
 - `TCODHeightMap` copy constructor where width and height are different would cause an infinite loop.
 - Fixed variable names in `renderer_xterm.c` that caused a compilation fail with GLIBC 2.42.
+- `SDL_RENDER_SCALE_QUALITY` was being ignored since the change to SDL3 and is now respected again for initial scale mode.
 
 ## [2.1.1] - 2025-04-02
 ### Fixed

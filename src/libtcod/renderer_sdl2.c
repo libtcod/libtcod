@@ -515,6 +515,14 @@ static TCOD_Error TCOD_sdl2_render(
 #endif  // SDL_VERSION_ATLEAST
   return TCOD_E_OK;
 }
+/// @brief Return a scale mode based on SDL2's `SDL_RENDER_SCALE_QUALITY` hint.
+static SDL_ScaleMode get_sdl2_scale_mode_hint() {
+  static const SDL_ScaleMode DEFAULT_SCALE_MODE = SDL_SCALEMODE_NEAREST;
+  const char* scale_mode_hint = SDL_GetHint("SDL_RENDER_SCALE_QUALITY");
+  if (!scale_mode_hint) return DEFAULT_SCALE_MODE;
+  if (strcmp(scale_mode_hint, "0") == 0 || strcmp(scale_mode_hint, "nearest") == 0) return SDL_SCALEMODE_NEAREST;
+  return SDL_SCALEMODE_LINEAR;
+}
 TCOD_Error TCOD_sdl2_render_texture_setup(
     const struct TCOD_TilesetAtlasSDL2* __restrict atlas,
     const struct TCOD_Console* __restrict console,
@@ -532,7 +540,9 @@ TCOD_Error TCOD_sdl2_render_texture_setup(
     TCOD_set_errorv("target must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
   }
+  SDL_ScaleMode scale_mode = -1;  // Replace -1 with SDL_SCALEMODE_INVALID after SDL 3.4 is released
   if (*target) {
+    SDL_GetTextureScaleMode(*target, &scale_mode);  // Preserve scale mode on replaced target texture
     // Checks if *target texture is still valid for the current parameters, deletes *target if not.
     float tex_width;
     float tex_height;
@@ -563,6 +573,8 @@ TCOD_Error TCOD_sdl2_render_texture_setup(
     if (!*target) {
       return TCOD_set_errorv("Failed to create a new target texture.");
     }
+    if (scale_mode == -1) scale_mode = get_sdl2_scale_mode_hint();
+    if (scale_mode >= 0) SDL_SetTextureScaleMode(*target, scale_mode);
   }
   TCOD_Error err = TCOD_E_OK;
   if (cache) {

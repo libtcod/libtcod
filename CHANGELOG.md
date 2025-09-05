@@ -8,6 +8,8 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 Versions since `2.0.0` only track API breaks and no longer guarantee ABI compatibility.
 
 ## [Unreleased]
+### Fixed
+- Fixed compile errors on Android platforms.
 
 ## [2.2.0] - 2025-09-05
 ### Changed

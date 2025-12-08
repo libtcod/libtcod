@@ -190,7 +190,7 @@ jobs:
           cpack --config ${{env.CMAKE_BUILD_DIR}}/CPackConfig.cmake --verbose
       - name: Upload CPack
         if: matrix.cpack
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: cpack-dist-${{ matrix.triplet }}
           path: |
@@ -260,7 +260,7 @@ jobs:
         run: find . | grep -e ".gc..$"
       - name: Generate coverage data
         run: gcov CMakeFiles/libtcod.dir/src/libtcod/*.o CMakeFiles/libtcod.dir/src/libtcod/*/*.o tests/CMakeFiles/unittest.dir/*.o
-      - uses: codecov/codecov-action@v4
+      - uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -276,7 +276,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python 3
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: 3.x
       - name: Install APT dependencies
@@ -331,7 +331,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python 3
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: 3.x
       - name: Install SCons
@@ -366,7 +366,7 @@ jobs:
           scons develop_all dist -j 3 -s CPPDEFINES=NDEBUG MODE=DEBUG_RELEASE ARCH=${{ matrix.architecture }} \
             TOOLSET=mingw
       - name: Archive distribution
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: scons-dist-${{ matrix.os }}-${{ matrix.architecture }}-${{ matrix.toolset }}
           path: |
@@ -427,7 +427,7 @@ jobs:
         run: find ${{ env.CMAKE_BUILD_DIR }}
       - name: List bin files
         run: find ${{env.CMAKE_BIN_DIR}}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: emscripten-builds
           path: ${{ env.CMAKE_BIN_DIR }}
@@ -447,7 +447,7 @@ jobs:
       - name: Generate body
         run: |
           scripts/get_release_description.py | tee release_body.md
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v6
         with:
           pattern: cpack-dist-*
           path: artifacts

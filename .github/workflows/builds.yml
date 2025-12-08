@@ -16,6 +16,7 @@ env:
   VCPKG_FETCH_DEPTH: 1 # Depth to fetch vcpkg commits, must include the baseline.
   SDL_LINUX_DEPENDENCIES: libltdl-dev libx11-dev libxft-dev libxext-dev libwayland-dev libxkbcommon-dev libegl1-mesa-dev libibus-1.0-dev
   CMAKE_BUILD_DIR: build
+  CMAKE_BIN_DIR: ~/build/bin
   VCPKG_ROOT: ${{github.workspace}}/vcpkg
 
 jobs:
@@ -147,6 +148,8 @@ jobs:
           cmake -S . -B ${{env.CMAKE_BUILD_DIR}} -G Ninja \
             -DVCPKG_TARGET_TRIPLET="${{ matrix.triplet }}" \
             -DCMAKE_BUILD_TYPE=${{matrix.config}} \
+            -D CMAKE_LIBRARY_OUTPUT_DIRECTORY:PATH=${{ env.CMAKE_BIN_DIR }}\
+            -D CMAKE_RUNTIME_OUTPUT_DIRECTORY:PATH=${{ env.CMAKE_BIN_DIR }}\
             -DLIBTCOD_SDL3=find_package \
             -DLIBTCOD_ZLIB=find_package \
             -DLIBTCOD_LODEPNG=find_package \
@@ -167,11 +170,11 @@ jobs:
           cmake --build ${{env.CMAKE_BUILD_DIR}} --target all_verify_interface_header_sets
       - name: List build files
         run: find ${{env.CMAKE_BUILD_DIR}}
+      - name: List bin files
+        run: find ${{env.CMAKE_BIN_DIR}}
       - name: Run tests
-        env:
-          LD_LIBRARY_PATH: ${{env.CMAKE_BUILD_DIR}}/lib
         run: |
-          ${{env.CMAKE_BUILD_DIR}}/bin/unittest ~[!nonportable] ${{ matrix.config != 'Release' && '~[benchmark]' || '' }}
+          ${{env.CMAKE_BIN_DIR}}/unittest ~[!nonportable] ${{ matrix.config != 'Release' && '~[benchmark]' || '' }}
       - name: CMake test install
         if: runner.os != 'Windows'
         run: |
@@ -229,6 +232,8 @@ jobs:
       - name: CMake configure
         run: |
           cmake . -G Ninja \
+            -D CMAKE_LIBRARY_OUTPUT_DIRECTORY:PATH=${{ env.CMAKE_BIN_DIR }}\
+            -D CMAKE_RUNTIME_OUTPUT_DIRECTORY:PATH=${{ env.CMAKE_BIN_DIR }}\
             -DCMAKE_BUILD_TYPE=Debug \
             -DCMAKE_CXX_FLAGS="--coverage" \
             -DCMAKE_C_FLAGS="--coverage" \
@@ -244,10 +249,7 @@ jobs:
         run: |
           cmake --build .
       - name: Run tests
-        env:
-          LD_LIBRARY_PATH: lib
-        run: |
-          bin/unittest ~[!nonportable] ~[benchmark]
+        run: ${{ env.CMAKE_BIN_DIR }}/unittest ~[!nonportable] ~[benchmark]
       - name: List coverage files
         run: find . | grep -e ".gc..$"
       - name: Generate coverage data
@@ -369,7 +371,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BUILD_TYPE: Release
-      CMAKE_BUILD_DIR: build
       EM_VERSION: 4.0.5
       EM_CACHE_FOLDER: "emsdk-cache"
       VCPKG_ROOT: ${{github.workspace}}/vcpkg
@@ -407,6 +408,7 @@ jobs:
           -DVCPKG_CHAINLOAD_TOOLCHAIN_FILE="${EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake"
           -DCMAKE_TOOLCHAIN_FILE=vcpkg/scripts/buildsystems/vcpkg.cmake
           -DVCPKG_TARGET_TRIPLET=wasm32-emscripten
+          -D CMAKE_RUNTIME_OUTPUT_DIRECTORY:PATH=${{ env.CMAKE_BIN_DIR }}
           -DCMAKE_BUILD_TYPE="${{ env.BUILD_TYPE }}"
           -DLIBTCOD_SAMPLES=ON
           -DLIBTCOD_THREADS=OFF
@@ -414,10 +416,12 @@ jobs:
         run: cmake --build ${{ env.CMAKE_BUILD_DIR }}
       - name: Show contents of the build directory
         run: find ${{ env.CMAKE_BUILD_DIR }}
+      - name: List bin files
+        run: find ${{env.CMAKE_BIN_DIR}}
       - uses: actions/upload-artifact@v4
         with:
           name: emscripten-builds
-          path: ${{ env.CMAKE_BUILD_DIR }}/bin
+          path: ${{ env.CMAKE_BIN_DIR }}
           retention-days: 7
           if-no-files-found: error
           compression-level: 6

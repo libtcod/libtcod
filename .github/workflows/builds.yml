@@ -261,8 +261,6 @@ jobs:
       - name: Generate coverage data
         run: gcov CMakeFiles/libtcod.dir/src/libtcod/*.o CMakeFiles/libtcod.dir/src/libtcod/*/*.o tests/CMakeFiles/unittest.dir/*.o
       - uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
 
   Autotools:
     # Disabled until SDL3 is supported

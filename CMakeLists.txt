@@ -1,9 +1,17 @@
 cmake_minimum_required(VERSION 3.23...4.0)
 
-if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
-    set(CMAKE_TOOLCHAIN_FILE
-        "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
-        CACHE STRING "Vcpkg toolchain file")
+set(LIBTCOD_VCPKG OFF CACHE BOOL "Enable Vcpkg for building libtcod locally.")
+set(LIBTCOD_SAMPLES OFF CACHE BOOL "Build sources from the samples directory.")
+set(LIBTCOD_TESTS OFF CACHE BOOL "Build unit tests.")
+set(LIBTCOD_INSTALL ON CACHE BOOL "Enable install targets.")
+set(LIBTCOD_CPACK OFF CACHE BOOL "Enable CPack for libtcod.")
+
+if(LIBTCOD_VCPKG)
+    if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+        set(CMAKE_TOOLCHAIN_FILE
+            "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+            CACHE STRING "Vcpkg toolchain file")
+    endif()
 endif()
 
 file(STRINGS src/libtcod/version.h LIBTCOD_VERSION_LINE REGEX "TCOD_STRVERSION")
@@ -23,10 +31,6 @@ if(CONAN_FILE)
     conan_basic_setup(TARGETS)
 endif()
 
-set(LIBTCOD_SAMPLES OFF CACHE BOOL "Build sources from the samples directory.")
-set(LIBTCOD_TESTS OFF CACHE BOOL "Build unit tests.")
-set(LIBTCOD_INSTALL ON CACHE BOOL "Enable install targets.")
-
 add_library(${PROJECT_NAME})
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 add_subdirectory(src)
@@ -39,8 +43,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     SOVERSION ${PROJECT_VERSION_MAJOR}
 )
 
-set(VCPKG_MANIFEST_NO_DEFAULT_FEATURES ON)
-
 if(LIBTCOD_SAMPLES)
     add_subdirectory(samples)
 endif()
@@ -49,11 +51,13 @@ if(LIBTCOD_TESTS)
     list(APPEND VCPKG_MANIFEST_FEATURES "tests")
 endif()
 
-if (WIN32)
-    set(CPACK_GENERATOR "ZIP")
-else()
-    set(CPACK_GENERATOR "TGZ")
+if(LIBTCOD_CPACK)
+    if (WIN32)
+        set(CPACK_GENERATOR "ZIP")
+    else()
+        set(CPACK_GENERATOR "TGZ")
+    endif()
+    set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt")
+    set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
+    include(CPack)
 endif()
-set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt")
-set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
-include(CPack)

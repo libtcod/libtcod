@@ -10,6 +10,7 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 ## [Unreleased]
 ### Changed
 - CMake script no longer sets output directories.
+- CMake script now only configures Vcpkg or CPack when `LIBTCOD_VCPKG` or `LIBTCOD_CPACK` is enabled.
 
 ## [2.2.1] - 2025-09-05
 ### Fixed

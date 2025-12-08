@@ -116,6 +116,8 @@
     "editor.defaultFormatter": "xaver.clang-format",
     "cmake.sourceDirectory": "${workspaceFolder}",
     "cmake.configureSettings": {
+        "LIBTCOD_VCPKG": "ON",
+        "LIBTCOD_CPACK": "ON",
         "LIBTCOD_SAMPLES": "ON",
         "LIBTCOD_TESTS": "ON",
         "LIBTCOD_THREADS": "OFF",

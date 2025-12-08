@@ -82,12 +82,18 @@ Instructions are [provided here](https://github.com/libtcod/libtcod/tree/master/
 
 The libtcod repository includes a CMake script for compiling libtcod and its tests and samples.
 You can include the repository as a submodule allowing another project to build and run any version of libtcod.
+For more info the project root `CMakeLists.txt` file contains config options near the top of the script.
 
-By default it is assumed that Vcpkg will be used to get dependencies, but this can be changed by setting the following cache variables.
-`find_package` means CMake's `find_package` command will be used.
-`vendored` means that sources bundled in the repository will be statically compiled, this is generally not recommended.
-`conan` and `vcpkg` means that package manager specific scripts are used to link these dependencies.
-`disable` can be used to ignore a library, but functions which require that library will no longer function.
+When building locally the `LIBTCOD_VCPKG` flag must be set with `-D LIBTCOD_VCPKG=ON` during CMake configuration,
+otherwise the Vcpkg toolchain must be manually set.
+
+The method used to find dependencies can be changed by setting the following cache variables to the following:
+- `find_package` means CMake's `find_package` command will be used.
+- `vendored` means that sources bundled in the repository will be statically compiled.
+  This is not recommended because the bundled libraries may be out-of-date.
+- `conan` and `vcpkg` means that package manager specific scripts are used to link these dependencies.
+- `disable` can be used to remove a library.
+  Libtcod functions which require that library will no longer be available.
 
 | Cache Variable   | Default      | Options | Notes |
 | ---------------- | ------------ | ------- | ----- |

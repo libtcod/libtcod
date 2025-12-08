@@ -8,6 +8,10 @@ on:
       - "*.*.*"
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 defaults:
   run:
     shell: bash
@@ -22,6 +26,7 @@ env:
 jobs:
   CMake:
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     strategy:
       fail-fast: true
       matrix:
@@ -197,6 +202,7 @@ jobs:
 
   coverage:
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     strategy:
       fail-fast: true
       matrix:
@@ -262,6 +268,7 @@ jobs:
     # Disabled until SDL3 is supported
     if: false
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     strategy:
       fail-fast: true
       matrix:
@@ -302,6 +309,7 @@ jobs:
     # Disabled until SDL3 is supported
     if: false
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     continue-on-error: ${{ matrix.experimental == true }}
     strategy:
       fail-fast: true
@@ -369,6 +377,7 @@ jobs:
 
   Emscripten:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     env:
       BUILD_TYPE: Release
       EM_VERSION: 4.0.5
@@ -430,6 +439,7 @@ jobs:
     needs: [CMake]
     if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
       contents: write
     steps:

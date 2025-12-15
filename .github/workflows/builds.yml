@@ -45,7 +45,7 @@ jobs:
             config: Release
             cpack: true
 
-          - os: macos-13
+          - os: macos-15-intel
             triplet: x64-osx
             shared: dynamic
             config: Release
@@ -318,9 +318,9 @@ jobs:
         os: [ubuntu-24.04]
         architecture: [x86_64]
         include:
-          - os: "macos-13"
+          - os: "macos-15-intel"
             architecture: universal2
-          - os: "macos-13"
+          - os: "macos-15-intel"
             architecture: x86_64
           - os: "windows-2022"
             architecture: x86

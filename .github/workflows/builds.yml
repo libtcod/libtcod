@@ -114,7 +114,7 @@ jobs:
       VCPKG_LIBRARY_LINKAGE: ${{matrix.shared}}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: true
       - name: Fetch Vcpkg commits
@@ -212,7 +212,7 @@ jobs:
           - os: ubuntu-24.04
             triplet: x64-linux
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: true
       - name: Fetch Vcpkg commits
@@ -275,7 +275,7 @@ jobs:
       matrix:
         os: [macos-14]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Set up Python 3
         uses: actions/setup-python@v6
         with:
@@ -330,7 +330,7 @@ jobs:
             architecture: x86_64
             toolset: mingw
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Set up Python 3
         uses: actions/setup-python@v6
         with:
@@ -385,7 +385,7 @@ jobs:
       EM_CACHE_FOLDER: "emsdk-cache"
       VCPKG_ROOT: ${{github.workspace}}/vcpkg
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: true
       - name: Fetch Vcpkg commits
@@ -445,7 +445,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Generate body
         run: |
           scripts/get_release_description.py | tee release_body.md

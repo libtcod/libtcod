@@ -130,7 +130,7 @@ jobs:
         run: sudo apt-get install ${{ env.SDL_LINUX_DEPENDENCIES }}
       # Restore both vcpkg and its artifacts from the GitHub cache service.
       - name: Restore vcpkg and its artifacts.
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           # The first path is where vcpkg generates artifacts while consuming the vcpkg.json manifest file.
           # The second path is the location of vcpkg (it contains the vcpkg executable and data files).
@@ -192,7 +192,7 @@ jobs:
           cpack --config ${{env.CMAKE_BUILD_DIR}}/CPackConfig.cmake --verbose
       - name: Upload CPack
         if: matrix.cpack
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: cpack-dist-${{ matrix.triplet }}
           path: |
@@ -227,7 +227,7 @@ jobs:
         if: runner.os == 'Linux'
         run: sudo apt-get install ${{ env.SDL_LINUX_DEPENDENCIES }}
       - name: Restore vcpkg and its artifacts.
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ${{ env.CMAKE_BUILD_DIR }}/vcpkg_installed/
@@ -367,7 +367,7 @@ jobs:
           scons develop_all dist -j 3 -s CPPDEFINES=NDEBUG MODE=DEBUG_RELEASE ARCH=${{ matrix.architecture }} \
             TOOLSET=mingw
       - name: Archive distribution
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: scons-dist-${{ matrix.os }}-${{ matrix.architecture }}-${{ matrix.toolset }}
           path: |
@@ -392,7 +392,7 @@ jobs:
         working-directory: vcpkg
         run: git fetch --depth=${{env.VCPKG_FETCH_DEPTH}}
       - name: Restore vcpkg and its artifacts
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ${{ env.CMAKE_BUILD_DIR }}/vcpkg_installed/
@@ -403,7 +403,7 @@ jobs:
           key: wasm32-emscripten-${{ hashFiles('vcpkg.json', '.git/modules/vcpkg/HEAD') }}
       - name: Setup cache
         id: cache-system-libraries
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ env.EM_CACHE_FOLDER }}
           key: ${{ env.EM_VERSION }}-${{ runner.os }}
@@ -429,7 +429,7 @@ jobs:
         run: find ${{ env.CMAKE_BUILD_DIR }}
       - name: List bin files
         run: find ${{env.CMAKE_BIN_DIR}}
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: emscripten-builds
           path: ${{ env.CMAKE_BIN_DIR }}
@@ -449,7 +449,7 @@ jobs:
       - name: Generate body
         run: |
           scripts/get_release_description.py | tee release_body.md
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
         with:
           pattern: cpack-dist-*
           path: artifacts

@@ -91,7 +91,7 @@ The method used to find dependencies can be changed by setting the following cac
 - `find_package` means CMake's `find_package` command will be used.
 - `vendored` means that sources bundled in the repository will be statically compiled.
   This is not recommended because the bundled libraries may be out-of-date.
-- `conan` and `vcpkg` means that package manager specific scripts are used to link these dependencies.
+- `conan` means that package manager specific scripts are used to link these dependencies.
 - `disable` can be used to remove a library.
   Libtcod functions which require that library will no longer be available.
 
@@ -100,6 +100,6 @@ The method used to find dependencies can be changed by setting the following cac
 | LIBTCOD_SDL3     | find_package | conan, disable, find_package | Support for libtcod contexts.
 | LIBTCOD_ZLIB     | find_package | conan, disable, find_package | Support for REXPaint and TCODZip.
 | LIBTCOD_LODEPNG  | find_package | disable, find_package, vendored |
-| LIBTCOD_UTF8PROC | vcpkg        | disable, find_package, vcpkg, vendored | Support for console printing functions.
+| LIBTCOD_UTF8PROC | find_package | disable, find_package, vendored | Support for console printing functions.
 | LIBTCOD_STB      | find_package | find_package, vendored |
 | LIBTCOD_THREADS  | false        | bool | Support for deprecated functions, leave this off.

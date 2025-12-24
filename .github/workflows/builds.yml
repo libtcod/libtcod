@@ -18,7 +18,7 @@ defaults:
 
 env:
   VCPKG_FETCH_DEPTH: 1 # Depth to fetch vcpkg commits, must include the baseline.
-  SDL_LINUX_DEPENDENCIES: libltdl-dev libx11-dev libxft-dev libxext-dev libwayland-dev libxkbcommon-dev libegl1-mesa-dev libibus-1.0-dev
+  SDL_LINUX_DEPENDENCIES: autoconf autoconf-archive automake libtool libltdl-dev libx11-dev libxft-dev libxext-dev libwayland-dev libxkbcommon-dev libegl1-mesa-dev libibus-1.0-dev
   CMAKE_BUILD_DIR: build
   CMAKE_BIN_DIR: ~/build/bin
   VCPKG_ROOT: ${{github.workspace}}/vcpkg
@@ -160,8 +160,8 @@ jobs:
             -DLIBTCOD_SDL3=find_package \
             -DLIBTCOD_ZLIB=find_package \
             -DLIBTCOD_LODEPNG=find_package \
-            -DLIBTCOD_UTF8PROC=vcpkg \
-            -DLIBTCOD_STB=vcpkg \
+            -DLIBTCOD_UTF8PROC=find_package \
+            -DLIBTCOD_STB=find_package \
             -DCMAKE_INSTALL_PREFIX=local \
             -DBUILD_SHARED_LIBS=${{ matrix.shared == 'dynamic' && 'TRUE' || 'FALSE' }} \
             -DLIBTCOD_SAMPLES=ON \
@@ -249,8 +249,8 @@ jobs:
             -DLIBTCOD_SDL3=find_package \
             -DLIBTCOD_ZLIB=find_package \
             -DLIBTCOD_LODEPNG=find_package \
-            -DLIBTCOD_UTF8PROC=vcpkg \
-            -DLIBTCOD_STB=vcpkg \
+            -DLIBTCOD_UTF8PROC=find_package \
+            -DLIBTCOD_STB=find_package \
             -DLIBTCOD_SAMPLES=OFF \
             -DLIBTCOD_TESTS=ON \
             -Wdev

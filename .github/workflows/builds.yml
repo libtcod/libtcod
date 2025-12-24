@@ -376,6 +376,35 @@ jobs:
           retention-days: 3
           compression-level: 0
 
+  FetchContent:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: false
+      - name: Install latest CMake
+        uses: lukka/get-cmake@latest
+      - name: Update APT packages
+        run: sudo apt-get update
+      - name: Install APT dependencies
+        run: sudo apt-get install ${{ env.SDL_LINUX_DEPENDENCIES }}
+      - name: CMake configure
+        run: |
+          cmake -S . -B ${{env.CMAKE_BUILD_DIR}} \
+            -G Ninja \
+            -D LIBTCOD_VCPKG=OFF \
+            -D CMAKE_LIBRARY_OUTPUT_DIRECTORY:PATH=${{ env.CMAKE_BIN_DIR }}\
+            -D CMAKE_RUNTIME_OUTPUT_DIRECTORY:PATH=${{ env.CMAKE_BIN_DIR }}\
+            -D CMAKE_BUILD_TYPE=Debug \
+            -D LIBTCOD_SAMPLES=ON \
+            -D LIBTCOD_TESTS=ON \
+            -Wdev
+      - name: CMake build
+        run: cmake --build ${{env.CMAKE_BUILD_DIR}}
+      - name: Run tests
+        run: ${{ env.CMAKE_BIN_DIR }}/unittest ~[!nonportable] ~[benchmark]
+
   Emscripten:
     runs-on: ubuntu-latest
     timeout-minutes: 30

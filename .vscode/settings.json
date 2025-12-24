@@ -130,6 +130,7 @@
     "cmake.configureArgs": [
         "-Wdev",
         "-Wdeprecated",
+        "--log-level=VERBOSE"
     ],
     "cmake.debugConfig": {
         // Workaround for launching the debugger from the CMake toolbar.

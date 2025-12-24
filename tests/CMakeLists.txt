@@ -2,7 +2,17 @@ cmake_minimum_required(VERSION 3.24...4.2)
 project(PackageTest CXX)
 
 set(_IMPORT_CHECK_TARGETS "")  # Suppress undefined variable in Catch2Targets.cmake.
-find_package(Catch2 CONFIG REQUIRED)
+
+include(FetchContent)
+FetchContent_Declare(
+    Catch2
+    GIT_REPOSITORY https://github.com/catchorg/Catch2
+    GIT_TAG b3fb4b9feafcd8d91c5cb510a4775143fdbef02f # v3.11.0
+    GIT_SHALLOW TRUE
+    FIND_PACKAGE_ARGS CONFIG
+)
+FetchContent_MakeAvailable(Catch2)
+
 
 if (APPLE)
     set(CMAKE_INSTALL_RPATH "@executable_path;@executable_path/../lib")

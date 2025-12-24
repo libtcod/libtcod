@@ -8,6 +8,10 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 Versions since `2.0.0` only track API breaks and no longer guarantee ABI compatibility.
 
 ## [Unreleased]
+### Added
+- Now fully supports Cmake's `FetchPackage` for dependency resolution.
+  [#141](https://github.com/libtcod/libtcod/issues/141)
+
 ### Changed
 - CMake script no longer sets output directories.
 - CMake script now only configures Vcpkg or CPack when `LIBTCOD_VCPKG` or `LIBTCOD_CPACK` is enabled.

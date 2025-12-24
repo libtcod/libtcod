@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.24...4.2)
 
+include(FetchContent)
 include(GNUInstallDirs)
 
 target_compile_features(${PROJECT_NAME} PUBLIC c_std_99 cxx_std_17)
@@ -37,10 +38,11 @@ if(CMAKE_DISABLE_FIND_PACKAGE_unofficial-utf8proc OR CMAKE_DISABLE_FIND_PACKAGE_
     set(LIBTCOD_UTF8PROC "disable")
 endif()
 
+
 set_property(CACHE LIBTCOD_SDL3 PROPERTY STRINGS "find_package" "conan" "disable")
 if(LIBTCOD_SDL3 STREQUAL "find_package")
     list(APPEND VCPKG_MANIFEST_FEATURES "sdl")
-    find_package(SDL3 CONFIG REQUIRED)
+    FetchContent_MakeAvailable(SDL3)
     target_link_libraries(${PROJECT_NAME} PUBLIC SDL3::SDL3)
 elseif(LIBTCOD_SDL3 STREQUAL "conan")
     target_link_libraries(${PROJECT_NAME} PUBLIC CONAN_PKG::sdl2)
@@ -52,7 +54,7 @@ endif()
 
 set_property(CACHE LIBTCOD_ZLIB PROPERTY STRINGS "find_package" "conan" "disable")
 if(LIBTCOD_ZLIB STREQUAL "find_package")
-    find_package(ZLIB REQUIRED)
+    FetchContent_MakeAvailable(ZLIB)
     target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
 elseif(LIBTCOD_ZLIB STREQUAL "conan")
     target_link_libraries(${PROJECT_NAME} PRIVATE CONAN_PKG::zlib)
@@ -64,7 +66,28 @@ endif()
 
 set_property(CACHE LIBTCOD_LODEPNG PROPERTY STRINGS "vendored" "find_package" "disable")
 if(LIBTCOD_LODEPNG STREQUAL "find_package")
-    find_package(lodepng-c CONFIG REQUIRED)
+    FetchContent_MakeAvailable(lodepng-c)
+    if(NOT TARGET lodepng-c)
+        message(STATUS "Adding missing lodepng-c target for ${lodepng-c_SOURCE_DIR}")
+        configure_file("${lodepng-c_SOURCE_DIR}/lodepng.cpp"  "${lodepng-c_SOURCE_DIR}/lodepng.c" COPYONLY)
+        add_library(lodepng-c STATIC "${lodepng-c_SOURCE_DIR}/lodepng.c")
+        target_include_directories(
+            lodepng-c PUBLIC
+            $<BUILD_INTERFACE:${lodepng-c_SOURCE_DIR}>
+        )
+        if (LIBTCOD_INSTALL)
+            install(
+                TARGETS lodepng-c
+                EXPORT lodepng-c-targets
+                RUNTIME LIBRARY ARCHIVE
+                )
+            install(
+                EXPORT lodepng-c-targets
+                DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/lodepng-c
+                NAMESPACE lodepng-c::
+            )
+        endif()
+    endif()
     target_link_libraries(${PROJECT_NAME} PRIVATE lodepng-c)
 elseif(LIBTCOD_LODEPNG STREQUAL "vendored")
     message("Will be vendored: LodePNG")
@@ -77,16 +100,22 @@ else()
 endif()
 
 set_property(CACHE LIBTCOD_UTF8PROC PROPERTY STRINGS "find_package" "vendored" "vcpkg" "disable")
+
+if(LIBTCOD_UTF8PROC STREQUAL "vcpkg")
+    message(DEPRECATION "LIBTCOD_UTF8PROC=vcpkg is deprecated, this should be LIBTCOD_UTF8PROC=find_package")
+    set(LIBTCOD_UTF8PROC "find_package")
+endif()
 if(LIBTCOD_UTF8PROC STREQUAL "vendored")
     message("Will be vendored: utf8proc")
     target_include_directories(${PROJECT_NAME} PRIVATE "vendor/utf8proc")
     target_sources(${PROJECT_NAME} PRIVATE "vendor/utf8proc/utf8proc.c")
-elseif(LIBTCOD_UTF8PROC STREQUAL "find_package" OR LIBTCOD_UTF8PROC STREQUAL "vcpkg")
-    find_package(utf8proc REQUIRED)
-    target_link_libraries(${PROJECT_NAME} PRIVATE utf8proc::utf8proc)
-    if(LIBTCOD_UTF8PROC STREQUAL "vcpkg")
-        message(DEPRECATION "LIBTCOD_UTF8PROC=vcpkg is deprecated, this should be LIBTCOD_UTF8PROC=find_package")
+elseif(LIBTCOD_UTF8PROC STREQUAL "find_package")
+    FetchContent_MakeAvailable(utf8proc)
+    if(NOT TARGET utf8proc::utf8proc)
+        message(STATUS "Fixing missing utf8proc::utf8proc alias in fetched utf8proc configuration")
+        add_library(utf8proc::utf8proc ALIAS utf8proc)
     endif()
+    target_link_libraries(${PROJECT_NAME} PRIVATE utf8proc::utf8proc)
 elseif(LIBTCOD_UTF8PROC STREQUAL "disable")
     target_compile_definitions(${PROJECT_NAME} PUBLIC TCOD_NO_UNICODE)
 else()
@@ -94,15 +123,16 @@ else()
 endif()
 
 set_property(CACHE LIBTCOD_STB PROPERTY STRINGS "find_package" "vendored" "vcpkg")
+if(LIBTCOD_STB STREQUAL "vcpkg")
+    message(DEPRECATION "LIBTCOD_STB=vcpkg is deprecated, this should be LIBTCOD_STB=find_package")
+    set(LIBTCOD_STB "find_package")
+endif()
 if(LIBTCOD_STB STREQUAL "vendored")
     message("Will be vendored: stb")
     target_include_directories(${PROJECT_NAME} PRIVATE "vendor/")
-elseif(LIBTCOD_STB STREQUAL "find_package" OR LIBTCOD_STB STREQUAL "vcpkg")
-    find_package(Stb REQUIRED)
-    target_include_directories(${PROJECT_NAME} PRIVATE ${Stb_INCLUDE_DIR})
-    if(LIBTCOD_STB STREQUAL "vcpkg")
-        message(DEPRECATION "LIBTCOD_STB=vcpkg is deprecated, this should be LIBTCOD_STB=find_package")
-    endif()
+elseif(LIBTCOD_STB STREQUAL "find_package")
+    FetchContent_MakeAvailable(stb)
+    target_include_directories(${PROJECT_NAME} PRIVATE ${stb_SOURCE_DIR})
 else()
     message(FATAL_ERROR "Unknown option for LIBTCOD_STB: '${LIBTCOD_STB}'")
 endif()

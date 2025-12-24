@@ -7,7 +7,6 @@ if(CONAN_FILE)
     conan_basic_setup(TARGETS)
     set(LINK_TCOD CONAN_PKG::libtcod)
 else()
-    find_package(SDL3 CONFIG REQUIRED)
     set(LINK_TCOD libtcod::libtcod)
 endif()
 

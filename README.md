@@ -18,16 +18,39 @@ This is the easiest way to get the latest stable version of libtcod for any proj
 
 Libtcod is included as a port in [Vcpkg](https://github.com/microsoft/vcpkg).
 You can install libtcod via Vcpkg and then link the library using a [CMake](https://cmake.org/) script as you normally do for that package manager.
+You may want to fork [this template project](https://github.com/HexDecimal/libtcod-vcpkg-template) if you plan on starting a project with this setup.
 
 ## As a submodule
 
 This is the best option for testing the development versions of libtcod.
 
-You can include libtcod in a project by adding the libtcod repository as a [submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules) and then adding that directory to a [CMake](https://cmake.org/) script.
-You will want to fork [this template project](https://github.com/HexDecimal/libtcod-vcpkg-template) if you plan on starting a project with this setup.
+You can include libtcod in a project by adding the libtcod repository as a [submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules) and then adding that directory to a [CMake](https://cmake.org/) script with `add_subdirectory`.
 
-It is expected that Vcpkg will be used, but libtcod's CMake script can be configured to compile without using Vcpkg for dependencies.
-See [CONTRIBUTING.md](CONTRIBUTING.md) for details on configuring dependencies.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for more details on configuring dependencies.
+
+## Using FetchContent
+
+Libtcod can be included via `FetchContent` in a projects `CMakeLists.txt`:
+
+```cmake
+cmake_minimum_required(VERSION 4.2)
+include(FetchContent)
+
+FetchContent_Declare(
+    libtcod
+    GIT_REPOSITORY https://github.com/libtcod/libtcod
+    GIT_TAG main  # Replace main with desired version or revision later than 2.2.1
+)
+FetchContent_MakeAvailable(libtcod)
+```
+
+Afterwards libtcod can be linked to a project as normal.
+
+```cmake
+target_link_libraries(${PROJECT_NAME} PRIVATE libtcod::libtcod)
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for more details on configuring dependencies.
 
 ## Using one of our downloads
 

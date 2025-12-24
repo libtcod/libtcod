@@ -88,7 +88,8 @@ When building locally the `LIBTCOD_VCPKG` flag must be set with `-D LIBTCOD_VCPK
 otherwise the Vcpkg toolchain must be manually set.
 
 The method used to find dependencies can be changed by setting the following cache variables to the following:
-- `find_package` means CMake's `find_package` command will be used.
+- `find_package` means CMake's `FetchContent_MakeAvailable` command will be used.
+  `find_package` is preferred but if the package does not exist locally then it will be automatically downloaded.
 - `vendored` means that sources bundled in the repository will be statically compiled.
   This is not recommended because the bundled libraries may be out-of-date.
 - `conan` means that package manager specific scripts are used to link these dependencies.

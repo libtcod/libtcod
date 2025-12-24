@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.23...4.0)
 
-set(LIBTCOD_VCPKG OFF CACHE BOOL "Enable Vcpkg for building libtcod locally.")
-set(LIBTCOD_SAMPLES OFF CACHE BOOL "Build sources from the samples directory.")
-set(LIBTCOD_TESTS OFF CACHE BOOL "Build unit tests.")
-set(LIBTCOD_INSTALL ON CACHE BOOL "Enable install targets.")
-set(LIBTCOD_CPACK OFF CACHE BOOL "Enable CPack for libtcod.")
+option(LIBTCOD_VCPKG "Enable Vcpkg for building libtcod locally." OFF)
+option(LIBTCOD_SAMPLES "Build sources from the samples directory." OFF)
+option(LIBTCOD_TESTS "Build unit tests." OFF)
+option(LIBTCOD_INSTALL "Enable install targets." ON)
+option(LIBTCOD_CPACK "Enable CPack for libtcod." OFF)
 
 if(LIBTCOD_VCPKG)
     if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)

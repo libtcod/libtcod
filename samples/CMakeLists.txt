@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.23...4.0)
+cmake_minimum_required(VERSION 3.24...4.2)
 
 project(libtcod_samples C CXX)
 

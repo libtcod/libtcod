@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.23...4.0)
+cmake_minimum_required(VERSION 3.24...4.2)
 
 option(LIBTCOD_VCPKG "Enable Vcpkg for building libtcod locally." OFF)
 option(LIBTCOD_SAMPLES "Build sources from the samples directory." OFF)

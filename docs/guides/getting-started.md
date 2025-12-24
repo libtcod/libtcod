@@ -59,7 +59,7 @@ To setup this environment CMake will be used to invoke Vcpkg to include those li
 
 This is done with a `./CMakeLists.txt` script:
 ```cmake
-cmake_minimum_required(VERSION 4.0)
+cmake_minimum_required(VERSION 4.2)
 
 # Set the default toolchain to use a Vcpkg submodule.
 if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)

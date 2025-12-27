@@ -32,6 +32,7 @@ FetchContent_Declare(
     lodepng-c
     GIT_REPOSITORY https://github.com/lvandeve/lodepng
     GIT_TAG d41d4aa8c63dea277e25c94ad85046b6c5335ccc
+    PATCH_COMMAND git apply ${CMAKE_CURRENT_SOURCE_DIR}/cmake/lodepng-c.patch
     FIND_PACKAGE_ARGS CONFIG
 )
 

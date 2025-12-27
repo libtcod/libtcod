@@ -67,27 +67,6 @@ endif()
 set_property(CACHE LIBTCOD_LODEPNG PROPERTY STRINGS "vendored" "find_package" "disable")
 if(LIBTCOD_LODEPNG STREQUAL "find_package")
     FetchContent_MakeAvailable(lodepng-c)
-    if(NOT TARGET lodepng-c)
-        message(STATUS "Adding missing lodepng-c target for ${lodepng-c_SOURCE_DIR}")
-        configure_file("${lodepng-c_SOURCE_DIR}/lodepng.cpp"  "${lodepng-c_SOURCE_DIR}/lodepng.c" COPYONLY)
-        add_library(lodepng-c STATIC "${lodepng-c_SOURCE_DIR}/lodepng.c")
-        target_include_directories(
-            lodepng-c PUBLIC
-            $<BUILD_INTERFACE:${lodepng-c_SOURCE_DIR}>
-        )
-        if (LIBTCOD_INSTALL)
-            install(
-                TARGETS lodepng-c
-                EXPORT lodepng-c-targets
-                RUNTIME LIBRARY ARCHIVE
-                )
-            install(
-                EXPORT lodepng-c-targets
-                DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/lodepng-c
-                NAMESPACE lodepng-c::
-            )
-        endif()
-    endif()
     target_link_libraries(${PROJECT_NAME} PRIVATE lodepng-c)
 elseif(LIBTCOD_LODEPNG STREQUAL "vendored")
     message("Will be vendored: LodePNG")

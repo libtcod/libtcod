@@ -1,0 +1,24 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+new file mode 100644
+index 0000000..ae6c157
+--- /dev/null
++++ b/CMakeLists.txt
+@@ -0,0 +1,18 @@
++cmake_minimum_required(VERSION 3.24...4.2)
++project(lodepng-c C)
++configure_file("${CMAKE_CURRENT_SOURCE_DIR}/lodepng.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/lodepng.c" COPYONLY)
++add_library(lodepng-c STATIC "${CMAKE_CURRENT_SOURCE_DIR}/lodepng.c")
++target_include_directories(
++    lodepng-c PUBLIC
++    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
++)
++install(
++    TARGETS lodepng-c
++    EXPORT lodepng-c-targets
++    RUNTIME LIBRARY ARCHIVE
++    )
++install(
++    EXPORT lodepng-c-targets
++    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/lodepng-c
++    NAMESPACE lodepng-c::
++)

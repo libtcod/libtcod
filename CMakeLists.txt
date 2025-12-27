@@ -40,6 +40,7 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/JuliaStrings/utf8proc
     GIT_TAG 90daf9f396cfec91668758eb9cc54bd5248a6b89 # v2.11.2
     GIT_SHALLOW TRUE
+    PATCH_COMMAND git apply ${CMAKE_CURRENT_SOURCE_DIR}/cmake/utf8proc.patch
     FIND_PACKAGE_ARGS
 )
 set(UTF8PROC_INSTALL ${LIBTCOD_INSTALL} CACHE BOOL "")

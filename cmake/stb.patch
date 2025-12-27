@@ -1,0 +1,8 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+new file mode 100644
+index 0000000..9d27ea2
+--- /dev/null
++++ b/CMakeLists.txt
+@@ -0,0 +1,2 @@
++cmake_minimum_required(VERSION 3.24...4.2)
++set(Stb_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)

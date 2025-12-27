@@ -45,9 +45,10 @@ FetchContent_Declare(
 set(UTF8PROC_INSTALL ${LIBTCOD_INSTALL} CACHE BOOL "")
 
 FetchContent_Declare(
-    stb
+    Stb
     GIT_REPOSITORY https://github.com/nothings/stb
     GIT_TAG f1c79c02822848a9bed4315b12c8c8f3761e1296
+    PATCH_COMMAND git apply ${CMAKE_CURRENT_SOURCE_DIR}/cmake/stb.patch
     FIND_PACKAGE_ARGS
 )
 

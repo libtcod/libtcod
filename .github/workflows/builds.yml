@@ -384,6 +384,7 @@ jobs:
         run: cmake -S . -B ${{env.CMAKE_BUILD_DIR}}
           -G Ninja
           -D LIBTCOD_VCPKG=OFF
+          -D FETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER
           -D CMAKE_LIBRARY_OUTPUT_DIRECTORY:PATH=${{ env.CMAKE_BIN_DIR }}
           -D CMAKE_RUNTIME_OUTPUT_DIRECTORY:PATH=${{ env.CMAKE_BIN_DIR }}
           -D CMAKE_BUILD_TYPE=Debug

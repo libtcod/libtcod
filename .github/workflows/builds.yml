@@ -116,6 +116,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
+          persist-credentials: false
           submodules: true
       - name: Fetch Vcpkg commits
         working-directory: vcpkg
@@ -214,6 +215,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
+          persist-credentials: false
           submodules: true
       - name: Fetch Vcpkg commits
         working-directory: vcpkg
@@ -276,6 +278,8 @@ jobs:
         os: [macos-14]
     steps:
       - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
       - name: Set up Python 3
         uses: actions/setup-python@v6
         with:
@@ -331,6 +335,8 @@ jobs:
             toolset: mingw
     steps:
       - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
       - name: Set up Python 3
         uses: actions/setup-python@v6
         with:
@@ -382,6 +388,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
+          persist-credentials: false
           submodules: false
       - name: Install latest CMake
         uses: lukka/get-cmake@latest
@@ -416,6 +423,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
+          persist-credentials: false
           submodules: true
       - name: Fetch Vcpkg commits
         working-directory: vcpkg
@@ -476,6 +484,7 @@ jobs:
           version: "1.15.0" # https://github.com/doxygen/doxygen/releases
       - uses: actions/checkout@v6
         with:
+          persist-credentials: false
           submodules: true
       - name: Generate Doxygen HTML
         working-directory: docs
@@ -495,12 +504,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
-      contents: write
+      contents: write # Publish GitHub Releases
     steps:
       - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
       - name: Generate body
-        run: |
-          scripts/get_release_description.py | tee release_body.md
+        run: scripts/get_release_description.py | tee release_body.md
       - uses: actions/download-artifact@v7
         with:
           pattern: cpack-dist-*

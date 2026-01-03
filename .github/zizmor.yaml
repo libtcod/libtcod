@@ -1,0 +1,9 @@
+rules:
+  anonymous-definition:
+    disable: true
+  cache-poisoning:
+    disable: true
+  excessive-permissions:
+    disable: true
+  unpinned-uses:
+    disable: true

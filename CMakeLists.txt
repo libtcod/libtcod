@@ -10,7 +10,7 @@ option(LIBTCOD_CPACK "Enable CPack for libtcod." OFF)
 FetchContent_Declare(
     SDL3
     GIT_REPOSITORY https://github.com/libsdl-org/SDL
-    GIT_TAG 7f3ae3d57459e59943a4ecfefc8f6277ec6bf540 # release-3.2.28
+    GIT_TAG f5e5f6588921eed3d7d048ce43d9eb1ff0da0ffc # release-3.2.30
     GIT_SHALLOW TRUE
     FIND_PACKAGE_ARGS CONFIG
 )
@@ -21,7 +21,7 @@ set(SDL_INSTALL_DOCS OFF CACHE BOOL "")
 FetchContent_Declare(
     zlib
     GIT_REPOSITORY https://github.com/madler/zlib
-    GIT_TAG 5a82f71ed1dfc0bec044d9702463dbdf84ea3b71 # v1.3.1.2
+    GIT_TAG 570720b0c24f9686c33f35a1b3165c1f568b96be # v1.3.1.2
     GIT_SHALLOW TRUE
     FIND_PACKAGE_ARGS
 )
@@ -39,7 +39,7 @@ FetchContent_Declare(
 FetchContent_Declare(
     utf8proc
     GIT_REPOSITORY https://github.com/JuliaStrings/utf8proc
-    GIT_TAG 90daf9f396cfec91668758eb9cc54bd5248a6b89 # v2.11.2
+    GIT_TAG e5e799221b45bbb90f5fdc5c69b6b8dfbf017e78 # v2.11.3
     GIT_SHALLOW TRUE
     PATCH_COMMAND git apply ${CMAKE_CURRENT_SOURCE_DIR}/cmake/utf8proc.patch
     FIND_PACKAGE_ARGS

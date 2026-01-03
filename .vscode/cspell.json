@@ -148,6 +148,7 @@
         "ENDFONT",
         "endforeach",
         "endianness",
+        "endmacro",
         "ENDPROPERTIES",
         "endrst",
         "endverbatim",

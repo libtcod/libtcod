@@ -157,11 +157,11 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{matrix.config}} \
             -D CMAKE_LIBRARY_OUTPUT_DIRECTORY:PATH=${{ env.CMAKE_BIN_DIR }}\
             -D CMAKE_RUNTIME_OUTPUT_DIRECTORY:PATH=${{ env.CMAKE_BIN_DIR }}\
-            -DLIBTCOD_SDL3=find_package \
-            -DLIBTCOD_ZLIB=find_package \
-            -DLIBTCOD_LODEPNG=find_package \
-            -DLIBTCOD_UTF8PROC=find_package \
-            -DLIBTCOD_STB=find_package \
+            -D LIBTCOD_SDL3=ON \
+            -D LIBTCOD_ZLIB=ON \
+            -D LIBTCOD_LODEPNG=ON \
+            -D LIBTCOD_UTF8PROC=ON \
+            -D LIBTCOD_STB=ON \
             -DCMAKE_INSTALL_PREFIX=local \
             -DBUILD_SHARED_LIBS=${{ matrix.shared == 'dynamic' && 'TRUE' || 'FALSE' }} \
             -DLIBTCOD_SAMPLES=ON \
@@ -246,11 +246,11 @@ jobs:
             -DCMAKE_BUILD_TYPE=Debug \
             -DCMAKE_CXX_FLAGS="--coverage" \
             -DCMAKE_C_FLAGS="--coverage" \
-            -DLIBTCOD_SDL3=find_package \
-            -DLIBTCOD_ZLIB=find_package \
-            -DLIBTCOD_LODEPNG=find_package \
-            -DLIBTCOD_UTF8PROC=find_package \
-            -DLIBTCOD_STB=find_package \
+            -D LIBTCOD_SDL3=ON \
+            -D LIBTCOD_ZLIB=ON \
+            -D LIBTCOD_LODEPNG=ON \
+            -D LIBTCOD_UTF8PROC=ON \
+            -D LIBTCOD_STB=ON \
             -DLIBTCOD_SAMPLES=OFF \
             -DLIBTCOD_TESTS=ON \
             -Wdev

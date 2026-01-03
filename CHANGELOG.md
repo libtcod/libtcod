@@ -15,7 +15,8 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 ### Changed
 - CMake script no longer sets output directories.
 - CMake script now only configures Vcpkg or CPack when `LIBTCOD_VCPKG` or `LIBTCOD_CPACK` is enabled.
-- CMake parameter `LIBTCOD_UTF8PROC=vcpkg` was replaced with `LIBTCOD_UTF8PROC=find_package`.
+- CMake parameter `LIBTCOD_UTF8PROC` now defaults to `ON` instead of `vcpkg`.
+- CMake script dependency options now use `ON`/`OFF` values instead of `find_package`/`disable`.
 
 ### Fixed
 - Mouse coordinate to tile conversions now support SDL renderer logical size and scaling.

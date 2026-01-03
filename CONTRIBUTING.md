@@ -88,19 +88,18 @@ When building locally the `LIBTCOD_VCPKG` flag must be set with `-D LIBTCOD_VCPK
 otherwise the Vcpkg toolchain must be manually set.
 
 The method used to find dependencies can be changed by setting the following cache variables to the following:
-- `find_package` means CMake's `FetchContent_MakeAvailable` command will be used.
+- `ON` means CMake's `FetchContent_MakeAvailable` command will be used.
   `find_package` is preferred but if the package does not exist locally then it will be automatically downloaded.
 - `vendored` means that sources bundled in the repository will be statically compiled.
   This is not recommended because the bundled libraries may be out-of-date.
-- `conan` means that package manager specific scripts are used to link these dependencies.
-- `disable` can be used to remove a library.
+- `OFF` can be used to remove a library.
   Libtcod functions which require that library will no longer be available.
 
-| Cache Variable   | Default      | Options | Notes |
-| ---------------- | ------------ | ------- | ----- |
-| LIBTCOD_SDL3     | find_package | conan, disable, find_package | Support for libtcod contexts.
-| LIBTCOD_ZLIB     | find_package | conan, disable, find_package | Support for REXPaint and TCODZip.
-| LIBTCOD_LODEPNG  | find_package | disable, find_package, vendored |
-| LIBTCOD_UTF8PROC | find_package | disable, find_package, vendored | Support for console printing functions.
-| LIBTCOD_STB      | find_package | find_package, vendored |
-| LIBTCOD_THREADS  | false        | bool | Support for deprecated functions, leave this off.
+| Cache Variable   | Default | Options | Notes |
+| ---------------- | ------- | ------- | ----- |
+| LIBTCOD_SDL3     | ON      | ON, OFF | Support for libtcod contexts.
+| LIBTCOD_ZLIB     | ON      | ON, OFF | Support for REXPaint and TCODZip.
+| LIBTCOD_LODEPNG  | ON      | ON, OFF, vendored |
+| LIBTCOD_UTF8PROC | ON      | ON, OFF, vendored | Support for console printing functions.
+| LIBTCOD_STB      | ON      | ON, OFF, vendored |
+| LIBTCOD_THREADS  | OFF     | ON, OFF | Support for deprecated functions, leave this off.

@@ -441,6 +441,7 @@
         "SOVERSION",
         "splitmix",
         "sscale",
+        "ssciwr",
         "Stam",
         "Stanislao",
         "STARCHAR",

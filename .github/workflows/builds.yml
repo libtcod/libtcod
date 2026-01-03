@@ -466,6 +466,29 @@ jobs:
           if-no-files-found: error
           compression-level: 6
 
+  Doxygen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Install Doxygen
+        uses: ssciwr/doxygen-install@v1
+        with:
+          version: "1.15.0" # https://github.com/doxygen/doxygen/releases
+      - uses: actions/checkout@v6
+        with:
+          submodules: true
+      - name: Generate Doxygen HTML
+        working-directory: docs
+        run: doxygen Doxyfile
+      - name: Upload Doxygen HTML
+        uses: actions/upload-artifact@v6
+        with:
+          name: doxygen-html
+          path: docs/html
+          retention-days: 60
+          if-no-files-found: error
+          compression-level: 6
+
   release:
     needs: [CMake]
     if: github.ref_type == 'tag'

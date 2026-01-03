@@ -75,40 +75,40 @@ jobs:
             triplet: x64-linux
             shared: dynamic
             config: Debug
-            cmake_extra_args: "-DLIBTCOD_SAMPLES=OFF -DCMAKE_DISABLE_FIND_PACKAGE_SDL3=1 -DCMAKE_DISABLE_FIND_PACKAGE_Threads=1"
+            cmake_extra_args: "-D LIBTCOD_SAMPLES=OFF -D LIBTCOD_THREADS=OFF -D LIBTCOD_SDL=OFF"
           - os: windows-2022
             triplet: x64-windows
             shared: dynamic
             config: Debug
-            cmake_extra_args: "-DLIBTCOD_SAMPLES=OFF -DCMAKE_DISABLE_FIND_PACKAGE_SDL3=1 -DCMAKE_DISABLE_FIND_PACKAGE_Threads=1"
+            cmake_extra_args: "-D LIBTCOD_SAMPLES=OFF -D LIBTCOD_THREADS=OFF -D LIBTCOD_SDL=OFF"
 
           # Test libtcod without zlib.
           - os: ubuntu-24.04
             triplet: x64-linux
             shared: dynamic
             config: Debug
-            cmake_extra_args: "-DLIBTCOD_SAMPLES=OFF -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=1 -DCMAKE_DISABLE_FIND_PACKAGE_Threads=1"
+            cmake_extra_args: "-D LIBTCOD_SAMPLES=OFF -D LIBTCOD_THREADS=OFF -D LIBTCOD_ZLIB=OFF"
 
           # Test libtcod without PNG.
           - os: ubuntu-24.04
             triplet: x64-linux
             shared: dynamic
             config: Debug
-            cmake_extra_args: "-DLIBTCOD_SAMPLES=OFF -DCMAKE_DISABLE_FIND_PACKAGE_lodepng-c=1 -DCMAKE_DISABLE_FIND_PACKAGE_Threads=1"
+            cmake_extra_args: "-D LIBTCOD_SAMPLES=OFF -D LIBTCOD_THREADS=OFF -D LIBTCOD_LODEPNG=OFF"
 
           # Test libtcod without utf8proc.
           - os: ubuntu-24.04
             triplet: x64-linux
             shared: dynamic
             config: Debug
-            cmake_extra_args: "-DLIBTCOD_SAMPLES=OFF -DCMAKE_DISABLE_FIND_PACKAGE_utf8proc=1 -DCMAKE_DISABLE_FIND_PACKAGE_Threads=1"
+            cmake_extra_args: "-D LIBTCOD_SAMPLES=OFF -D LIBTCOD_THREADS=OFF -D LIBTCOD_UTF8PROC=OFF"
 
           # Test libtcod without everything.
           - os: ubuntu-24.04
             triplet: x64-linux
             shared: dynamic
             config: Debug
-            cmake_extra_args: "-DLIBTCOD_SAMPLES=OFF -DCMAKE_DISABLE_FIND_PACKAGE_SDL3=1 -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=1 -DCMAKE_DISABLE_FIND_PACKAGE_lodepng-c=1 -DCMAKE_DISABLE_FIND_PACKAGE_utf8proc=1 -DCMAKE_DISABLE_FIND_PACKAGE_Threads=1"
+            cmake_extra_args: "-D LIBTCOD_SAMPLES=OFF -D LIBTCOD_THREADS=OFF -D LIBTCOD_SDL=OFF -D LIBTCOD_ZLIB=OFF -D LIBTCOD_LODEPNG=OFF -D LIBTCOD_UTF8PROC=OFF"
 
     env:
       VCPKG_LIBRARY_LINKAGE: ${{matrix.shared}}
@@ -150,47 +150,41 @@ jobs:
       # On Windows runners, let's ensure to have the Developer Command Prompt environment setup correctly. As used here the Developer Command Prompt created is targeting x64 and using the default the Windows SDK.
       - uses: ilammy/msvc-dev-cmd@v1
       - name: CMake configure
-        run: |
-          cmake -S . -B ${{env.CMAKE_BUILD_DIR}} -G Ninja \
-            -D LIBTCOD_VCPKG=ON \
-            -D LIBTCOD_CPACK=ON \
-            -DVCPKG_TARGET_TRIPLET="${{ matrix.triplet }}" \
-            -DCMAKE_BUILD_TYPE=${{matrix.config}} \
-            -D CMAKE_LIBRARY_OUTPUT_DIRECTORY:PATH=${{ env.CMAKE_BIN_DIR }}\
-            -D CMAKE_RUNTIME_OUTPUT_DIRECTORY:PATH=${{ env.CMAKE_BIN_DIR }}\
-            -D LIBTCOD_SDL3=ON \
-            -D LIBTCOD_ZLIB=ON \
-            -D LIBTCOD_LODEPNG=ON \
-            -D LIBTCOD_UTF8PROC=ON \
-            -D LIBTCOD_STB=ON \
-            -DCMAKE_INSTALL_PREFIX=local \
-            -DBUILD_SHARED_LIBS=${{ matrix.shared == 'dynamic' && 'TRUE' || 'FALSE' }} \
-            -DLIBTCOD_SAMPLES=ON \
-            -DLIBTCOD_TESTS=ON \
-            -DCPACK_SYSTEM_NAME=${{ matrix.triplet }}\
-            -Wdev \
-            ${{ matrix.cmake_extra_args }}
+        run: cmake -S . -B ${{env.CMAKE_BUILD_DIR}} -G Ninja
+          -D LIBTCOD_VCPKG=ON
+          -D LIBTCOD_CPACK=ON
+          -D VCPKG_TARGET_TRIPLET="${{ matrix.triplet }}"
+          -D CMAKE_BUILD_TYPE=${{matrix.config}}
+          -D CMAKE_LIBRARY_OUTPUT_DIRECTORY:PATH=${{ env.CMAKE_BIN_DIR }}
+          -D CMAKE_RUNTIME_OUTPUT_DIRECTORY:PATH=${{ env.CMAKE_BIN_DIR }}
+          -D LIBTCOD_SDL3=ON
+          -D LIBTCOD_ZLIB=ON
+          -D LIBTCOD_LODEPNG=ON
+          -D LIBTCOD_UTF8PROC=ON
+          -D LIBTCOD_STB=ON
+          -D CMAKE_INSTALL_PREFIX=local
+          -D BUILD_SHARED_LIBS=${{ matrix.shared == 'dynamic' && 'TRUE' || 'FALSE' }}
+          -D LIBTCOD_SAMPLES=ON
+          -D LIBTCOD_TESTS=ON
+          -D CPACK_SYSTEM_NAME=${{ matrix.triplet }}
+          -Wdev
+          ${{ matrix.cmake_extra_args }}
       - name: CMake build
-        run: |
-          cmake --build ${{env.CMAKE_BUILD_DIR}}
+        run: cmake --build ${{env.CMAKE_BUILD_DIR}}
       - name: CMake verify headers
-        run: |
-          cmake --build ${{env.CMAKE_BUILD_DIR}} --target all_verify_interface_header_sets
+        run: cmake --build ${{env.CMAKE_BUILD_DIR}} --target all_verify_interface_header_sets
       - name: List build files
         run: find ${{env.CMAKE_BUILD_DIR}}
       - name: List bin files
         run: find ${{env.CMAKE_BIN_DIR}}
       - name: Run tests
-        run: |
-          ${{env.CMAKE_BIN_DIR}}/unittest ~[!nonportable] ${{ matrix.config != 'Release' && '~[benchmark]' || '' }}
+        run: ${{env.CMAKE_BIN_DIR}}/unittest ~[!nonportable] ${{ matrix.config != 'Release' && '~[benchmark]' || '' }}
       - name: CMake test install
         if: runner.os != 'Windows'
-        run: |
-          cmake --install ${{env.CMAKE_BUILD_DIR}} --config ${{matrix.config}}
+        run: cmake --install ${{env.CMAKE_BUILD_DIR}} --config ${{matrix.config}}
       - name: CPack
         if: matrix.cpack
-        run: |
-          cpack --config ${{env.CMAKE_BUILD_DIR}}/CPackConfig.cmake --verbose
+        run: cpack --config ${{env.CMAKE_BUILD_DIR}}/CPackConfig.cmake --verbose
       - name: Upload CPack
         if: matrix.cpack
         uses: actions/upload-artifact@v6
@@ -240,25 +234,23 @@ jobs:
           key: |
             ${{ hashFiles( 'vcpkg_manifest/vcpkg.json', '.git/modules/vcpkg/HEAD' )}}-${{ matrix.triplet }}-invalidate
       - name: CMake configure
-        run: |
-          cmake . -G Ninja \
-            -D LIBTCOD_VCPKG=ON \
-            -D CMAKE_LIBRARY_OUTPUT_DIRECTORY:PATH=${{ env.CMAKE_BIN_DIR }}\
-            -D CMAKE_RUNTIME_OUTPUT_DIRECTORY:PATH=${{ env.CMAKE_BIN_DIR }}\
-            -DCMAKE_BUILD_TYPE=Debug \
-            -DCMAKE_CXX_FLAGS="--coverage" \
-            -DCMAKE_C_FLAGS="--coverage" \
-            -D LIBTCOD_SDL3=ON \
-            -D LIBTCOD_ZLIB=ON \
-            -D LIBTCOD_LODEPNG=ON \
-            -D LIBTCOD_UTF8PROC=ON \
-            -D LIBTCOD_STB=ON \
-            -DLIBTCOD_SAMPLES=OFF \
-            -DLIBTCOD_TESTS=ON \
-            -Wdev
+        run: cmake . -G Ninja
+          -D LIBTCOD_VCPKG=ON
+          -D CMAKE_LIBRARY_OUTPUT_DIRECTORY:PATH=${{ env.CMAKE_BIN_DIR }}
+          -D CMAKE_RUNTIME_OUTPUT_DIRECTORY:PATH=${{ env.CMAKE_BIN_DIR }}
+          -D CMAKE_BUILD_TYPE=Debug
+          -D CMAKE_CXX_FLAGS="--coverage"
+          -D CMAKE_C_FLAGS="--coverage"
+          -D LIBTCOD_SDL3=ON
+          -D LIBTCOD_ZLIB=ON
+          -D LIBTCOD_LODEPNG=ON
+          -D LIBTCOD_UTF8PROC=ON
+          -D LIBTCOD_STB=ON
+          -D LIBTCOD_SAMPLES=OFF
+          -D LIBTCOD_TESTS=ON
+          -Wdev
       - name: CMake build
-        run: |
-          cmake --build .
+        run: cmake --build .
       - name: Run tests
         run: ${{ env.CMAKE_BIN_DIR }}/unittest ~[!nonportable] ~[benchmark]
       - name: List coverage files
@@ -291,8 +283,7 @@ jobs:
           sudo apt-get install libsdl3-dev
       - name: Install Brew dependencies
         if: runner.os == 'macOS'
-        run: |
-          brew install automake sdl3 libtool
+        run: brew install automake sdl3 libtool
       - name: libtoolize
         run: ${{ runner.os == 'macOS' && 'glibtoolize' || 'libtoolize' }} --install
         working-directory: buildsys/autotools
@@ -303,19 +294,16 @@ jobs:
           ./configure --prefix=$HOME/.local
       - name: Build package
         working-directory: buildsys/autotools
-        run: |
-          make -j 3 install
+        run: make -j 3 install
       - name: Run tests
         working-directory: buildsys/autotools
-        run: |
-          make check
+        run: make check
 
   SCons:
     # Disabled until SDL3 is supported
     if: false
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
-    continue-on-error: ${{ matrix.experimental == true }}
     strategy:
       fail-fast: true
       matrix:
@@ -352,8 +340,7 @@ jobs:
           sudo apt-get install libsdl3-dev
       - name: Install Brew dependencies
         if: runner.os == 'macOS'
-        run: |
-          brew install sdl3
+        run: brew install sdl3
       - uses: msys2/setup-msys2@v2
         if: ${{ matrix.toolset == 'mingw' }}
         with:
@@ -363,15 +350,12 @@ jobs:
       - name: Build package.
         if: ${{ matrix.toolset != 'mingw' }}
         working-directory: buildsys/scons
-        run: |
-          scons develop_all dist -j 3 -s CPPDEFINES=NDEBUG MODE=DEBUG_RELEASE ARCH=${{ matrix.architecture }}
+        run: scons develop_all dist -j 3 -s CPPDEFINES=NDEBUG MODE=DEBUG_RELEASE ARCH=${{ matrix.architecture }}
       - name: Build package (MinGW)
         if: ${{ matrix.toolset == 'mingw' }}
         working-directory: buildsys/scons
         shell: msys2 {0}
-        run: |
-          scons develop_all dist -j 3 -s CPPDEFINES=NDEBUG MODE=DEBUG_RELEASE ARCH=${{ matrix.architecture }} \
-            TOOLSET=mingw
+        run: scons develop_all dist -j 3 -s CPPDEFINES=NDEBUG MODE=DEBUG_RELEASE ARCH=${{ matrix.architecture }} TOOLSET=mingw
       - name: Archive distribution
         uses: actions/upload-artifact@v6
         with:
@@ -397,16 +381,15 @@ jobs:
       - name: Install APT dependencies
         run: sudo apt-get install ${{ env.SDL_LINUX_DEPENDENCIES }}
       - name: CMake configure
-        run: |
-          cmake -S . -B ${{env.CMAKE_BUILD_DIR}} \
-            -G Ninja \
-            -D LIBTCOD_VCPKG=OFF \
-            -D CMAKE_LIBRARY_OUTPUT_DIRECTORY:PATH=${{ env.CMAKE_BIN_DIR }}\
-            -D CMAKE_RUNTIME_OUTPUT_DIRECTORY:PATH=${{ env.CMAKE_BIN_DIR }}\
-            -D CMAKE_BUILD_TYPE=Debug \
-            -D LIBTCOD_SAMPLES=ON \
-            -D LIBTCOD_TESTS=ON \
-            -Wdev
+        run: cmake -S . -B ${{env.CMAKE_BUILD_DIR}}
+          -G Ninja
+          -D LIBTCOD_VCPKG=OFF
+          -D CMAKE_LIBRARY_OUTPUT_DIRECTORY:PATH=${{ env.CMAKE_BIN_DIR }}
+          -D CMAKE_RUNTIME_OUTPUT_DIRECTORY:PATH=${{ env.CMAKE_BIN_DIR }}
+          -D CMAKE_BUILD_TYPE=Debug
+          -D LIBTCOD_SAMPLES=ON
+          -D LIBTCOD_TESTS=ON
+          -Wdev
       - name: CMake build
         run: cmake --build ${{env.CMAKE_BUILD_DIR}}
       - name: Run tests
@@ -417,7 +400,7 @@ jobs:
     timeout-minutes: 30
     env:
       BUILD_TYPE: Release
-      EM_VERSION: 4.0.5
+      EM_VERSION: 4.0.22 # https://github.com/emscripten-core/emscripten/blob/main/ChangeLog.md
       EM_CACHE_FOLDER: "emsdk-cache"
       VCPKG_ROOT: ${{github.workspace}}/vcpkg
     steps:
@@ -451,15 +434,15 @@ jobs:
       - name: Verify
         run: emcc -v
       - name: Configure
+        # No space in DCMAKE_TOOLCHAIN_FILE, otherwise emcmake breaks
         run: emcmake cmake -S . -B ${{ env.CMAKE_BUILD_DIR }} -G Ninja
-          -D LIBTCOD_VCPKG=ON
-          -DVCPKG_CHAINLOAD_TOOLCHAIN_FILE="${EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake"
           -DCMAKE_TOOLCHAIN_FILE=vcpkg/scripts/buildsystems/vcpkg.cmake
-          -DVCPKG_TARGET_TRIPLET=wasm32-emscripten
+          -D VCPKG_CHAINLOAD_TOOLCHAIN_FILE="${EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake"
+          -D VCPKG_TARGET_TRIPLET=wasm32-emscripten
           -D CMAKE_RUNTIME_OUTPUT_DIRECTORY:PATH=${{ env.CMAKE_BIN_DIR }}
-          -DCMAKE_BUILD_TYPE="${{ env.BUILD_TYPE }}"
-          -DLIBTCOD_SAMPLES=ON
-          -DLIBTCOD_THREADS=OFF
+          -D CMAKE_BUILD_TYPE="${{ env.BUILD_TYPE }}"
+          -D LIBTCOD_SAMPLES=ON
+          -D LIBTCOD_THREADS=OFF
       - name: Build
         run: cmake --build ${{ env.CMAKE_BUILD_DIR }}
       - name: Show contents of the build directory

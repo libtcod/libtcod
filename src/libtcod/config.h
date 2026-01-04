@@ -131,8 +131,9 @@
 
 #ifdef __GNUC__
 /// Used to suppress internal header warnings.
-#define TCODLIB_BEGIN_IGNORE_DEPRECATIONS \
-  _Pragma("GCC diagnostic push") _Pragma("GCC diagnostic ignored \"-Wdeprecated\"")
+#define TCODLIB_BEGIN_IGNORE_DEPRECATIONS                                           \
+  _Pragma("GCC diagnostic push") _Pragma("GCC diagnostic ignored \"-Wdeprecated\"") \
+      _Pragma("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 #define TCODLIB_END_IGNORE_DEPRECATIONS _Pragma("GCC diagnostic pop")
 #elif defined(_MSC_VER)
 #define TCODLIB_BEGIN_IGNORE_DEPRECATIONS _Pragma("warning(push)") _Pragma("warning(disable : 4996)")

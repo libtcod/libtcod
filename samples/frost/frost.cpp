@@ -202,7 +202,7 @@ SDL_AppResult SDL_AppEvent(void*, SDL_Event* event) {
       if (event->button.button == SDL_BUTTON_LEFT) {
         frostManager.addFrost(tile_xy.at(0) * 2, tile_xy.at(1) * 2);
       }
-    }
+    } break;
     case SDL_EVENT_MOUSE_MOTION: {
       auto tile_xy = g_context.pixel_to_tile_coordinates(
           std::array<int, 2>{{static_cast<int>(event->motion.x), static_cast<int>(event->motion.y)}});

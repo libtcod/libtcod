@@ -190,7 +190,7 @@ FULL_PATH_NAMES        = YES
 # will be relative from the directory where Doxygen is started.
 # This tag requires that the tag FULL_PATH_NAMES is set to YES.
 
-STRIP_FROM_PATH        =
+STRIP_FROM_PATH        = ../src
 
 # The STRIP_FROM_INC_PATH tag can be used to strip a user-defined part of the
 # path mentioned in the documentation of a class, which tells the reader which
@@ -2557,6 +2557,8 @@ PREDEFINED             = TCODLIB_API= \
                          TCOD_NODISCARD= \
                          TCOD_PUBLIC= \
                          TCOD_PRIVATE= \
+                         TCODLIB_BEGIN_IGNORE_DEPRECATIONS= \
+                         TCODLIB_END_IGNORE_DEPRECATIONS= \
                          __restrict= \
                          __cplusplus
 

@@ -6,6 +6,7 @@ option(LIBTCOD_SAMPLES "Build sources from the samples directory." OFF)
 option(LIBTCOD_TESTS "Build unit tests." OFF)
 option(LIBTCOD_INSTALL "Enable install targets." ON)
 option(LIBTCOD_CPACK "Enable CPack for libtcod." OFF)
+option(LIBTCOD_DOCS "Build documentation using Doxygen for installation." OFF)
 
 option(LIBTCOD_THREADS "If true then deprecated thread functions are enabled by libtcod." ON)
 option(LIBTCOD_SDL3 "Enable or disable this library dependency." ON)

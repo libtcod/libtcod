@@ -134,6 +134,25 @@ else()
   target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
 endif()
 
+if(LIBTCOD_DOCS)
+    message(STATUS "Preparing Doxygen")
+    find_package(Doxygen REQUIRED)
+    doxygen_add_docs(
+        ${PROJECT_NAME}_docs
+        ALL
+        COMMENT "Generating documentation using Doxygen ${Doxygen_VERSION}"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../docs
+        CONFIG_FILE ${CMAKE_CURRENT_SOURCE_DIR}/../docs/Doxyfile
+    )
+    if(LIBTCOD_INSTALL)
+        install(
+            DIRECTORY
+            ${CMAKE_CURRENT_SOURCE_DIR}/../docs/html/
+            TYPE DOC
+        )
+    endif()
+endif()
+
 if(LIBTCOD_INSTALL)
     install(
         TARGETS ${PROJECT_NAME}

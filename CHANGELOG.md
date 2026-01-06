@@ -8,6 +8,8 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 Versions since `2.0.0` only track API breaks and no longer guarantee ABI compatibility.
 
 ## [Unreleased]
+
+## [2.2.2] - 2026-01-06
 ### CMake
 - Now fully supports `FetchPackage` for dependency resolution.
   [#141](https://github.com/libtcod/libtcod/issues/141)

@@ -16,6 +16,7 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 - `LIBTCOD_UTF8PROC` now defaults to `ON` instead of `vcpkg`.
 - Library dependency options now use `ON`/`OFF` values instead of `find_package`/`disable`.
 - `CMAKE_DISABLE_FIND_PACKAGE_X` no longer disables dependencies automatically.
+- Added `LIBTCOD_DOCS` to build and install HTML documentation.
 
 ### Fixed
 - Mouse coordinate to tile conversions now support SDL renderer logical size and scaling.

@@ -6,3 +6,11 @@
 	path = docs/doxygen-awesome-css
 	url = https://github.com/jothepro/doxygen-awesome-css.git
 	shallow = true
+[submodule "src/vendor/utf8proc"]
+	path = src/vendor/utf8proc
+	url = https://github.com/JuliaStrings/utf8proc.git
+	shallow = true
+[submodule "src/vendor/zlib"]
+	path = src/vendor/zlib
+	url = https://github.com/madler/zlib.git
+	shallow = true

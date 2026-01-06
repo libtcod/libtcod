@@ -118,10 +118,9 @@ jobs:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
-          submodules: true
+          submodules: false
       - name: Fetch Vcpkg commits
-        working-directory: vcpkg
-        run: git fetch --depth=${{env.VCPKG_FETCH_DEPTH}}
+        run: git submodule update --init --depth=${{env.VCPKG_FETCH_DEPTH}} vcpkg
       - name: Install latest CMake
         uses: lukka/get-cmake@latest
       - name: Update APT packages
@@ -217,10 +216,9 @@ jobs:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
-          submodules: true
+          submodules: false
       - name: Fetch Vcpkg commits
-        working-directory: vcpkg
-        run: git fetch --depth=${{env.VCPKG_FETCH_DEPTH}}
+        run: git submodule update --init --depth=${{env.VCPKG_FETCH_DEPTH}} vcpkg
       - name: Install the latest CMake
         uses: lukka/get-cmake@latest
       - name: Update APT packages
@@ -415,10 +413,9 @@ jobs:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
-          submodules: true
+          submodules: false
       - name: Fetch Vcpkg commits
-        working-directory: vcpkg
-        run: git fetch --depth=${{env.VCPKG_FETCH_DEPTH}}
+        run: git submodule update --init --depth=${{env.VCPKG_FETCH_DEPTH}} vcpkg
       - name: Restore vcpkg and its artifacts
         uses: actions/cache@v5
         with:
@@ -476,7 +473,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
-          submodules: true
+          submodules: false
       - name: Generate Doxygen HTML
         working-directory: docs
         run: doxygen Doxyfile

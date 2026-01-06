@@ -12,19 +12,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     VERIFY_INTERFACE_HEADER_SETS TRUE
 )
 
-if(CMAKE_DISABLE_FIND_PACKAGE_SDL3)
-    set(LIBTCOD_SDL3 "OFF")
-endif()
-if(CMAKE_DISABLE_FIND_PACKAGE_ZLIB)
-    set(LIBTCOD_ZLIB "OFF")
-endif()
-if(CMAKE_DISABLE_FIND_PACKAGE_lodepng-c)
-    set(LIBTCOD_LODEPNG "OFF")
-endif()
-if(CMAKE_DISABLE_FIND_PACKAGE_unofficial-utf8proc OR CMAKE_DISABLE_FIND_PACKAGE_utf8proc)
-    set(LIBTCOD_UTF8PROC "OFF")
-endif()
-
 macro(fix_deprecated_link_setting LINK_OPTION)  # Replaces find_package/disable with ON/OFF
     if(${LINK_OPTION} STREQUAL "find_package")
         message(DEPRECATION "${LINK_OPTION}=find_package is deprecated, this should be ${LINK_OPTION}=ON")

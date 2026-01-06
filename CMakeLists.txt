@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.24...4.2)
 include(FetchContent)
 
-option(LIBTCOD_VCPKG "Enable Vcpkg for building libtcod locally." OFF)
+option(LIBTCOD_VCPKG "Enable Vcpkg toolchain by default." OFF)
 option(LIBTCOD_SAMPLES "Build sources from the samples directory." OFF)
 option(LIBTCOD_TESTS "Build unit tests." OFF)
 option(LIBTCOD_INSTALL "Enable install targets." ON)
@@ -64,11 +64,9 @@ FetchContent_Declare(
 
 
 if(LIBTCOD_VCPKG)
-    if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
-        set(CMAKE_TOOLCHAIN_FILE
-            "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
-            CACHE STRING "Vcpkg toolchain file")
-    endif()
+    set(CMAKE_TOOLCHAIN_FILE
+        "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+        CACHE STRING "Vcpkg toolchain file")
 endif()
 
 file(STRINGS src/libtcod/version.h LIBTCOD_VERSION_LINE REGEX "TCOD_STRVERSION")

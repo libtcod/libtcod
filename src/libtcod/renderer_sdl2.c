@@ -788,8 +788,7 @@ static void sdl2_pixel_to_tile(struct TCOD_Context* __restrict self, double* __r
   struct TCOD_RendererSDL2* context = self->contextdata_;
   float float_x = (float)*x;
   float float_y = (float)*y;
-  bool success = SDL_RenderCoordinatesFromWindow(context->renderer, float_x, float_y, &float_x, &float_y);
-  assert(success);
+  SDL_RenderCoordinatesFromWindow(context->renderer, float_x, float_y, &float_x, &float_y);
   *x = (float_x - context->cursor_transform.offset_x) * context->cursor_transform.scale_x;
   *y = (float_y - context->cursor_transform.offset_y) * context->cursor_transform.scale_y;
 }

@@ -8,15 +8,14 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 Versions since `2.0.0` only track API breaks and no longer guarantee ABI compatibility.
 
 ## [Unreleased]
-### Added
-- Now fully supports Cmake's `FetchPackage` for dependency resolution.
+### CMake
+- Now fully supports `FetchPackage` for dependency resolution.
   [#141](https://github.com/libtcod/libtcod/issues/141)
-
-### Changed
-- CMake script no longer sets output directories.
-- CMake script now only configures Vcpkg or CPack when `LIBTCOD_VCPKG` or `LIBTCOD_CPACK` is enabled.
-- CMake parameter `LIBTCOD_UTF8PROC` now defaults to `ON` instead of `vcpkg`.
-- CMake script dependency options now use `ON`/`OFF` values instead of `find_package`/`disable`.
+- No longer sets output directories.
+- Now only configures Vcpkg or CPack when `LIBTCOD_VCPKG` or `LIBTCOD_CPACK` is enabled.
+- `LIBTCOD_UTF8PROC` now defaults to `ON` instead of `vcpkg`.
+- Library dependency options now use `ON`/`OFF` values instead of `find_package`/`disable`.
+- `CMAKE_DISABLE_FIND_PACKAGE_X` no longer disables dependencies automatically.
 
 ### Fixed
 - Mouse coordinate to tile conversions now support SDL renderer logical size and scaling.

@@ -4,7 +4,7 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "install documentation requirements",
+            "label": "install Sphinx documentation requirements",
             "type": "process",
             "command": "python",
             "args": [
@@ -17,7 +17,7 @@
             "problemMatcher": []
         },
         {
-            "label": "build documentation",
+            "label": "build Sphinx documentation",
             "type": "shell",
             "command": "make",
             "args": [
@@ -33,6 +33,18 @@
             "windows": {
                 "command": "./make.bat"
             }
+        },
+        {
+            "label": "build Doxygen documentation",
+            "type": "shell",
+            "command": "doxygen",
+            "args": [
+                "Doxyfile"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/docs"
+            },
+            "problemMatcher": [],
         }
     ]
 }

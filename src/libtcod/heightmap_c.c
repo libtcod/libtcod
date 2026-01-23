@@ -514,6 +514,29 @@ void TCOD_heightmap_heat_erosion(TCOD_heightmap_t *hm, int nbPass,float minSlope
 }
 #endif
 
+/**
+    @brief Apply a sparse kernel transform to a heightmap.
+
+    This function applies a convolution kernel to the heightmap in-place.
+    It uses an internal copy to ensure correct convolution behavior
+    (each output cell is computed from the original input values only).
+
+    The kernel is defined by parallel arrays of x-offsets, y-offsets, and weights.
+    For each cell, the weighted sum of neighboring values (as defined by the kernel)
+    is computed and normalized by the total weight of in-bounds neighbors.
+
+    Cells with values outside [minLevel, maxLevel] are left unchanged.
+
+    @param hm Heightmap to transform.
+    @param kernel_size Number of elements in the kernel arrays.
+    @param dx Array of x-offsets for kernel positions.
+    @param dy Array of y-offsets for kernel positions.
+    @param weight Array of weights for each kernel position.
+    @param minLevel Minimum value for cells to be transformed.
+    @param maxLevel Maximum value for cells to be transformed.
+
+    @see TCOD_heightmap_kernel_transform_out
+ */
 void TCOD_heightmap_kernel_transform(
     TCOD_heightmap_t* hm,
     int kernel_size,
@@ -525,21 +548,87 @@ void TCOD_heightmap_kernel_transform(
   if (!hm) {
     return;
   }
+  // Create a copy of the input to read from (fixes in-place modification bug)
+  TCOD_heightmap_t* hm_copy = TCOD_heightmap_new(hm->w, hm->h);
+  if (!hm_copy) {
+    return;
+  }
+  TCOD_heightmap_copy(hm, hm_copy);
+
+  // Apply convolution: read from copy, write to original
   for (int y = 0; y < hm->h; y++) {
     for (int x = 0; x < hm->w; x++) {
-      if (GET_VALUE(hm, x, y) >= minLevel && GET_VALUE(hm, x, y) <= maxLevel) {
+      const float src_val = GET_VALUE(hm_copy, x, y);
+      if (src_val >= minLevel && src_val <= maxLevel) {
         float val = 0.0f;
         float totalWeight = 0.0f;
         for (int i = 0; i < kernel_size; i++) {
           const int nx = x + dx[i];
           const int ny = y + dy[i];
-          if (in_bounds(hm, nx, ny)) {
-            val += weight[i] * GET_VALUE(hm, nx, ny);
+          if (in_bounds(hm_copy, nx, ny)) {
+            val += weight[i] * GET_VALUE(hm_copy, nx, ny);
             totalWeight += weight[i];
           }
         }
         GET_VALUE(hm, x, y) = val / totalWeight;
       }
+    }
+  }
+
+  TCOD_heightmap_delete(hm_copy);
+}
+
+/**
+    @brief Apply a sparse kernel convolution from source to destination heightmap.
+
+    This function reads from the source heightmap and writes results to a separate
+    destination heightmap. This avoids the need for an internal copy when the caller
+    already has separate source and destination buffers.
+
+    The kernel is defined by parallel arrays of x-offsets, y-offsets, and weights.
+    For each cell, the weighted sum of neighboring values (as defined by the kernel)
+    is computed and normalized by the total weight of in-bounds neighbors.
+
+    @param hm_src Source heightmap (read-only). Must not alias hm_dst.
+    @param hm_dst Destination heightmap (must be same size as source). Must not alias hm_src.
+    @param kernel_size Number of elements in the kernel arrays.
+    @param dx Array of x-offsets for kernel positions.
+    @param dy Array of y-offsets for kernel positions.
+    @param weight Array of weights for each kernel position.
+
+    @code{.c}
+      // Example: 3x3 blur kernel
+      const int dx[] = {-1, 0, 1, -1, 0, 1, -1, 0, 1};
+      const int dy[] = {-1, -1, -1, 0, 0, 0, 1, 1, 1};
+      const float weight[] = {1, 2, 1, 2, 4, 2, 1, 2, 1};
+      TCOD_heightmap_kernel_transform_out(src, dst, 9, dx, dy, weight);
+    @endcode
+
+    @versionadded{Unreleased}
+ */
+void TCOD_heightmap_kernel_transform_out(
+    const TCOD_heightmap_t* __restrict hm_src,
+    TCOD_heightmap_t* __restrict hm_dst,
+    int kernel_size,
+    const int* dx,
+    const int* dy,
+    const float* weight) {
+  if (!is_same_size(hm_src, hm_dst)) {
+    return;
+  }
+  for (int y = 0; y < hm_src->h; y++) {
+    for (int x = 0; x < hm_src->w; x++) {
+      float val = 0.0f;
+      float totalWeight = 0.0f;
+      for (int i = 0; i < kernel_size; i++) {
+        const int nx = x + dx[i];
+        const int ny = y + dy[i];
+        if (in_bounds(hm_src, nx, ny)) {
+          val += weight[i] * GET_VALUE(hm_src, nx, ny);
+          totalWeight += weight[i];
+        }
+      }
+      GET_VALUE(hm_dst, x, y) = val / totalWeight;
     }
   }
 }

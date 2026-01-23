@@ -8,6 +8,11 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 Versions since `2.0.0` only track API breaks and no longer guarantee ABI compatibility.
 
 ## [Unreleased]
+### Added
+- Added `TCOD_heightmap_kernel_transform_out` for convolution with separate source and destination heightmaps.
+
+### Fixed
+- Fixed `TCOD_heightmap_kernel_transform` reading modified values during in-place convolution.
 
 ## [2.2.2] - 2026-01-06
 ### CMake

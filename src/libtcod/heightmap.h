@@ -91,15 +91,19 @@ TCODLIB_API void TCOD_heightmap_kernel_transform(
     @brief Apply a sparse kernel convolution from source to destination heightmap.
 
     This function reads from the source heightmap and writes results to a separate
-    destination heightmap. Unlike TCOD_heightmap_kernel_transform, this variant
-    does not support min/max level filtering.
+    destination heightmap. This avoids the need for an internal copy when the caller
+    already has separate source and destination buffers.
 
-    @param hm_src Source heightmap (read-only).
-    @param hm_dst Destination heightmap (must be same size as source).
+    Cells with values outside [minLevel, maxLevel] are copied unchanged to the destination.
+
+    @param hm_src Source heightmap (read-only). Must not alias hm_dst.
+    @param hm_dst Destination heightmap (must be same size as source). Must not alias hm_src.
     @param kernel_size Number of elements in the kernel arrays.
     @param dx Array of x-offsets for kernel positions.
     @param dy Array of y-offsets for kernel positions.
     @param weight Array of weights for each kernel position.
+    @param minLevel Minimum value for cells to be transformed.
+    @param maxLevel Maximum value for cells to be transformed.
 
     @versionadded{Unreleased}
  */
@@ -109,7 +113,9 @@ TCODLIB_API void TCOD_heightmap_kernel_transform_out(
     int kernel_size,
     const int* dx,
     const int* dy,
-    const float* weight);
+    const float* weight,
+    float minLevel,
+    float maxLevel);
 TCODLIB_API void TCOD_heightmap_add_voronoi(
     TCOD_heightmap_t* hm, int nbPoints, int nbCoef, const float* coef, TCOD_Random* rnd);
 TCODLIB_API void TCOD_heightmap_mid_point_displacement(TCOD_heightmap_t* hm, TCOD_Random* rnd, float roughness);

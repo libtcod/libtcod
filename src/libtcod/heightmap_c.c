@@ -467,7 +467,6 @@ void TCOD_heightmap_kernel_transform_out(
   for (int y = 0; y < hm_src->h; y++) {
     for (int x = 0; x < hm_src->w; x++) {
       const int idx = x + y * hm_src->w;
-      const float src_val = hm_src->values[idx];
       // Transform if no mask, or mask value is non-zero
       if (!mask || mask[idx]) {
         float val = 0.0f;

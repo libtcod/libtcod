@@ -24,6 +24,14 @@ repos:
       - id: clang-format
         exclude_types: [json]
   - repo: https://github.com/zizmorcore/zizmor-pre-commit
-    rev: v1.19.0
+    rev: v1.22.0
     hooks:
       - id: zizmor
+  - repo: local
+    hooks:
+      - id: scripts-update-sources-py
+        name: run scripts/update_sources.py
+        entry: python scripts/update_sources.py
+        language: python
+        types_or: [c, c++, cmake]
+        pass_filenames: false

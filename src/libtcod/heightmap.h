@@ -35,6 +35,8 @@
 #ifndef TCOD_HEIGHTMAP_H_
 #define TCOD_HEIGHTMAP_H_
 
+#include <stdint.h>
+
 #include "mersenne_types.h"
 #include "noise.h"
 #include "portability.h"
@@ -88,13 +90,35 @@ TCODLIB_API void TCOD_heightmap_kernel_transform(
     float minLevel,
     float maxLevel);
 /**
+    @brief Generate a mask from heightmap values within a threshold range.
+
+    Sets mask values to 1 where heightmap values are in [minLevel, maxLevel],
+    and 0 elsewhere. The mask array must be allocated by the caller with
+    size (hm->w * hm->h) bytes, stored in row-major order.
+
+    @param hm Source heightmap to threshold.
+    @param mask Destination mask array (must be hm->w * hm->h bytes, row-major).
+    @param minLevel Minimum value (inclusive) for cells to be marked.
+    @param maxLevel Maximum value (inclusive) for cells to be marked.
+
+    @versionadded{Unreleased}
+ */
+TCODLIB_API void TCOD_heightmap_threshold_mask(
+    const TCOD_heightmap_t* hm, uint8_t* mask, float minLevel, float maxLevel);
+/**
     @brief Apply a sparse kernel convolution from source to destination heightmap.
 
     This function reads from the source heightmap and writes results to a separate
     destination heightmap. This avoids the need for an internal copy when the caller
     already has separate source and destination buffers.
 
-    Cells with values outside [minLevel, maxLevel] are copied unchanged to the destination.
+    The kernel is defined by parallel arrays of x-offsets, y-offsets, and weights.
+    For each cell, the weighted sum of neighboring values (as defined by the kernel)
+    is computed and normalized by the total weight of in-bounds neighbors.
+
+    If mask is non-NULL, only cells with non-zero mask values are transformed;
+    cells with zero mask values are unmodified by the transformation.
+    If mask is NULL, all cells are transformed.
 
     @param hm_src Source heightmap (read-only). Must not alias hm_dst.
     @param hm_dst Destination heightmap (must be same size as source). Must not alias hm_src.
@@ -102,8 +126,7 @@ TCODLIB_API void TCOD_heightmap_kernel_transform(
     @param dx Array of x-offsets for kernel positions.
     @param dy Array of y-offsets for kernel positions.
     @param weight Array of weights for each kernel position.
-    @param minLevel Minimum value for cells to be transformed.
-    @param maxLevel Maximum value for cells to be transformed.
+    @param mask Optional mask array (hm->w * hm->h bytes, row-major). NULL transforms all cells.
 
     @versionadded{Unreleased}
  */
@@ -114,8 +137,7 @@ TCODLIB_API void TCOD_heightmap_kernel_transform_out(
     const int* dx,
     const int* dy,
     const float* weight,
-    float minLevel,
-    float maxLevel);
+    const uint8_t* mask);
 TCODLIB_API void TCOD_heightmap_add_voronoi(
     TCOD_heightmap_t* hm, int nbPoints, int nbCoef, const float* coef, TCOD_Random* rnd);
 TCODLIB_API void TCOD_heightmap_mid_point_displacement(TCOD_heightmap_t* hm, TCOD_Random* rnd, float roughness);

@@ -1,5 +1,6 @@
 #include <catch2/catch_all.hpp>
 #include <cfloat>
+#include <cstdlib>
 
 #include "libtcod/heightmap.h"
 #include "libtcod/heightmap.hpp"
@@ -54,7 +55,7 @@ TEST_CASE("TCOD_heightmap_kernel_transform_out size mismatch", "[heightmap][kern
     TCOD_heightmap_set_value(dst, 0, 0, 99.0f);
 
     // Should silently return without modifying dst
-    TCOD_heightmap_kernel_transform_out(src, dst, 1, dx, dy, weight, -FLT_MAX, FLT_MAX);
+    TCOD_heightmap_kernel_transform_out(src, dst, 1, dx, dy, weight, nullptr);
 
     // dst should be unchanged
     REQUIRE(TCOD_heightmap_get_value(dst, 0, 0) == 99.0f);
@@ -68,7 +69,7 @@ TEST_CASE("TCOD_heightmap_kernel_transform_out size mismatch", "[heightmap][kern
     REQUIRE(dst != nullptr);
     TCOD_heightmap_set_value(dst, 0, 0, 99.0f);
 
-    TCOD_heightmap_kernel_transform_out(nullptr, dst, 1, dx, dy, weight, -FLT_MAX, FLT_MAX);
+    TCOD_heightmap_kernel_transform_out(nullptr, dst, 1, dx, dy, weight, nullptr);
 
     REQUIRE(TCOD_heightmap_get_value(dst, 0, 0) == 99.0f);
     TCOD_heightmap_delete(dst);
@@ -79,7 +80,7 @@ TEST_CASE("TCOD_heightmap_kernel_transform_out size mismatch", "[heightmap][kern
     REQUIRE(src != nullptr);
 
     // Should not crash
-    TCOD_heightmap_kernel_transform_out(src, nullptr, 1, dx, dy, weight, -FLT_MAX, FLT_MAX);
+    TCOD_heightmap_kernel_transform_out(src, nullptr, 1, dx, dy, weight, nullptr);
 
     TCOD_heightmap_delete(src);
   }
@@ -114,7 +115,8 @@ TEST_CASE("TCOD_heightmap_kernel_transform basic functionality", "[heightmap][ke
 
     TCOD_heightmap_set_value(src, 1, 1, 9.0f);
 
-    TCOD_heightmap_kernel_transform_out(src, dst, 9, dx, dy, weight, -FLT_MAX, FLT_MAX);
+    // NULL mask = transform all cells
+    TCOD_heightmap_kernel_transform_out(src, dst, 9, dx, dy, weight, nullptr);
 
     // Source unchanged
     REQUIRE(TCOD_heightmap_get_value(src, 1, 1) == 9.0f);
@@ -123,6 +125,56 @@ TEST_CASE("TCOD_heightmap_kernel_transform basic functionality", "[heightmap][ke
 
     TCOD_heightmap_delete(src);
     TCOD_heightmap_delete(dst);
+  }
+}
+
+TEST_CASE("TCOD_heightmap_threshold_mask", "[heightmap][mask]") {
+  SECTION("generates correct mask from threshold range") {
+    TCOD_heightmap_t* hm = TCOD_heightmap_new(3, 3);
+    REQUIRE(hm != nullptr);
+
+    // Set values 0-8
+    for (int y = 0; y < 3; y++) {
+      for (int x = 0; x < 3; x++) {
+        TCOD_heightmap_set_value(hm, x, y, (float)(x + y * 3));
+      }
+    }
+
+    uint8_t* mask = (uint8_t*)malloc(9);
+    REQUIRE(mask != nullptr);
+
+    // Threshold for values [3, 5]
+    TCOD_heightmap_threshold_mask(hm, mask, 3.0f, 5.0f);
+
+    // Check mask: positions with values 3, 4, 5 should be 1, others 0
+    REQUIRE(mask[0] == 0);  // value 0
+    REQUIRE(mask[1] == 0);  // value 1
+    REQUIRE(mask[2] == 0);  // value 2
+    REQUIRE(mask[3] == 1);  // value 3
+    REQUIRE(mask[4] == 1);  // value 4
+    REQUIRE(mask[5] == 1);  // value 5
+    REQUIRE(mask[6] == 0);  // value 6
+    REQUIRE(mask[7] == 0);  // value 7
+    REQUIRE(mask[8] == 0);  // value 8
+
+    free(mask);
+    TCOD_heightmap_delete(hm);
+  }
+
+  SECTION("null heightmap does not crash") {
+    uint8_t mask[9] = {0};
+    TCOD_heightmap_threshold_mask(nullptr, mask, 0.0f, 1.0f);
+    // mask should be unchanged
+    for (int i = 0; i < 9; i++) {
+      REQUIRE(mask[i] == 0);
+    }
+  }
+
+  SECTION("null mask does not crash") {
+    TCOD_heightmap_t* hm = TCOD_heightmap_new(3, 3);
+    REQUIRE(hm != nullptr);
+    TCOD_heightmap_threshold_mask(hm, nullptr, 0.0f, 1.0f);
+    TCOD_heightmap_delete(hm);
   }
 }
 
@@ -165,7 +217,7 @@ TEST_CASE("TCOD_heightmap_kernel_transform minLevel/maxLevel filtering", "[heigh
     TCOD_heightmap_delete(hm);
   }
 
-  SECTION("values outside range are copied unchanged in _out variant") {
+  SECTION("mask controls which cells are transformed in _out variant") {
     TCOD_heightmap_t* src = TCOD_heightmap_new(3, 3);
     TCOD_heightmap_t* dst = TCOD_heightmap_new(3, 3);
     REQUIRE(src != nullptr);
@@ -178,21 +230,26 @@ TEST_CASE("TCOD_heightmap_kernel_transform minLevel/maxLevel filtering", "[heigh
       }
     }
 
-    // Only transform values in range [3, 5]
-    TCOD_heightmap_kernel_transform_out(src, dst, 9, blur_dx, blur_dy, blur_weight, 3.0f, 5.0f);
+    // Create mask for values [3, 5]
+    uint8_t* mask = (uint8_t*)malloc(9);
+    REQUIRE(mask != nullptr);
+    TCOD_heightmap_threshold_mask(src, mask, 3.0f, 5.0f);
 
-    // Values outside range should be copied unchanged to dst
+    TCOD_heightmap_kernel_transform_out(src, dst, 9, blur_dx, blur_dy, blur_weight, mask);
+
+    // Values outside range should be unmodified by the transform
     REQUIRE(TCOD_heightmap_get_value(dst, 0, 0) == 0.0f);
-    REQUIRE(TCOD_heightmap_get_value(dst, 1, 0) == 1.0f);
-    REQUIRE(TCOD_heightmap_get_value(dst, 2, 0) == 2.0f);
-    REQUIRE(TCOD_heightmap_get_value(dst, 0, 2) == 6.0f);
-    REQUIRE(TCOD_heightmap_get_value(dst, 1, 2) == 7.0f);
-    REQUIRE(TCOD_heightmap_get_value(dst, 2, 2) == 8.0f);
+    REQUIRE(TCOD_heightmap_get_value(dst, 1, 0) == 0.0f);
+    REQUIRE(TCOD_heightmap_get_value(dst, 2, 0) == 0.0f);
+    REQUIRE(TCOD_heightmap_get_value(dst, 0, 2) == 0.0f);
+    REQUIRE(TCOD_heightmap_get_value(dst, 1, 2) == 0.0f);
+    REQUIRE(TCOD_heightmap_get_value(dst, 2, 2) == 0.0f);
 
     // Source unchanged
     REQUIRE(TCOD_heightmap_get_value(src, 0, 0) == 0.0f);
     REQUIRE(TCOD_heightmap_get_value(src, 1, 1) == 4.0f);
 
+    free(mask);
     TCOD_heightmap_delete(src);
     TCOD_heightmap_delete(dst);
   }

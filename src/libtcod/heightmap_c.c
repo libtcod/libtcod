@@ -514,6 +514,48 @@ void TCOD_heightmap_heat_erosion(TCOD_heightmap_t *hm, int nbPass,float minSlope
 }
 #endif
 
+void TCOD_heightmap_threshold_mask(const TCOD_heightmap_t* hm, uint8_t* mask, float minLevel, float maxLevel) {
+  if (!hm || !mask) {
+    return;
+  }
+  for (int i = 0; i < hm->w * hm->h; i++) {
+    mask[i] = (hm->values[i] >= minLevel && hm->values[i] <= maxLevel) ? 1 : 0;
+  }
+}
+
+void TCOD_heightmap_kernel_transform_out(
+    const TCOD_heightmap_t* __restrict hm_src,
+    TCOD_heightmap_t* __restrict hm_dst,
+    int kernel_size,
+    const int* dx,
+    const int* dy,
+    const float* weight,
+    const uint8_t* mask) {
+  if (!is_same_size(hm_src, hm_dst)) {
+    return;
+  }
+  for (int y = 0; y < hm_src->h; y++) {
+    for (int x = 0; x < hm_src->w; x++) {
+      const int idx = x + y * hm_src->w;
+      const float src_val = hm_src->values[idx];
+      // Transform if no mask, or mask value is non-zero
+      if (!mask || mask[idx]) {
+        float val = 0.0f;
+        float totalWeight = 0.0f;
+        for (int i = 0; i < kernel_size; i++) {
+          const int nx = x + dx[i];
+          const int ny = y + dy[i];
+          if (in_bounds(hm_src, nx, ny)) {
+            val += weight[i] * GET_VALUE(hm_src, nx, ny);
+            totalWeight += weight[i];
+          }
+        }
+        hm_dst->values[idx] = val / totalWeight;
+      }
+    }
+  }
+}
+
 void TCOD_heightmap_kernel_transform(
     TCOD_heightmap_t* hm,
     int kernel_size,
@@ -525,23 +567,28 @@ void TCOD_heightmap_kernel_transform(
   if (!hm) {
     return;
   }
-  for (int y = 0; y < hm->h; y++) {
-    for (int x = 0; x < hm->w; x++) {
-      if (GET_VALUE(hm, x, y) >= minLevel && GET_VALUE(hm, x, y) <= maxLevel) {
-        float val = 0.0f;
-        float totalWeight = 0.0f;
-        for (int i = 0; i < kernel_size; i++) {
-          const int nx = x + dx[i];
-          const int ny = y + dy[i];
-          if (in_bounds(hm, nx, ny)) {
-            val += weight[i] * GET_VALUE(hm, nx, ny);
-            totalWeight += weight[i];
-          }
-        }
-        GET_VALUE(hm, x, y) = val / totalWeight;
-      }
-    }
+  // Create a copy of the input to read from
+  TCOD_heightmap_t* hm_copy = TCOD_heightmap_new(hm->w, hm->h);
+  if (!hm_copy) {
+    return;
   }
+  TCOD_heightmap_copy(hm, hm_copy);
+
+  // Generate mask if threshold range is not "all values"
+  uint8_t* mask = NULL;
+  if (!(minLevel <= -FLT_MAX && maxLevel >= FLT_MAX)) {
+    mask = malloc((size_t)hm->w * (size_t)hm->h);
+    if (!mask) {
+      TCOD_heightmap_delete(hm_copy);
+      return;
+    }
+    TCOD_heightmap_threshold_mask(hm_copy, mask, minLevel, maxLevel);
+  }
+
+  TCOD_heightmap_kernel_transform_out(hm_copy, hm, kernel_size, dx, dy, weight, mask);
+
+  free(mask);
+  TCOD_heightmap_delete(hm_copy);
 }
 
 void TCOD_heightmap_add_voronoi(TCOD_heightmap_t* hm, int nbPoints, int nbCoef, const float* coef, TCOD_Random* rnd) {

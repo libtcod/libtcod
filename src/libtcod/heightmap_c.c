@@ -561,9 +561,34 @@ void TCOD_heightmap_add_voronoi(
 }
 
 static void setMPDHeight(
-    TCOD_heightmap_t* __restrict hm, TCOD_Random* __restrict rnd, int x, int y, float z, float offset);
+    TCOD_heightmap_t* __restrict hm, TCOD_Random* __restrict rnd, int x, int y, float z, float offset) {
+  z += TCOD_random_get_float(rnd, -offset, offset);
+  GET_VALUE(hm, x, y) = z;
+}
+
 static void setMDPHeightSquare(
-    TCOD_heightmap_t* __restrict hm, TCOD_Random* __restrict rnd, int x, int y, int initsz, int sz, float offset);
+    TCOD_heightmap_t* __restrict hm, TCOD_Random* __restrict rnd, int x, int y, int initsz, int sz, float offset) {
+  float z = 0;
+  int count = 0;
+  if (y >= sz) {
+    z += GET_VALUE(hm, x, y - sz);
+    count++;
+  }
+  if (x >= sz) {
+    z += GET_VALUE(hm, x - sz, y);
+    count++;
+  }
+  if (y + sz < initsz) {
+    z += GET_VALUE(hm, x, y + sz);
+    count++;
+  }
+  if (x + sz < initsz) {
+    z += GET_VALUE(hm, x + sz, y);
+    count++;
+  }
+  z /= count;
+  setMPDHeight(hm, rnd, x, y, z, offset);
+}
 
 void TCOD_heightmap_mid_point_displacement(
     TCOD_heightmap_t* __restrict hm, TCOD_Random* __restrict rnd, float roughness) {
@@ -609,35 +634,4 @@ void TCOD_heightmap_mid_point_displacement(
     sz /= 2;
     step *= 2;
   }
-}
-
-/* private stuff */
-static void setMPDHeight(
-    TCOD_heightmap_t* __restrict hm, TCOD_Random* __restrict rnd, int x, int y, float z, float offset) {
-  z += TCOD_random_get_float(rnd, -offset, offset);
-  GET_VALUE(hm, x, y) = z;
-}
-
-static void setMDPHeightSquare(
-    TCOD_heightmap_t* __restrict hm, TCOD_Random* __restrict rnd, int x, int y, int initsz, int sz, float offset) {
-  float z = 0;
-  int count = 0;
-  if (y >= sz) {
-    z += GET_VALUE(hm, x, y - sz);
-    count++;
-  }
-  if (x >= sz) {
-    z += GET_VALUE(hm, x - sz, y);
-    count++;
-  }
-  if (y + sz < initsz) {
-    z += GET_VALUE(hm, x, y + sz);
-    count++;
-  }
-  if (x + sz < initsz) {
-    z += GET_VALUE(hm, x + sz, y);
-    count++;
-  }
-  z /= count;
-  setMPDHeight(hm, rnd, x, y, z, offset);
 }

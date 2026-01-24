@@ -61,12 +61,13 @@ TCODLIB_API int TCOD_heightmap_count_cells(const TCOD_heightmap_t* hm, float min
 TCODLIB_API bool TCOD_heightmap_has_land_on_border(const TCOD_heightmap_t* hm, float waterLevel);
 TCODLIB_API void TCOD_heightmap_get_minmax(const TCOD_heightmap_t* hm, float* min, float* max);
 
-TCODLIB_API void TCOD_heightmap_copy(const TCOD_heightmap_t* hm_source, TCOD_heightmap_t* hm_dest);
+TCODLIB_API void TCOD_heightmap_copy(
+    const TCOD_heightmap_t* __restrict hm_source, TCOD_heightmap_t* __restrict hm_dest);
 TCODLIB_API void TCOD_heightmap_add(TCOD_heightmap_t* hm, float value);
 TCODLIB_API void TCOD_heightmap_scale(TCOD_heightmap_t* hm, float value);
 TCODLIB_API void TCOD_heightmap_clamp(TCOD_heightmap_t* hm, float min, float max);
 TCODLIB_API void TCOD_heightmap_normalize(TCOD_heightmap_t* hm, float min, float max);
-TCODLIB_API void TCOD_heightmap_clear(TCOD_heightmap_t* hm);
+TCODLIB_API void TCOD_heightmap_clear(TCOD_heightmap_t* __restrict hm);
 TCODLIB_API void TCOD_heightmap_lerp_hm(
     const TCOD_heightmap_t* hm1, const TCOD_heightmap_t* hm2, TCOD_heightmap_t* out, float coef);
 TCODLIB_API void TCOD_heightmap_add_hm(const TCOD_heightmap_t* hm1, const TCOD_heightmap_t* hm2, TCOD_heightmap_t* out);

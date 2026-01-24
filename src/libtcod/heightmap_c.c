@@ -77,11 +77,9 @@ void TCOD_heightmap_delete(TCOD_heightmap_t* hm) {
   free(hm);
 }
 
-void TCOD_heightmap_clear(TCOD_heightmap_t* hm) {
-  if (!hm) {
-    return;
-  }
-  memset(hm->values, 0, hm->w * hm->h * sizeof(float));
+void TCOD_heightmap_clear(TCOD_heightmap_t* __restrict hm) {
+  if (!hm) return;
+  for (size_t i = 0; i < hm->w * hm->h; ++i) hm->values[i] = 0;
 }
 
 float TCOD_heightmap_get_value(const TCOD_heightmap_t* hm, int x, int y) {
@@ -190,11 +188,9 @@ void TCOD_heightmap_dig_hill(TCOD_heightmap_t* hm, float hx, float hy, float h_r
   }
 }
 
-void TCOD_heightmap_copy(const TCOD_heightmap_t* hm_source, TCOD_heightmap_t* hm_dest) {
-  if (!is_same_size(hm_source, hm_dest)) {
-    return;
-  }
-  memcpy(hm_dest->values, hm_source->values, sizeof(float) * hm_source->w * hm_source->h);
+void TCOD_heightmap_copy(const TCOD_heightmap_t* __restrict hm_source, TCOD_heightmap_t* __restrict hm_dest) {
+  if (!is_same_size(hm_source, hm_dest)) return;
+  for (size_t i = 0; i < hm_source->w * hm_source->h; ++i) hm_dest->values[i] = hm_source->values[i];
 }
 
 void TCOD_heightmap_add_fbm(

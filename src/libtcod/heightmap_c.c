@@ -96,26 +96,15 @@ void TCOD_heightmap_set_value(TCOD_heightmap_t* hm, int x, int y, float value) {
   }
 }
 
-void TCOD_heightmap_get_minmax(const TCOD_heightmap_t* hm, float* min, float* max) {
-  if (!in_bounds(hm, 0, 0)) {
-    *min = 0;
-    *max = 0;
-    return;
-  }
-  if (min) {
-    *min = hm->values[0];
-  }
-  if (max) {
-    *max = hm->values[0];
-  }
-  for (int i = 0; i != hm->h * hm->w; i++) {
-    const float value = hm->values[i];
-    if (min) {
-      *min = TCOD_MIN(*min, value);
-    }
-    if (max) {
-      *max = TCOD_MAX(*max, value);
-    }
+void TCOD_heightmap_get_minmax(
+    const TCOD_heightmap_t* __restrict heightmap, float* __restrict min_out, float* __restrict max_out) {
+  if (min_out) *min_out = FLT_MAX;
+  if (max_out) *max_out = -FLT_MAX;
+  if (!heightmap) return;
+  for (int i = 0; i < heightmap->h * heightmap->w; ++i) {
+    const float value = heightmap->values[i];
+    if (min_out) *min_out = TCOD_MIN(*min_out, value);
+    if (max_out) *max_out = TCOD_MAX(*max_out, value);
   }
 }
 

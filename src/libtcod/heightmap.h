@@ -59,7 +59,15 @@ TCODLIB_API float TCOD_heightmap_get_slope(const TCOD_heightmap_t* hm, int x, in
 TCODLIB_API void TCOD_heightmap_get_normal(const TCOD_heightmap_t* hm, float x, float y, float n[3], float waterLevel);
 TCODLIB_API int TCOD_heightmap_count_cells(const TCOD_heightmap_t* hm, float min, float max);
 TCODLIB_API bool TCOD_heightmap_has_land_on_border(const TCOD_heightmap_t* hm, float waterLevel);
-TCODLIB_API void TCOD_heightmap_get_minmax(const TCOD_heightmap_t* hm, float* min, float* max);
+/***************************************************************************
+    @brief Output the highest and lowest values in `heightmap` to `min` and `max`
+
+    @param heightmap Input heightmap, can be NULL
+    @param min_out The lowest value in `heightmap` or `FLT_MAX` if `heightmap` has no values, can be NULL
+    @param max_out The highest value in `heightmap` or `-FLT_MAX` if `heightmap` has no values, can be NULL
+ */
+TCODLIB_API void TCOD_heightmap_get_minmax(
+    const TCOD_heightmap_t* __restrict heightmap, float* __restrict min_out, float* __restrict max_out);
 
 TCODLIB_API void TCOD_heightmap_copy(
     const TCOD_heightmap_t* __restrict hm_source, TCOD_heightmap_t* __restrict hm_dest);

@@ -28,6 +28,25 @@ TEST_CASE("TCODHeightmap") {
   REQUIRE(hm.getValue(0, 0) == 0.0f);
 }
 
+TEST_CASE("TCODHeightmap::getMinMax", "[heightmap]") {
+  auto empty = TCODHeightMap{0, 0};
+  empty.getMinMax(NULL, NULL);
+
+  float min = 0;
+  float max = 0;
+  empty.getMinMax(&min, &max);
+  REQUIRE(min == FLT_MAX);
+  REQUIRE(max == -FLT_MAX);
+
+  auto zero_one = TCODHeightMap{2, 1};
+  zero_one.setValue(1, 0, 1.0f);
+  zero_one.getMinMax(NULL, NULL);
+  zero_one.getMinMax(&min, NULL);
+  zero_one.getMinMax(NULL, &max);
+  REQUIRE(min == 0.0f);
+  REQUIRE(max == 1.0f);
+}
+
 TEST_CASE("TCOD_heightmap_kernel_transform null handling", "[heightmap][kernel]") {
   // Identity kernel for simple testing
   const int dx[] = {0};

@@ -11,8 +11,12 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 ### Added
 - Added `TCOD_heightmap_kernel_transform_out` for convolution with separate source and destination heightmaps.
 
+### Changed
+- `TCOD_heightmap_get_minmax` now outputs `FLT_MAX` and `-FLT_MAX` in exceptional cases instead of zero.
+
 ### Fixed
 - Fixed `TCOD_heightmap_kernel_transform` reading modified values during in-place convolution.
+- `TCOD_heightmap_get_minmax` no longer writes to NULL outputs when the input heightmap has zero elements.
 
 ## [2.2.2] - 2026-01-06
 ### CMake

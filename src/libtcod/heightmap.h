@@ -56,7 +56,8 @@ TCODLIB_API float TCOD_heightmap_get_value(const TCOD_heightmap_t* hm, int x, in
 TCODLIB_API float TCOD_heightmap_get_interpolated_value(const TCOD_heightmap_t* hm, float x, float y);
 TCODLIB_API void TCOD_heightmap_set_value(TCOD_heightmap_t* hm, int x, int y, float value);
 TCODLIB_API float TCOD_heightmap_get_slope(const TCOD_heightmap_t* hm, int x, int y);
-TCODLIB_API void TCOD_heightmap_get_normal(const TCOD_heightmap_t* hm, float x, float y, float n[3], float waterLevel);
+TCODLIB_API void TCOD_heightmap_get_normal(
+    const TCOD_heightmap_t* __restrict hm, float x, float y, float n[3], float waterLevel);
 TCODLIB_API int TCOD_heightmap_count_cells(const TCOD_heightmap_t* hm, float min, float max);
 TCODLIB_API bool TCOD_heightmap_has_land_on_border(const TCOD_heightmap_t* hm, float waterLevel);
 /***************************************************************************
@@ -77,25 +78,39 @@ TCODLIB_API void TCOD_heightmap_clamp(TCOD_heightmap_t* hm, float min, float max
 TCODLIB_API void TCOD_heightmap_normalize(TCOD_heightmap_t* hm, float min, float max);
 TCODLIB_API void TCOD_heightmap_clear(TCOD_heightmap_t* __restrict hm);
 TCODLIB_API void TCOD_heightmap_lerp_hm(
-    const TCOD_heightmap_t* hm1, const TCOD_heightmap_t* hm2, TCOD_heightmap_t* out, float coef);
-TCODLIB_API void TCOD_heightmap_add_hm(const TCOD_heightmap_t* hm1, const TCOD_heightmap_t* hm2, TCOD_heightmap_t* out);
+    const TCOD_heightmap_t* __restrict hm1,
+    const TCOD_heightmap_t* __restrict hm2,
+    TCOD_heightmap_t* __restrict out,
+    float coef);
+TCODLIB_API void TCOD_heightmap_add_hm(
+    const TCOD_heightmap_t* __restrict hm1, const TCOD_heightmap_t* __restrict hm2, TCOD_heightmap_t* __restrict out);
 TCODLIB_API void TCOD_heightmap_multiply_hm(
-    const TCOD_heightmap_t* hm1, const TCOD_heightmap_t* hm2, TCOD_heightmap_t* out);
+    const TCOD_heightmap_t* __restrict hm1, const TCOD_heightmap_t* __restrict hm2, TCOD_heightmap_t* __restrict out);
 
 TCODLIB_API void TCOD_heightmap_add_hill(TCOD_heightmap_t* hm, float hx, float hy, float h_radius, float h_height);
 TCODLIB_API void TCOD_heightmap_dig_hill(TCOD_heightmap_t* hm, float hx, float hy, float h_radius, float h_height);
 TCODLIB_API void TCOD_heightmap_dig_bezier(
-    TCOD_heightmap_t* hm, int px[4], int py[4], float startRadius, float startDepth, float endRadius, float endDepth);
+    TCOD_heightmap_t* __restrict hm,
+    int px[4],
+    int py[4],
+    float startRadius,
+    float startDepth,
+    float endRadius,
+    float endDepth);
 TCODLIB_API void TCOD_heightmap_rain_erosion(
-    TCOD_heightmap_t* hm, int nbDrops, float erosionCoef, float sedimentationCoef, TCOD_Random* rnd);
+    TCOD_heightmap_t* __restrict hm,
+    int nbDrops,
+    float erosionCoef,
+    float sedimentationCoef,
+    TCOD_Random* __restrict rnd);
 /* TCODLIB_API void TCOD_heightmap_heat_erosion(TCOD_heightmap_t *hm, int nbPass,float minSlope,float erosionCoef,float
  * sedimentationCoef,TCOD_Random* rnd); */
 TCODLIB_API void TCOD_heightmap_kernel_transform(
-    TCOD_heightmap_t* hm,
+    TCOD_heightmap_t* __restrict hm,
     int kernel_size,
-    const int* dx,
-    const int* dy,
-    const float* weight,
+    const int* __restrict dx,
+    const int* __restrict dy,
+    const float* __restrict weight,
     float minLevel,
     float maxLevel);
 /**
@@ -113,7 +128,7 @@ TCODLIB_API void TCOD_heightmap_kernel_transform(
     @versionadded{Unreleased}
  */
 TCODLIB_API void TCOD_heightmap_threshold_mask(
-    const TCOD_heightmap_t* hm, uint8_t* mask, float minLevel, float maxLevel);
+    const TCOD_heightmap_t* __restrict hm, uint8_t* __restrict mask, float minLevel, float maxLevel);
 /**
     @brief Apply a sparse kernel convolution from source to destination heightmap.
 
@@ -143,16 +158,21 @@ TCODLIB_API void TCOD_heightmap_kernel_transform_out(
     const TCOD_heightmap_t* __restrict hm_src,
     TCOD_heightmap_t* __restrict hm_dst,
     int kernel_size,
-    const int* dx,
-    const int* dy,
-    const float* weight,
-    const uint8_t* mask);
+    const int* __restrict dx,
+    const int* __restrict dy,
+    const float* __restrict weight,
+    const uint8_t* __restrict mask);
 TCODLIB_API void TCOD_heightmap_add_voronoi(
-    TCOD_heightmap_t* hm, int nbPoints, int nbCoef, const float* coef, TCOD_Random* rnd);
-TCODLIB_API void TCOD_heightmap_mid_point_displacement(TCOD_heightmap_t* hm, TCOD_Random* rnd, float roughness);
+    TCOD_heightmap_t* __restrict hm,
+    int nbPoints,
+    int nbCoef,
+    const float* __restrict coef,
+    TCOD_Random* __restrict rnd);
+TCODLIB_API void TCOD_heightmap_mid_point_displacement(
+    TCOD_heightmap_t* __restrict hm, TCOD_Random* __restrict rnd, float roughness);
 TCODLIB_API void TCOD_heightmap_add_fbm(
-    TCOD_heightmap_t* hm,
-    TCOD_noise_t noise,
+    TCOD_heightmap_t* __restrict hm,
+    TCOD_Noise* __restrict noise,
     float mul_x,
     float mul_y,
     float add_x,
@@ -161,8 +181,8 @@ TCODLIB_API void TCOD_heightmap_add_fbm(
     float delta,
     float scale);
 TCODLIB_API void TCOD_heightmap_scale_fbm(
-    TCOD_heightmap_t* hm,
-    TCOD_noise_t noise,
+    TCOD_heightmap_t* __restrict hm,
+    TCOD_Noise* __restrict noise,
     float mul_x,
     float mul_y,
     float add_x,
@@ -171,7 +191,7 @@ TCODLIB_API void TCOD_heightmap_scale_fbm(
     float delta,
     float scale);
 TCOD_DEPRECATED("This function does nothing and will be removed.")
-TCODLIB_API void TCOD_heightmap_islandify(TCOD_heightmap_t* hm, float seaLevel, TCOD_Random* rnd);
+TCODLIB_API void TCOD_heightmap_islandify(TCOD_heightmap_t* __restrict hm, float seaLevel, TCOD_Random* __restrict rnd);
 #ifdef __cplusplus
 }
 #endif

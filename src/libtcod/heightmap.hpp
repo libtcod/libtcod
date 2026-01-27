@@ -41,6 +41,8 @@
 
 #include "heightmap.h"
 #include "noise.hpp"
+/// @defgroup Heightmap_CPP Heightmaps (C++)
+/// @{
 
 // clang-format off
 /**
@@ -532,5 +534,5 @@ class TCODLIB_API TCODHeightMap {
 
  private:
 };
-
+/// @}
 #endif  // TCOD_HEIGHTMAP_HPP_

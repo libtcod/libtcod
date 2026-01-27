@@ -40,10 +40,13 @@
 #include "mersenne_types.h"
 #include "noise.h"
 #include "portability.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+/// @defgroup Heightmap Heightmaps (C)
+/// @{
+
+/// @brief A contigious 2D array of float values.
 typedef struct {
   int w, h;
   float* __restrict values;
@@ -192,7 +195,8 @@ TCODLIB_API void TCOD_heightmap_scale_fbm(
     float scale);
 TCOD_DEPRECATED("This function does nothing and will be removed.")
 TCODLIB_API void TCOD_heightmap_islandify(TCOD_heightmap_t* __restrict hm, float seaLevel, TCOD_Random* __restrict rnd);
+/// @}
 #ifdef __cplusplus
-}
+}  // extern "C"
 #endif
 #endif  // TCOD_HEIGHTMAP_H_

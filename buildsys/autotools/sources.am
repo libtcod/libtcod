@@ -156,9 +156,9 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/parser.cpp \
 	../../src/libtcod/parser_c.c \
 	../../src/libtcod/path.cpp \
+	../../src/libtcod/path_c.c \
 	../../src/libtcod/pathfinder.c \
 	../../src/libtcod/pathfinder_frontier.c \
-	../../src/libtcod/path_c.c \
 	../../src/libtcod/random.c \
 	../../src/libtcod/renderer_sdl2.c \
 	../../src/libtcod/renderer_xterm.c \

@@ -46,9 +46,9 @@ target_sources(${PROJECT_NAME} PRIVATE
     libtcod/parser.cpp
     libtcod/parser_c.c
     libtcod/path.cpp
+    libtcod/path_c.c
     libtcod/pathfinder.c
     libtcod/pathfinder_frontier.c
-    libtcod/path_c.c
     libtcod/random.c
     libtcod/renderer_sdl2.c
     libtcod/renderer_xterm.c
@@ -283,11 +283,11 @@ source_group(libtcod FILES
     libtcod/path.cpp
     libtcod/path.h
     libtcod/path.hpp
+    libtcod/path_c.c
     libtcod/pathfinder.c
     libtcod/pathfinder.h
     libtcod/pathfinder_frontier.c
     libtcod/pathfinder_frontier.h
-    libtcod/path_c.c
     libtcod/portability.h
     libtcod/random.c
     libtcod/random.h

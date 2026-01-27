@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import datetime
-import os
 import re
 from pathlib import Path
 
@@ -70,13 +69,13 @@ def main() -> None:
 
     copyright = get_copyright(args)
     # This avoids touching vendor files.
-    for file in os.listdir(PROJECT_DIR / "src"):
-        if RE_SOURCE_FILE.match(file):
+    for file in Path(PROJECT_DIR / "src").iterdir():
+        if RE_SOURCE_FILE.match(file.name):
             update_file(PROJECT_DIR / "src" / file, copyright, args)
-    for dirpath, _, filenames in os.walk(PROJECT_DIR / "src/libtcod"):
-        for file in filenames:
-            if RE_SOURCE_FILE.match(file):
-                update_file(Path(dirpath, file), copyright, args)
+    for dirpath, _, filenames in (PROJECT_DIR / "src/libtcod").walk():
+        for filename in filenames:
+            if RE_SOURCE_FILE.match(filename):
+                update_file((dirpath / filename), copyright, args)
 
 
 if __name__ == "__main__":

@@ -6,7 +6,6 @@ from __future__ import annotations
 import argparse
 import datetime
 import json
-import os
 import re
 import subprocess
 import sys
@@ -96,7 +95,7 @@ def replace_unreleased_tags(tag: str, path: Path, *, dry_run: bool) -> None:
     match = re.match(r"\d+\.\d+", tag)  # Get "major.minor" version.
     assert match
     short_tag = match.group()
-    for directory, _, files in os.walk(path):
+    for directory, _, files in path.walk():
         for filename in files:
             file = Path(directory, filename)
             if file.suffix not in {".c", ".cpp", ".h", ".hpp"}:

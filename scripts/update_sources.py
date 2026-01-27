@@ -42,11 +42,10 @@ def get_sources(
         re_inclusion.append("h|hpp")
     re_valid = re.compile(rf""".*\.({"|".join(re_inclusion)})$""")
 
-    for current_path_str, dirs, files_str in os.walk(directory):
-        current_path = Path(current_path_str)
-        # Ignore hidden directories.
-        dirs[:] = [dir for dir in dirs if not dir.startswith(".")]  # noqa: A001
-        files = [current_path / f for f in files_str if re_valid.match(f)]
+    for current_path, dirs, files_str in Path(directory).walk():
+        # Ignore hidden directories, dirs and files need to be sorted
+        dirs[:] = sorted(dir for dir in dirs if not dir.startswith("."))  # noqa: A001
+        files = sorted(current_path / f for f in files_str if re_valid.match(f))
         group = current_path.relative_to("src")
         yield group, files
     if sources:

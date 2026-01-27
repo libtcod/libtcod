@@ -25,7 +25,18 @@ env:
   VCPKG_ROOT: ${{github.workspace}}/vcpkg
 
 jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+          submodules: false
+      - uses: pre-commit/action@v3.0.1
+
   CMake:
+    needs: [pre-commit]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     strategy:
@@ -204,6 +215,7 @@ jobs:
           if-no-files-found: error
 
   coverage:
+    needs: [pre-commit]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     strategy:
@@ -267,6 +279,7 @@ jobs:
   Autotools:
     # Disabled until SDL3 is supported
     if: false
+    needs: [pre-commit]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     strategy:
@@ -307,6 +320,7 @@ jobs:
   SCons:
     # Disabled until SDL3 is supported
     if: false
+    needs: [pre-commit]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     strategy:
@@ -372,6 +386,7 @@ jobs:
           compression-level: 0
 
   FetchContent:
+    needs: [pre-commit]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -402,6 +417,7 @@ jobs:
         run: ${{ env.CMAKE_BIN_DIR }}/unittest ~[!nonportable] ~[benchmark]
 
   Emscripten:
+    needs: [pre-commit]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
@@ -463,6 +479,7 @@ jobs:
           compression-level: 6
 
   Doxygen:
+    needs: [pre-commit]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

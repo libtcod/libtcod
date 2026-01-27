@@ -117,7 +117,7 @@ def generate_cmake() -> str:
 def main() -> None:
     """Main script."""
     # Change to project root directory, using this file as a reference.
-    os.chdir(Path(__file__, "../.."))
+    os.chdir(Path(__file__, "../..").resolve(strict=True))
 
     Path("buildsys/autotools/sources.am").write_text(generate_am(), encoding="utf-8")
     Path("src/sources.cmake").write_text(generate_cmake(), encoding="utf-8")

@@ -19,7 +19,7 @@ parser.add_argument("-e", "--edit", action="store_true", help="Force edits of gi
 parser.add_argument("-n", "--dry-run", action="store_true", help="Don't modify files.")
 parser.add_argument("-v", "--verbose", action="store_true", help="Print debug information.")
 
-PROJECT_DIR = Path(__file__).parent.parent  # Project directory relative to this script.
+PROJECT_DIR = Path(__file__, "../..").resolve(strict=True)  # Project directory relative to this script.
 CHANGELOG_PATH = PROJECT_DIR / "CHANGELOG.md"
 
 
@@ -140,7 +140,7 @@ def main() -> None:
     if not args.dry_run:
         CHANGELOG_PATH.write_text(new_changelog, encoding="utf-8")
         edit = ["-e"] if args.edit else []
-        subprocess.run(["pre-commit", "run", "-a"], check=False)  # noqa: S603, S607
+        subprocess.run(["pre-commit", "run", "-a"], check=False)  # noqa: S607
         subprocess.run(  # noqa: S603
             ["git", "commit", "-avm", f"Prepare {args.tag} release.", *edit],  # noqa: S607
             check=True,

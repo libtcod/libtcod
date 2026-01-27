@@ -15,7 +15,7 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("-n", "--dry-run", action="store_true", help="Don't modify files.")
 parser.add_argument("-v", "--verbose", action="store_true", help="Print debug information.")
 
-PROJECT_DIR = Path(__file__, "../..")  # Project directory relative to this script.
+PROJECT_DIR = Path(__file__, "../..").resolve(strict=True)  # Project directory relative to this script.
 LICENSE_FILE = PROJECT_DIR / "LICENSE.txt"
 RE_SOURCE_FILE = re.compile(r".*\.[ch].?.?$")
 

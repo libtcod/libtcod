@@ -252,7 +252,7 @@ void TCOD_heightmap_get_normal(const TCOD_heightmap_t* __restrict hm, float x, f
   n[1] = 255 * (height_0 - height_y);
   n[2] = 16.0f;
   // Normalize
-  const float invlen = 1.0f / (float)sqrt(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]);
+  const float invlen = 1.0f / sqrtf(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]);
   n[0] *= invlen;
   n[1] *= invlen;
   n[2] *= invlen;
@@ -365,7 +365,7 @@ float TCOD_heightmap_get_slope(const TCOD_heightmap_t* hm, int x, int y) {
       max_dy = TCOD_MAX(max_dy, n_slope);
     }
   }
-  return (float)atan2(max_dy + min_dy, 1.0f);
+  return atan2f(max_dy + min_dy, 1.0f);
 }
 
 void TCOD_heightmap_rain_erosion(

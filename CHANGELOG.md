@@ -175,8 +175,8 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 
 ## [1.22.0] - 2022-08-24
 ### Added
-- Libtcod can now be built without zlib by passing the `-DLIBTCOD_ZLIB=disable` flag to CMake or by setting `CMAKE_DISABLE_FIND_PACKAGE_ZLIB=1`.
-- Libtcod can now be built without PNG support by passing the `-DLIBTCOD_LODEPNG=disable` flag to CMake.
+- Libtcod can now be built without zlib by passing the `-D LIBTCOD_ZLIB=disable` flag to CMake or by setting `CMAKE_DISABLE_FIND_PACKAGE_ZLIB=1`.
+- Libtcod can now be built without PNG support by passing the `-D LIBTCOD_LODEPNG=disable` flag to CMake.
 - Added context screen capture functions to take screenshots into memory instead of a file.
 
 ### Changed
@@ -194,7 +194,7 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 - Added the `tcod::Context` class to better handle contexts in C++.
 - Added a CMake toggle `LIBTCOD_THREADS` to remove deprecated threading functions.
   `CMAKE_DISABLE_FIND_PACKAGE_Threads=1` can also be used.
-- Libtcod can now be built without SDL by passing the `-DLIBTCOD_SDL2=disable` flag in CMake or by setting
+- Libtcod can now be built without SDL by passing the `-D LIBTCOD_SDL2=disable` flag in CMake or by setting
   `CMAKE_DISABLE_FIND_PACKAGE_SDL2=1`.
 
 ### Changed

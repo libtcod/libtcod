@@ -5,6 +5,7 @@ option(LIBTCOD_VCPKG "Enable Vcpkg toolchain by default." OFF)
 option(LIBTCOD_SAMPLES "Build sources from the samples directory." OFF)
 option(LIBTCOD_TESTS "Build unit tests." OFF)
 option(LIBTCOD_INSTALL "Enable install targets." ON)
+option(LIBTCOD_INSTALL_PKGCONFIG "Install pkg-config files." ON)
 option(LIBTCOD_CPACK "Enable CPack for libtcod." OFF)
 option(LIBTCOD_DOCS "Build documentation using Doxygen for installation." OFF)
 

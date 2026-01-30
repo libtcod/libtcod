@@ -173,4 +173,22 @@ if(LIBTCOD_INSTALL)
         DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}
         RENAME copyright
     )
+
+    if (LIBTCOD_INSTALL_PKGCONFIG)
+        set(prefix "${CMAKE_INSTALL_PREFIX}")
+        set(exec_prefix "\${prefix}")
+        set(libdir "\${exec_prefix}/${CMAKE_INSTALL_LIBDIR}")
+        set(includedir "\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}")
+        set(PACKAGE_VERSION "${LIBTCOD_VERSION_FULL}")
+        configure_file(
+            ${CMAKE_CURRENT_SOURCE_DIR}/../buildsys/autotools/libtcod.pc.in
+            ${CMAKE_CURRENT_BINARY_DIR}/libtcod.pc
+            @ONLY
+            NEWLINE_STYLE UNIX
+        )
+        install(
+            FILES ${CMAKE_CURRENT_BINARY_DIR}/libtcod.pc
+            DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+        )
+    endif()
 endif()

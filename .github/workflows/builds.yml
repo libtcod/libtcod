@@ -277,19 +277,19 @@ jobs:
       - uses: codecov/codecov-action@v5
 
   Autotools:
-    # Disabled until SDL3 is supported
-    if: false
     needs: [pre-commit]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     strategy:
       fail-fast: true
       matrix:
-        os: [macos-14]
+        os: [macos-15]
     steps:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
+      - name: Checkout vendored libraries
+        run: git submodule update --init src/vendor/utf8proc
       - name: Set up Python 3
         uses: actions/setup-python@v6
         with:
@@ -312,7 +312,7 @@ jobs:
           ./configure --prefix=$HOME/.local
       - name: Build package
         working-directory: buildsys/autotools
-        run: make -j 3 install
+        run: make -j 4 install
       - name: Run tests
         working-directory: buildsys/autotools
         run: make check

@@ -18,6 +18,9 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 - Fixed `TCOD_heightmap_kernel_transform` reading modified values during in-place convolution.
 - `TCOD_heightmap_get_minmax` no longer writes to NULL outputs when the input heightmap has zero elements.
 
+### Removed
+- SCons support has been officially removed.
+
 ## [2.2.2] - 2026-01-06
 ### CMake
 - Now fully supports `FetchPackage` for dependency resolution.

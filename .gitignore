@@ -528,7 +528,6 @@ docs/library/
 .dirstamp
 /build*
 !/buildsys
-buildsys/scons/*/
 buildsys/msvs/*/
 Thumbs.db
 libtcod.pc

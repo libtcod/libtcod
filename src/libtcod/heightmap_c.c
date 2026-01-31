@@ -41,15 +41,6 @@
 
 #define GET_VALUE(hm, x, y) (hm)->values[(x) + (y) * (hm)->w]
 
-/// @brief Return true if heightmap is valid
-/// @details Valid heightmaps are non-NULL and never have negative shapes
-static bool TCOD_heightmap_is_valid(const TCOD_heightmap_t* heightmap) {
-  return heightmap && heightmap->values && heightmap->w >= 0 && heightmap->h >= 0;
-}
-/// @brief Returns true if `x`,`y` are valid coordinates for this heightmap
-static bool TCOD_heightmap_in_bounds(const TCOD_heightmap_t* heightmap, int x, int y) {
-  return TCOD_heightmap_is_valid(heightmap) && 0 <= x && 0 <= y && x < heightmap->w && y < heightmap->h;
-}
 /// @brief Return true if two heightmaps have the same shape for the purposes of a vectorized operation
 static bool TCOD_heightmap_is_same_size(const TCOD_heightmap_t* hm1, const TCOD_heightmap_t* hm2) {
   return TCOD_heightmap_is_valid(hm1) && TCOD_heightmap_is_valid(hm2) && hm1->w == hm2->w && hm1->h == hm2->h;
@@ -75,15 +66,6 @@ void TCOD_heightmap_delete(TCOD_heightmap_t* hm) {
 void TCOD_heightmap_clear(TCOD_heightmap_t* __restrict hm) {
   if (!TCOD_heightmap_is_valid(hm)) return;
   for (size_t i = 0; i < hm->w * hm->h; ++i) hm->values[i] = 0;
-}
-
-float TCOD_heightmap_get_value(const TCOD_heightmap_t* hm, int x, int y) {
-  if (!TCOD_heightmap_in_bounds(hm, x, y)) return 0.0;
-  return GET_VALUE(hm, x, y);
-}
-
-void TCOD_heightmap_set_value(TCOD_heightmap_t* hm, int x, int y, float value) {
-  if (TCOD_heightmap_in_bounds(hm, x, y)) GET_VALUE(hm, x, y) = value;
 }
 
 void TCOD_heightmap_get_minmax(

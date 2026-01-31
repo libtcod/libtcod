@@ -48,16 +48,49 @@ extern "C" {
 
 /// @brief A contigious 2D array of float values.
 typedef struct {
-  int w, h;
+  int w;  ///< Width of this heightmap
+  int h;  ///< Height of this heightmap
+  /// @brief Contigious 2D array of float values.
+  /// Access array elements with `heightmap->values[y * heightmap-> w + x]`
   float* __restrict values;
 } TCOD_heightmap_t;
+
+/// @brief Return true if `heightmap` is valid
+/// @param heightmap Can be NULL
+/// @details Valid heightmaps are non-NULL and never have negative shapes
+static inline bool TCOD_heightmap_is_valid(const TCOD_heightmap_t* heightmap) {
+  return heightmap && heightmap->values && heightmap->w >= 0 && heightmap->h >= 0;
+}
+/// @brief Return true if `x`,`y` are valid and accessible coordinates for this `heightmap`
+/// @param heightmap Pointer to heightmap to access, NULL or invalid heightmaps are always out-of-bounds
+/// @param x X coordinate in range: `0 <= x < heightmap->w`
+/// @param y Y coordinate in range: `0 <= y < heightmap->h`
+/// @return `true` if the coordinates at `x`,`y` are safe to access
+static inline bool TCOD_heightmap_in_bounds(const TCOD_heightmap_t* heightmap, int x, int y) {
+  return TCOD_heightmap_is_valid(heightmap) && 0 <= x && 0 <= y && x < heightmap->w && y < heightmap->h;
+}
+/// @brief Return the value at `x`,`y` from `heightmap`, or `0.0` for out-of-bounds coordinates
+/// @param heightmap Can be NULL
+/// @param x X coordinate in range: `0 <= x < heightmap->w`
+/// @param y Y coordinate in range: `0 <= y < heightmap->h`
+/// @return Value at `heightmap->values[y * heightmap->w + x]`, out-of-bounds coordinates return `0.0`
+static inline float TCOD_heightmap_get_value(const TCOD_heightmap_t* heightmap, int x, int y) {
+  if (!TCOD_heightmap_in_bounds(heightmap, x, y)) return 0.0;
+  return heightmap->values[y * heightmap->w + x];
+}
+/// @brief Set `x`,`y` on `heightmap` to `value`, out-of-bounds coordinates are silently ignored
+/// @param heightmap Can be NULL
+/// @param x X coordinate in range: `0 <= x < heightmap->w`
+/// @param y Y coordinate in range: `0 <= y < heightmap->h`
+/// @param value Value to write to `heightmap->values[y * heightmap->w + x]` if within bounds
+static inline void TCOD_heightmap_set_value(TCOD_heightmap_t* heightmap, int x, int y, float value) {
+  if (TCOD_heightmap_in_bounds(heightmap, x, y)) heightmap->values[y * heightmap->w + x] = value;
+}
 
 TCODLIB_API TCOD_heightmap_t* TCOD_heightmap_new(int w, int h);
 TCODLIB_API void TCOD_heightmap_delete(TCOD_heightmap_t* hm);
 
-TCODLIB_API float TCOD_heightmap_get_value(const TCOD_heightmap_t* hm, int x, int y);
 TCODLIB_API float TCOD_heightmap_get_interpolated_value(const TCOD_heightmap_t* hm, float x, float y);
-TCODLIB_API void TCOD_heightmap_set_value(TCOD_heightmap_t* hm, int x, int y, float value);
 TCODLIB_API float TCOD_heightmap_get_slope(const TCOD_heightmap_t* hm, int x, int y);
 TCODLIB_API void TCOD_heightmap_get_normal(
     const TCOD_heightmap_t* __restrict hm, float x, float y, float n[3], float waterLevel);

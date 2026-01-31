@@ -43,7 +43,8 @@ AS_CASE([$host_os],
         AX_PTHREAD([:], [AC_MSG_ERROR([cannot find pthreads])])
     ]
 )
-AC_SUBST([SOVERSION], [m4_esyscmd_s(./get_version.py --so)])
+# libtcod versions are not ABI compatible
+AC_SUBST([SOVERSION], [m4_esyscmd_s(./get_version.py --soversion)])
 
 AX_CXX_COMPILE_STDCXX([17], [noext], [mandatory])
 

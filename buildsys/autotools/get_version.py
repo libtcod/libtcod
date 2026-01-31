@@ -1,29 +1,38 @@
 #!/usr/bin/env python3
-"""
-    Print the version number for libtcod.
+"""Print the libtcod version number."""
 
-    The --so flag can be used to get the library version number instead.
-"""
-
-import io
 import re
-import sys
+from pathlib import Path
+import argparse
 
-RE_MAJOR = '.*#define TCOD_MAJOR_VERSION *([0-9]+)'
-RE_MINOR = '.*#define TCOD_MINOR_VERSION *([0-9]+)'
-RE_PATCH = '.*#define TCOD_PATCHLEVEL *([0-9]+)'
-RE_VERSION = RE_MAJOR + RE_MINOR + RE_PATCH
+THIS_DIR = Path(__file__).parent
+VERSION_HEADER = Path(THIS_DIR, "../../src/libtcod/version.h").resolve(strict=True)
+
+RE_MAJOR = r".*#define TCOD_MAJOR_VERSION\s+([0-9]+)"
+RE_MINOR = r".*#define TCOD_MINOR_VERSION\s+([0-9]+)"
+RE_PATCH = r".*#define TCOD_PATCHLEVEL\s+([0-9]+)"
+RE_VERSION = re.compile(RE_MAJOR + RE_MINOR + RE_PATCH, flags=re.DOTALL)
+
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument(
+    "--soversion",
+    "--so",
+    action="store_true",
+    help="print the shared object version number instead",
+)
 
 
-def main():
-    with io.open('../../src/libtcod/version.h', encoding='utf-8') as f:
-        header = f.read()
-    major, minor, patch = re.match(RE_VERSION, header, re.DOTALL).groups()
-    if '--so' in sys.argv:
-        print('{major}:{minor}'.format(**locals()))
-    else:
-        print('{major}.{minor}.{patch}'.format(**locals()))
+def main() -> None:
+    """Fetch and print the requested version number."""
+    args = parser.parse_args()
+    version_match = RE_VERSION.match(VERSION_HEADER.read_text(encoding="utf-8"))
+    assert version_match
+    major, minor, patch = version_match.groups()
+    if args.soversion:
+        print(f"{major}:{minor}")  # libtcod versions are not ABI compatible
+        return
+    print(f"{major}.{minor}.{patch}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

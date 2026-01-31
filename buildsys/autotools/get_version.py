@@ -5,7 +5,7 @@ import re
 from pathlib import Path
 import argparse
 
-THIS_DIR = Path(__file__).parent
+THIS_DIR = Path(__file__).parent.resolve(strict=True)
 VERSION_HEADER = Path(THIS_DIR, "../../src/libtcod/version.h").resolve(strict=True)
 
 RE_MAJOR = r".*#define TCOD_MAJOR_VERSION\s+([0-9]+)"

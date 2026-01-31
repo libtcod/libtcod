@@ -18,7 +18,8 @@ parser.add_argument("-e", "--edit", action="store_true", help="Force edits of gi
 parser.add_argument("-n", "--dry-run", action="store_true", help="Don't modify files.")
 parser.add_argument("-v", "--verbose", action="store_true", help="Print debug information.")
 
-PROJECT_DIR = Path(__file__, "../..").resolve(strict=True)  # Project directory relative to this script.
+SCRIPTS_DIR = Path(__file__).parent.resolve(strict=True)
+PROJECT_DIR = (SCRIPTS_DIR / "..").resolve(strict=True)
 CHANGELOG_PATH = PROJECT_DIR / "CHANGELOG.md"
 
 

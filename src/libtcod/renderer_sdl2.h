@@ -53,9 +53,7 @@ struct SDL_Texture;
     An SDL tileset atlas.  This prepares a tileset for use with SDL.
 
     This works for SDL3 despite the name.
-    \rst
-    .. versionadded:: 1.16
-    \endrst
+    @versionadded{1.16}
  */
 typedef struct TCOD_TilesetAtlasSDL2 {
   /** The renderer used to create this atlas. Non-owning. */
@@ -150,9 +148,7 @@ TCOD_PUBLIC void TCOD_sdl2_atlas_delete(struct TCOD_TilesetAtlasSDL2* atlas);
 
     Returns a negative value on an error, check `TCOD_get_error`.
 
-    \rst
-    .. versionadded:: 1.16
-    \endrst
+    @versionadded{1.16}
  */
 TCOD_PUBLIC TCOD_Error TCOD_sdl2_render_texture_setup(
     const struct TCOD_TilesetAtlasSDL2* __restrict atlas,
@@ -187,9 +183,7 @@ TCOD_PUBLIC TCOD_Error TCOD_sdl2_render_texture_setup(
 
     Returns a negative value on an error, check `TCOD_get_error`.
 
-    \rst
-    .. versionadded:: 1.16
-    \endrst
+    @versionadded{1.16}
  */
 TCOD_PUBLIC TCOD_Error TCOD_sdl2_render_texture(
     const struct TCOD_TilesetAtlasSDL2* __restrict atlas,

@@ -135,9 +135,7 @@ TCOD_PUBLIC TCOD_Error TCOD_console_draw_rect_rgb(
 
     If `clear` is true then the inner area of the frame is filled with the inner decoration, which is typically space.
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 TCOD_PUBLIC TCOD_Error TCOD_console_draw_frame_rgb(
     struct TCOD_Console* __restrict con,
@@ -175,9 +173,7 @@ namespace tcod {
       // Draw a horizontal bar.
       tcod::draw_rect(console, {8, 8, 16, 1}, '-', {{255, 255, 255}}, std::nullopt);
     @endcode
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 inline void draw_rect(
     TCOD_Console& console,
@@ -215,9 +211,7 @@ inline void draw_rect(
       static constexpr std::array<int, 9> LEGEND = {'0', '1', '2', '3', '4', '5', '6', '7', '8'};
       tcod::draw_frame(console, {0, 0, 3, 3}, LEGEND, {{255, 255, 255}}, {{0, 0, 0}});
     @endcode
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 inline void draw_frame(
     TCOD_Console& console,

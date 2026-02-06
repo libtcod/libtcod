@@ -55,9 +55,7 @@ struct TCOD_TilesetObserver {
 /**
     @brief A container for libtcod tileset graphics.
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 struct TCOD_Tileset {
   int tile_width;
@@ -146,16 +144,12 @@ typedef struct TCOD_Tileset TCOD_Tileset;
 // clang-format on
 /**
     A character mapping of a Code Page 437 tileset to Unicode.
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 static const int TCOD_CHARMAP_CP437[256] = TCOD_CHARMAP_CP437_;
 /**
     A character mapping of a deprecated TCOD tileset to Unicode.
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 static const int TCOD_CHARMAP_TCOD[256] = TCOD_CHARMAP_TCOD_;
 #ifdef __cplusplus
@@ -163,17 +157,13 @@ extern "C" {
 #endif  // __cplusplus
 /**
     Create a new tile-set with the given tile size.
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 TCOD_NODISCARD
 TCOD_PUBLIC TCOD_Tileset* TCOD_tileset_new(int tile_width, int tile_height);
 /**
     Delete a tile-set.
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 TCOD_PUBLIC void TCOD_tileset_delete(TCOD_Tileset* tileset);
 /**
@@ -234,9 +224,7 @@ TCOD_tileset_set_tile_(TCOD_Tileset* __restrict tileset, int codepoint, const st
     Tiles are assigned in row-major order.
     `TCOD_CHARMAP_CP437` or `TCOD_CHARMAP_TCOD` could be used here.
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 TCOD_NODISCARD
 TCOD_PUBLIC TCOD_Tileset* TCOD_tileset_load(
@@ -249,9 +237,7 @@ TCOD_PUBLIC TCOD_Tileset* TCOD_tileset_load(
 
     The remaining parameters are the same as `TCOD_tileset_load`.
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 TCOD_NODISCARD
 TCOD_PUBLIC TCOD_Tileset* TCOD_tileset_load_mem(
@@ -265,9 +251,7 @@ TCOD_PUBLIC TCOD_Tileset* TCOD_tileset_load_mem(
 
     The remaining parameters are the same as `TCOD_tileset_load`.
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 TCOD_NODISCARD
 TCOD_PUBLIC TCOD_Tileset* TCOD_tileset_load_raw(

@@ -63,9 +63,7 @@ TCOD_DEPRECATED("This function will corrupt console characters greater than 255.
 TCODLIB_API void TCOD_zip_put_console(TCOD_zip_t zip, const TCOD_Console* val);
 /**
     Write a TCOD_Random* object.
-    \rst
-    .. versionadded:: 1.16
-    \endrst
+    @versionadded{1.16}
  */
 TCODLIB_API void TCOD_zip_put_random(TCOD_zip_t zip, const TCOD_Random* val);
 TCODLIB_API void TCOD_zip_put_data(TCOD_zip_t zip, int nbBytes, const void* data);
@@ -83,9 +81,7 @@ TCODLIB_API TCOD_Image* TCOD_zip_get_image(TCOD_zip_t zip);
 TCODLIB_API TCOD_console_t TCOD_zip_get_console(TCOD_zip_t zip);
 /**
     Read a TCOD_Random* object.
-    \rst
-    .. versionadded:: 1.16
-    \endrst
+    @versionadded{1.16}
  */
 TCODLIB_API TCOD_Random* TCOD_zip_get_random(TCOD_zip_t zip);
 TCODLIB_API int TCOD_zip_get_data(TCOD_zip_t zip, int nbBytes, void* data);

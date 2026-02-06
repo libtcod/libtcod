@@ -49,9 +49,7 @@ struct ConsoleDeleter {
 /***************************************************************************
     @brief A unique pointer to a TCOD_Console.
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 typedef std::unique_ptr<struct TCOD_Console, ConsoleDeleter> ConsolePtr;
 /***************************************************************************
@@ -73,9 +71,7 @@ typedef std::unique_ptr<struct TCOD_Console, ConsoleDeleter> ConsolePtr;
       }
     @endcode
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 class Console {
  public:

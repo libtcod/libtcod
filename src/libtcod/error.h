@@ -87,18 +87,14 @@ extern "C" {
 /***************************************************************************
     @brief Return the last error message.  If there is no error then the string will have a length of zero.
 
-    \rst
-    .. versionadded:: 1.12
-    \endrst
+    @versionadded{1.12}
  */
 TCOD_NODISCARD
 TCODLIB_API const char* TCOD_get_error(void);
 /***************************************************************************
     @brief Set an error message and return TCOD_E_ERROR.
 
-    \rst
-    .. versionadded:: 1.12
-    \endrst
+    @versionadded{1.12}
  */
 TCODLIB_API TCOD_Error TCOD_set_error(const char* msg);
 /**

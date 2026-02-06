@@ -63,9 +63,7 @@ extern "C" {
     SDL_PIXELFORMAT_RGBA32.
 
     Returns a negative value on error, see `TCOD_get_error`.
-    \rst
-    .. versionadded:: 1.16
-    \endrst
+    @versionadded{1.16}
  */
 TCOD_PUBLIC TCOD_Error TCOD_tileset_render_to_surface(
     const TCOD_Tileset* __restrict tileset,

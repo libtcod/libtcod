@@ -183,9 +183,7 @@ TCOD_PUBLIC int TCOD_sys_accumulate_console_(const TCOD_Console* console, const 
     @return A TCOD_Context pointer, or NULL if the global internals were not initialzed.
 
     This function can be useful to progressively upgrade older code to use the newer API.
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 TCOD_PUBLIC TCOD_Context* TCOD_sys_get_internal_context(void);
 /***************************************************************************
@@ -195,17 +193,13 @@ TCOD_PUBLIC TCOD_Context* TCOD_sys_get_internal_context(void);
 
     @return A pointer to TCOD_Console, or NULL if it doesn't exist.
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 TCOD_PUBLIC TCOD_Console* TCOD_sys_get_internal_console(void);
 /***************************************************************************
     @brief Shutdown libtcod.  This must be called before your program exits.
 
-    \rst
-    .. versionadded:: 1.8
-    \endrst
+    @versionadded{1.8}
  */
 TCOD_PUBLIC void TCOD_quit(void);
 #ifdef __cplusplus

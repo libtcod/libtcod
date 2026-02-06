@@ -63,9 +63,7 @@ namespace tcod {
         float delta_time = timer.sync(desired_fps);  // desired_fps is optional.
         // ...
     @endcode
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 class [[nodiscard]] Timer {
  public:

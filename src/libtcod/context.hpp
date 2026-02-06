@@ -66,9 +66,7 @@ namespace tcod {
     }
     @endcode
 
-    \rst
-    .. versionadded:: 1.21
-    \endrst
+    @versionadded{1.21}
  */
 class Context {
  public:

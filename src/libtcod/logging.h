@@ -49,9 +49,7 @@ typedef enum TCOD_LogLevel {
     @brief Information being logged, this is a temporary object which doesn't last longer than the logging callbacks.
 
     This struct will not contain NULL character pointers.
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 typedef struct TCOD_LogMessage {
   const char* message;  // Message that was logged.
@@ -71,9 +69,7 @@ extern "C" {
 
     @param level Should be one of the levels from TCOD_LogLevel.
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 TCODLIB_API void TCOD_set_log_level(int level);
 /***************************************************************************
@@ -83,9 +79,7 @@ TCODLIB_API void TCOD_set_log_level(int level);
         Can be NULL to disable logging.
     @param userdata Userdata to be passed to the log function.
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 TCODLIB_API void TCOD_set_log_callback(TCOD_LoggingCallback callback, void* userdata);
 /***************************************************************************

@@ -104,9 +104,7 @@ TCOD_PUBLIC void TCOD_noise_delete(TCOD_Noise* __restrict noise);
     and leave the remaining arrays as NULL.
 
     `out[n]` is the output array, which will receive the noise values.
-    \rst
-    .. versionadded:: 1.16
-    \endrst
+    @versionadded{1.16}
  */
 TCOD_PUBLIC void TCOD_noise_get_vectorized(
     TCOD_Noise* __restrict noise,
@@ -124,9 +122,7 @@ TCOD_PUBLIC void TCOD_noise_get_vectorized(
     `octaves` are the number of samples to take.
 
     The remaining parameters are the same as `TCOD_noise_get_vectorized`.
-    \rst
-    .. versionadded:: 1.16
-    \endrst
+    @versionadded{1.16}
  */
 TCOD_PUBLIC void TCOD_noise_get_fbm_vectorized(
     TCOD_Noise* __restrict noise,
@@ -145,9 +141,7 @@ TCOD_PUBLIC void TCOD_noise_get_fbm_vectorized(
     `octaves` are the number of samples to take.
 
     The remaining parameters are the same as `TCOD_noise_get_vectorized`.
-    \rst
-    .. versionadded:: 1.16
-    \endrst
+    @versionadded{1.16}
  */
 TCOD_PUBLIC void TCOD_noise_get_turbulence_vectorized(
     TCOD_Noise* __restrict noise,

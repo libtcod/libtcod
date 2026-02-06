@@ -82,9 +82,7 @@ typedef enum TCOD_alignment_t { TCOD_LEFT, TCOD_RIGHT, TCOD_CENTER } TCOD_alignm
 /***************************************************************************
     @brief The raw data for a single TCOD_Console tile.
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 typedef struct TCOD_ConsoleTile {
 #ifdef __cplusplus
@@ -118,9 +116,7 @@ typedef struct TCOD_ConsoleTile {
 
     For C++ code examples see `tcod::Console`.
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 struct TCOD_Console {
 #ifdef __cplusplus

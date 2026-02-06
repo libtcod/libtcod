@@ -51,9 +51,7 @@ namespace tcod {
     @param path The path to the REXPaint file to load.
     @return Returns a vector of consoles.
 
-    \rst
-    .. versionadded:: 1.18
-    \endrst
+    @versionadded{1.18}
  */
 inline std::vector<tcod::ConsolePtr> load_xp(const std::filesystem::path& path) {
   const auto path_str = path.string();
@@ -69,9 +67,7 @@ inline std::vector<tcod::ConsolePtr> load_xp(const std::filesystem::path& path) 
     @param path The path to write the REXPaint file to.
     @param compress_level A compression level for the zlib library.
 
-    \rst
-    .. versionadded:: 1.18
-    \endrst
+    @versionadded{1.18}
  */
 inline void save_xp(
     const std::vector<const TCOD_Console*>& consoles, const std::filesystem::path& path, int compress_level = 9) {

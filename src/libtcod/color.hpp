@@ -46,9 +46,7 @@ namespace tcod {
 /***************************************************************************
     @brief A C++ RGB color, used to handle conversions between color types.
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 struct ColorRGB : public TCOD_ColorRGB {
  public:
@@ -84,9 +82,7 @@ struct ColorRGB : public TCOD_ColorRGB {
 /***************************************************************************
     @brief A C++ RGBA color, used to handle conversions between color types.
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 struct ColorRGBA : public TCOD_ColorRGBA {
  public:

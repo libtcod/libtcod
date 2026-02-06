@@ -49,9 +49,7 @@ namespace tcod {
 
     Will throw an exception on a missing or corrupt file.
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 TCOD_NODISCARD
 inline auto load_bdf(const std::filesystem::path& path) -> TilesetPtr {

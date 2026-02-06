@@ -132,9 +132,7 @@ TCODLIB_API bool TCOD_console_list_save_xp(TCOD_list_t console_list, const char*
     @param out The array to fill with loaded consoles.
     @return Returns the number of consoles held by the file.  Returns a negative error code on error.
 
-    \rst
-    .. versionadded:: 1.18
-    \endrst
+    @versionadded{1.18}
  */
 TCODLIB_API int TCOD_load_xp_from_memory(int n_data, const unsigned char* data, int n_out, TCOD_Console** out);
 /**
@@ -151,9 +149,7 @@ TCODLIB_API int TCOD_load_xp_from_memory(int n_data, const unsigned char* data, 
             Otherwise this returns the number of bytes actually filled.
             On an error a negative error code is returned.
 
-    \rst
-    .. versionadded:: 1.18
-    \endrst
+    @versionadded{1.18}
  */
 TCODLIB_API int TCOD_save_xp_to_memory(
     int n_consoles, const TCOD_Console* const* consoles, int n_out, unsigned char* out, int compression_level);
@@ -165,9 +161,7 @@ TCODLIB_API int TCOD_save_xp_to_memory(
     @param out The array to fill with loaded consoles.
     @return Returns the number of consoles held by the file.  Returns a negative error code on error.
 
-    \rst
-    .. versionadded:: 1.18
-    \endrst
+    @versionadded{1.18}
  */
 TCODLIB_API int TCOD_load_xp(const char* path, int n, TCOD_Console** out);
 /**
@@ -181,9 +175,7 @@ TCODLIB_API int TCOD_load_xp(const char* path, int n, TCOD_Console** out);
     @param compress_level A compression level for the zlib library.
     @return Returns an error code on failure.
 
-    \rst
-    .. versionadded:: 1.18
-    \endrst
+    @versionadded{1.18}
  */
 TCODLIB_API TCOD_Error TCOD_save_xp(int n, const TCOD_Console* const* consoles, const char* path, int compress_level);
 #ifdef __cplusplus

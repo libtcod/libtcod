@@ -68,9 +68,7 @@ namespace tcod {
       tcod::print(console, {0, 0}, "Hello World", {{255, 255, 255}}, {{0, 0, 0}});
     @endcode
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 inline void print(
     TCOD_Console& console,
@@ -107,9 +105,7 @@ inline void print(
       tcod::print(console, {0, 0, console->w, 1}, "Hello World", TEAL, std::nullopt, TCOD_CENTER);
     @endcode
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 inline int print_rect(
     TCOD_Console& console,
@@ -147,9 +143,7 @@ inline int print_rect(
       tcod::print(console, {0, y, width, 0}, "Long text example", std::nullopt, std::nullopt);
     @endcode
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 inline int get_height_rect(int width, std::string_view str) {
   return check_throw_error(TCOD_console_get_height_rect_wn(width, str.size(), str.data()));
@@ -190,9 +184,7 @@ TCODLIB_END_IGNORE_DEPRECATIONS
       tcod::print(console, {0, 0}, tcod::stringf("%s %s", "Hello", "World"), nullptr, nullptr);
     @endcode
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 template <typename... T>
 inline std::string stringf(const char* format, T... args) {

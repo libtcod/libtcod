@@ -49,9 +49,7 @@ struct ImageDeleter {
 /***************************************************************************
     @brief A unique pointer to a TCOD_Image.
 
-    \rst
-    .. versionadded:: 1.24
-    \endrst
+    @versionadded{1.24}
  */
 typedef std::unique_ptr<TCOD_Image, ImageDeleter> ImagePtr;
 }  // namespace tcod
@@ -581,9 +579,7 @@ namespace tcod {
       TCODImage* image = new TCODImage(console.get_width() * 2, console.get_height() * 2);
       tcod::draw_quartergraphics(console, image);
     @endcode
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 inline void draw_quartergraphics(
     TCOD_Console& dest,

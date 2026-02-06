@@ -63,9 +63,7 @@ typedef struct TCOD_Context TCOD_Context;
 /**
     A struct of parameters used to create a new context with `TCOD_context_new`.
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 typedef struct TCOD_ContextParams {
   /// @brief Compiled libtcod version for ABI compatiblity with older versions of libtcod
@@ -190,9 +188,7 @@ TCOD_NODISCARD struct TCOD_Context* TCOD_context_new_(void);
     This can be NULL to use the default options, which are to stretch the
     console to fit the screen.
 
-    \rst
-    .. versionadded:: 1.16
-    \endrst
+    @versionadded{1.16}
  */
 TCOD_PUBLIC TCOD_Error TCOD_context_present(
     struct TCOD_Context* context, const struct TCOD_Console* console, const struct TCOD_ViewportOptions* viewport);
@@ -205,9 +201,7 @@ TCOD_PUBLIC TCOD_Error TCOD_context_present(
     The parameters given to the last call to `TCOD_context_present` will
     determine where the tiles are for this call.
 
-    \rst
-    .. versionadded:: 1.16
-    \endrst
+    @versionadded{1.16}
  */
 TCOD_PUBLIC TCOD_Error TCOD_context_screen_pixel_to_tile_d(struct TCOD_Context* context, double* x, double* y);
 /**
@@ -216,49 +210,37 @@ TCOD_PUBLIC TCOD_Error TCOD_context_screen_pixel_to_tile_d(struct TCOD_Context* 
     Save as `TCOD_context_screen_pixel_to_tile` but the inputs and results are
     integers.  This is useful if you don't need sub-tile coordinates.
 
-    \rst
-    .. versionadded:: 1.16
-    \endrst
+    @versionadded{1.16}
  */
 TCOD_PUBLIC TCOD_Error TCOD_context_screen_pixel_to_tile_i(struct TCOD_Context* context, int* x, int* y);
 /**
     Convert the pixel coordinates of SDL mouse events to the tile coordinates of the current context.
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 TCOD_PUBLIC TCOD_Error TCOD_context_convert_event_coordinates(struct TCOD_Context* context, union SDL_Event* event);
 /**
     Save the last presented console to a PNG file.
 
-    \rst
-    .. versionadded:: 1.16
-    \endrst
+    @versionadded{1.16}
  */
 TCOD_PUBLIC TCOD_Error TCOD_context_save_screenshot(struct TCOD_Context* context, const char* filename);
 /**
     Return a pointer the SDL_Window for this context if it uses one.
 
-    \rst
-    .. versionadded:: 1.16
-    \endrst
+    @versionadded{1.16}
  */
 TCOD_PUBLIC struct SDL_Window* TCOD_context_get_sdl_window(struct TCOD_Context* context);
 /**
     Return a pointer the SDL_Renderer for this context if it uses one.
 
-    \rst
-    .. versionadded:: 1.16
-    \endrst
+    @versionadded{1.16}
  */
 TCOD_PUBLIC struct SDL_Renderer* TCOD_context_get_sdl_renderer(struct TCOD_Context* context);
 /**
     Change the active tileset for this context.
 
-    \rst
-    .. versionadded:: 1.16
-    \endrst
+    @versionadded{1.16}
  */
 TCOD_PUBLIC TCOD_Error TCOD_context_change_tileset(struct TCOD_Context* self, TCOD_Tileset* tileset);
 /**
@@ -266,9 +248,7 @@ TCOD_PUBLIC TCOD_Error TCOD_context_change_tileset(struct TCOD_Context* self, TC
 
     Returns a negative number on error, such as `context` being NULL.
 
-    \rst
-    .. versionadded:: 1.16
-    \endrst
+    @versionadded{1.16}
  */
 TCOD_PUBLIC int TCOD_context_get_renderer_type(struct TCOD_Context* context);
 /**
@@ -277,9 +257,7 @@ TCOD_PUBLIC int TCOD_context_get_renderer_type(struct TCOD_Context* context);
     `magnification` determines the apparent size of the tiles on the output.
     Values of 0.0f or lower will default to 1.0f.
 
-    \rst
-    .. versionadded:: 1.16
-    \endrst
+    @versionadded{1.16}
  */
 TCOD_PUBLIC TCOD_Error TCOD_context_recommended_console_size(
     struct TCOD_Context* context, float magnification, int* __restrict columns, int* __restrict rows);
@@ -293,9 +271,7 @@ TCOD_PUBLIC TCOD_Error TCOD_context_recommended_console_size(
     @param height Pointer to fill with the expected image height.
     @return A negative error value is returned on errors, otherwise returns TCOD_E_OK.
 
-    \rst
-    .. versionadded:: 1.22
-    \endrst
+    @versionadded{1.22}
  */
 TCOD_PUBLIC TCOD_Error TCOD_context_screen_capture(
     struct TCOD_Context* __restrict context,
@@ -310,9 +286,7 @@ TCOD_PUBLIC TCOD_Error TCOD_context_screen_capture(
     @param height Pointer to fill with the allocated image height.
     @return An allocated array of RGBA pixels which must be manually freed.
 
-    \rst
-    .. versionadded:: 1.22
-    \endrst
+    @versionadded{1.22}
  */
 TCOD_NODISCARD
 TCOD_PUBLIC TCOD_ColorRGBA* TCOD_context_screen_capture_alloc(
@@ -333,9 +307,7 @@ TCOD_PUBLIC TCOD_Error TCOD_context_set_mouse_transform(
 #endif  // __cplusplus
 /**
     A rendering context for libtcod.
-    \rst
-    .. versionadded:: 1.16
-    \endrst
+    @versionadded{1.16}
  */
 struct TCOD_Context {
 #ifdef __cplusplus

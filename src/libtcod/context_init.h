@@ -51,9 +51,7 @@ extern "C" {
 
     `out` is the output for the `TCOD_Context`, must not be NULL.
 
-    \rst
-    .. versionadded:: 1.16
-    \endrst
+    @versionadded{1.16}
  */
 TCOD_PUBLIC TCOD_NODISCARD TCOD_Error TCOD_context_new(const TCOD_ContextParams* params, TCOD_Context** out);
 #ifdef __cplusplus
@@ -69,9 +67,7 @@ namespace tcod {
     For critical issues an exception is thrown as usual.
     Non-critical issues are things such as being unable to create a desired renderer and using to a fallback instead.
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 [[deprecated("This function has been replaced by `auto context = tcod::Context(params);`")]] TCOD_NODISCARD inline auto
 new_context(const TCOD_ContextParams& params, TCOD_Error& out_code) -> ContextPtr {
@@ -84,9 +80,7 @@ new_context(const TCOD_ContextParams& params, TCOD_Error& out_code) -> ContextPt
 
     @param params Options to configure the new context with.
     @return ContextPtr A pointer to the new context.
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 [[deprecated("This function has been replaced by `auto context = tcod::Context(params);`")]] TCOD_NODISCARD inline auto
 new_context(const TCOD_ContextParams& params) -> ContextPtr {

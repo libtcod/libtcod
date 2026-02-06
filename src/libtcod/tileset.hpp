@@ -47,16 +47,12 @@ namespace tcod {
 /// @{
 /**
     A character mapping of a Code Page 437 tileset to Unicode.
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 static constexpr std::array<int, 256> CHARMAP_CP437 = TCOD_CHARMAP_CP437_;
 /**
     A character mapping of a deprecated TCOD tileset to Unicode.
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 static constexpr std::array<int, 256> CHARMAP_TCOD = TCOD_CHARMAP_TCOD_;
 
@@ -66,17 +62,13 @@ struct TilesetDeleter {
 /**
     @brief A unique pointer to a TCOD_Tileset.
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 typedef std::unique_ptr<TCOD_Tileset, TilesetDeleter> TilesetPtr;
 /***************************************************************************
     @brief A C++ Tileset container.
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 class Tileset {
  public:
@@ -173,9 +165,7 @@ class Tileset {
 
     Tiles are indexed in row-major order and should be assigned to Unicode codepoints.
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
 
     @tparam ArrayType Must be a `std::vector` or `std::array` like type.  With `size()` and `data()` methods.
     @param path The file path to the PNG tilesheet image.

@@ -360,9 +360,7 @@ TCODLIB_API TCODLIB_FORMAT(6, 7) int TCOD_console_get_height_rect_fmt(
     @param alignment The text justification.  This is one of `TCOD_alignment_t` and is normally `TCOD_LEFT`.
     @return TCOD_Error Any problems such as malformed UTF-8 will return a negative error code.
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 TCOD_PUBLIC TCOD_Error TCOD_console_printn(
     TCOD_Console* __restrict console,
@@ -392,9 +390,7 @@ TCOD_PUBLIC TCOD_Error TCOD_console_printn(
     @param alignment The text justification.  This is one of `TCOD_alignment_t` and is normally `TCOD_LEFT`.
     @return int The height of the printed text, or a negative error code on failure.
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 TCOD_PUBLIC int TCOD_console_printn_rect(
     TCOD_Console* __restrict console,
@@ -420,9 +416,7 @@ TCOD_PUBLIC int TCOD_console_printn_rect(
     @param str The text to print.  This string can contain libtcod color codes.
     @return int The height of the word-wrapped text as if it were printed, or a negative error code on failure.
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 TCOD_PUBLIC int TCOD_console_get_height_rect_n(
     TCOD_Console* __restrict console, int x, int y, int width, int height, size_t n, const char* __restrict str);
@@ -434,9 +428,7 @@ TCOD_PUBLIC int TCOD_console_get_height_rect_n(
     @param str The text to print.  This string can contain libtcod color codes.
     @return int The height of the word-wrapped text as if it were printed, or a negative error code on failure.
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 TCOD_PUBLIC int TCOD_console_get_height_rect_wn(int width, size_t n, const char* __restrict str);
 TCOD_DEPRECATED("Print function TCOD_printn_rgb and TCOD_console_draw_frame_rgb should be called separately.")
@@ -468,9 +460,7 @@ TCOD_PUBLIC TCOD_Error TCOD_console_printn_frame(
     @param args The arguments for the formatted string.
     @return TCOD_Error Any problems such as malformed UTF-8 will return a negative error code.
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 TCOD_DEPRECATED("Use TCOD_vprintf_rgb instead.")
 TCOD_PUBLIC TCOD_Error TCOD_console_vprintf(
@@ -501,9 +491,7 @@ TCOD_PUBLIC TCOD_Error TCOD_console_vprintf(
     @param args The arguments for the formatted string.
     @return int The height of the printed text, or a negative error code on failures.
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 TCOD_DEPRECATED("Use TCOD_vprintf_rgb instead.")
 TCOD_PUBLIC int TCOD_console_vprintf_rect(
@@ -539,9 +527,7 @@ typedef struct TCOD_PrintParamsRGB {
     @param fmt The format string for a vprintf-like function.
     @param args The arguments for the formatted string.
     @return An error code if less than 0
-    \rst
-    .. versionadded:: 1.23
-    \endrst
+    @versionadded{1.23}
  */
 TCOD_PUBLIC TCODLIB_FORMAT(3, 4) int TCOD_printf_rgb(
     TCOD_Console* __restrict console, TCOD_PrintParamsRGB params, const char* __restrict fmt, ...);
@@ -553,9 +539,7 @@ TCOD_PUBLIC TCODLIB_FORMAT(3, 4) int TCOD_printf_rgb(
     @param str The string to be read from.
     @param n Length of string in bytes
     @return An error code if less than 0
-    \rst
-    .. versionadded:: 1.23
-    \endrst
+    @versionadded{1.23}
  */
 TCOD_PUBLIC int TCOD_printn_rgb(
     TCOD_Console* __restrict console, TCOD_PrintParamsRGB params, int n, const char* __restrict str);
@@ -567,9 +551,7 @@ TCOD_PUBLIC int TCOD_printn_rgb(
     @param fmt The format string for a vprintf-like function
     @param args The arguments for the format string
     @return An error code if less than 0
-    \rst
-    .. versionadded:: 1.23
-    \endrst
+    @versionadded{1.23}
  */
 TCOD_PUBLIC int TCOD_vprintf_rgb(
     TCOD_Console* __restrict console, TCOD_PrintParamsRGB params, const char* __restrict fmt, va_list args);

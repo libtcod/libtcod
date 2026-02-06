@@ -41,9 +41,7 @@
 
 /**
     Viewport options for the rendering context.
-    \rst
-    .. versionadded:: 1.16
-    \endrst
+    @versionadded{1.16}
  */
 struct TCOD_ViewportOptions {
   /**
@@ -92,16 +90,12 @@ extern "C" {
 
     You should not allocate this struct manually since the size of it may change
     between versions.
-    \rst
-    .. versionadded:: 1.16
-    \endrst
+    @versionadded{1.16}
  */
 TCOD_PUBLIC TCOD_NODISCARD TCOD_ViewportOptions* TCOD_viewport_new(void);
 /**
     Delete a viewport.
-    \rst
-    .. versionadded:: 1.16
-    \endrst
+    @versionadded{1.16}
  */
 TCOD_PUBLIC void TCOD_viewport_delete(TCOD_ViewportOptions* viewport);
 #ifdef __cplusplus

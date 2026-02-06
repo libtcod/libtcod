@@ -53,9 +53,7 @@
 
 /**
     The version of libtcod currently being compiled.
-    \rst
-    .. versionadded:: 1.16
-    \endrst
+    @versionadded{1.16}
  */
 #define TCOD_COMPILEDVERSION TCOD_VERSIONNUM(TCOD_MAJOR_VERSION, TCOD_MINOR_VERSION, TCOD_PATCHLEVEL)
 
@@ -82,9 +80,7 @@
 /***************************************************************************
     @brief Returns true if the compiled version of libtcod is at least (major, minor).
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 #define TCOD_VERSION_ATLEAST(major, minor) (TCOD_COMPILEDVERSION >= TCOD_VERSIONNUM(major, minor, 0))
 

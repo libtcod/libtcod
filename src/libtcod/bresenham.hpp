@@ -160,9 +160,7 @@ namespace tcod {
 /**
     Encapsulates a Bresenham line drawing algorithm.
 
-    \rst
-    .. versionadded:: 1.17
-    \endrst
+    @versionadded{1.17}
  */
 class BresenhamLine {
  public:

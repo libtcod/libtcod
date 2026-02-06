@@ -82,9 +82,7 @@ TCODLIB_API void TCOD_console_set_dirty(int x, int y, int w, int h);
     `viewport` is optional.
 
     Returns a negative values on error.  See `TCOD_get_error`.
-    \rst
-    .. versionadded:: 1.16
-    \endrst
+    @versionadded{1.16}
  */
 TCOD_PUBLIC TCOD_Error TCOD_console_flush_ex(TCOD_Console* console, struct TCOD_ViewportOptions* viewport);
 /**
@@ -149,9 +147,7 @@ TCODLIB_END_IGNORE_DEPRECATIONS
     @param delta_time Delta time in seconds.
     @return Returns true once the credits animation has ended.
 
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 TCODLIB_API bool TCOD_console_credits_render_ex(TCOD_Console* console, int x, int y, bool alpha, float delta_time);
 

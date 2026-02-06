@@ -45,9 +45,7 @@
     pointer.
 
     This function is provisional, the API may change in the future.
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 TCODLIB_CAPI TCOD_Tileset* TCOD_get_default_tileset(void);
 /**
@@ -58,9 +56,7 @@ TCODLIB_CAPI TCOD_Tileset* TCOD_get_default_tileset(void);
     this function.
 
     This function is provisional, the API may change in the future.
-    \rst
-    .. versionadded:: 1.19
-    \endrst
+    @versionadded{1.19}
  */
 TCODLIB_CAPI void TCOD_set_default_tileset(TCOD_Tileset* tileset);
 #endif  // LIBTCOD_GLOBALS_H_

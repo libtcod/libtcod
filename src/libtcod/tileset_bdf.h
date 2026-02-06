@@ -51,9 +51,7 @@ extern "C" {
 
     May return NULL on failure.  See `TCOD_get_error` for the error message.
 
-    \rst
-    .. versionadded:: 1.16
-    \endrst
+    @versionadded{1.16}
  */
 TCODLIB_API TCOD_NODISCARD TCOD_Tileset* TCOD_load_bdf(const char* path);
 /**
@@ -63,9 +61,7 @@ TCODLIB_API TCOD_NODISCARD TCOD_Tileset* TCOD_load_bdf(const char* path);
 
     May return NULL on failure.  See `TCOD_get_error` for the error message.
 
-    \rst
-    .. versionadded:: 1.16
-    \endrst
+    @versionadded{1.16}
  */
 TCODLIB_API TCOD_NODISCARD TCOD_Tileset* TCOD_load_bdf_memory(int size, const unsigned char* buffer);
 /// @}

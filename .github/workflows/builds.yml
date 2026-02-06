@@ -22,7 +22,7 @@ env:
   SDL_LINUX_DEPENDENCIES: autoconf autoconf-archive automake libtool libltdl-dev libx11-dev libxft-dev libxext-dev libwayland-dev libxkbcommon-dev libegl1-mesa-dev libibus-1.0-dev
   CMAKE_BUILD_DIR: build
   CMAKE_BIN_DIR: ~/build/bin
-  DOXYGEN_VERSION: "1.15.0" # https://github.com/doxygen/doxygen/releases
+  DOXYGEN_VERSION: "1.16.1" # https://github.com/doxygen/doxygen/releases
   VCPKG_ROOT: ${{github.workspace}}/vcpkg
 
 jobs:
@@ -63,11 +63,11 @@ jobs:
             shared: dynamic
             config: Release
             cpack: true
-          - os: macos-14
+          - os: macos-15
             triplet: arm64-osx
             shared: static
             config: Debug
-          - os: macos-14
+          - os: macos-15
             triplet: arm64-osx
             shared: dynamic
             config: Release
@@ -163,7 +163,7 @@ jobs:
       - uses: ilammy/msvc-dev-cmd@v1
       - name: Install Doxygen
         if: matrix.cpack
-        uses: ssciwr/doxygen-install@v1
+        uses: ssciwr/doxygen-install@v2
         with:
           version: ${{env.DOXYGEN_VERSION}}
       - name: CMake configure
@@ -417,7 +417,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Install Doxygen
-        uses: ssciwr/doxygen-install@v1
+        uses: ssciwr/doxygen-install@v2
         with:
           version: ${{env.DOXYGEN_VERSION}}
       - uses: actions/checkout@v6

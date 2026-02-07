@@ -427,47 +427,16 @@ const TCOD_color_t TCOD_colors[TCOD_COLOR_NB][TCOD_COLOR_LEVELS] = {
      {TCOD_DARK_CRIMSON},
      {TCOD_DARKER_CRIMSON},
      {TCOD_DARKEST_CRIMSON}}};
-/**
- *  \brief Return a new TCOD_color_t from RGB values.
- *
- *  This function is redundant, you should use a braced initializer instead:
- *
- *      TCOD_color_t white = {255, 255, 255};
- */
 TCOD_color_t TCOD_color_RGB(uint8_t r, uint8_t g, uint8_t b) {
   TCOD_color_t new_color = {r, g, b};
   return new_color;
 }
-/**
- *  \brief Return a new TCOD_color_t from HSV values.
- *
- *  \param hue The colors hue (in degrees.)
- *  \param saturation The colors saturation (from 0 to 1)
- *  \param value The colors value (from 0 to 1)
- *  \return A new TCOD_color_t struct.
- *
- *  The saturation and value parameters are automatically clamped to 0 and 1.
- *
- *      TCOD_color_t light_blue = TCOD_color_HSV(240.0f, 0.75f, 1.0f);
- *
- *  Use TCOD_color_set_HSV to fill an existing struct with HSV values.
- */
 TCOD_color_t TCOD_color_HSV(float hue, float saturation, float value) {
   TCOD_color_t new_color;
   TCOD_color_set_HSV(&new_color, hue, saturation, value);
   return new_color;
 }
-/**
- *  \brief Return a true value if c1 and c2 are equal.
- */
 bool TCOD_color_equals(TCOD_color_t c1, TCOD_color_t c2) { return (c1.r == c2.r && c1.g == c2.g && c1.b == c2.b); }
-/**
- *  \brief Add two colors together and return the result.
- *
- *  \param c1 The first color.
- *  \param c2 The second color.
- *  \return A new TCOD_color_t struct with the result.
- */
 TCOD_color_t TCOD_color_add(TCOD_color_t c1, TCOD_color_t c2) {
   TCOD_color_t new_color = {
       (uint8_t)TCOD_MIN(255, (int)c1.r + c2.r),
@@ -475,13 +444,6 @@ TCOD_color_t TCOD_color_add(TCOD_color_t c1, TCOD_color_t c2) {
       (uint8_t)TCOD_MIN(255, (int)c1.b + c2.b)};
   return new_color;
 }
-/**
- *  \brief Subtract c2 from c1 and return the result.
- *
- *  \param c1 The first color.
- *  \param c2 The second color.
- *  \return A new TCOD_color_t struct with the result.
- */
 TCOD_color_t TCOD_color_subtract(TCOD_color_t c1, TCOD_color_t c2) {
   TCOD_color_t new_color = {
       (uint8_t)TCOD_MAX(0, (int)c1.r - c2.r),
@@ -489,25 +451,11 @@ TCOD_color_t TCOD_color_subtract(TCOD_color_t c1, TCOD_color_t c2) {
       (uint8_t)TCOD_MAX(0, (int)c1.b - c2.b)};
   return new_color;
 }
-/**
- *  \brief Multiply two colors together and return the result.
- *
- *  \param c1 The first color.
- *  \param c2 The second color.
- *  \return A new TCOD_color_t struct with the result.
- */
 TCOD_color_t TCOD_color_multiply(TCOD_color_t c1, TCOD_color_t c2) {
   TCOD_color_t new_color = {
       (uint8_t)(((int)c1.r) * c2.r / 255), (uint8_t)(((int)c1.g) * c2.g / 255), (uint8_t)(((int)c1.b) * c2.b / 255)};
   return new_color;
 }
-/**
- *  \brief Multiply a color with a scalar value and return the result.
- *
- *  \param c1 The color to multiply.
- *  \param value The scalar float.
- *  \return A new TCOD_color_t struct with the result.
- */
 TCOD_color_t TCOD_color_multiply_scalar(TCOD_color_t c1, float value) {
   TCOD_color_t new_color = {
       (uint8_t)TCOD_CLAMP(0.0f, 255.0f, (float)c1.r * value),
@@ -515,14 +463,6 @@ TCOD_color_t TCOD_color_multiply_scalar(TCOD_color_t c1, float value) {
       (uint8_t)TCOD_CLAMP(0.0f, 255.0f, (float)c1.b * value)};
   return new_color;
 }
-/**
- *  \brief Interpolate two colors together and return the result.
- *
- *  \param c1 The first color (where coef if 0)
- *  \param c2 The second color (where coef if 1)
- *  \param coef The coefficient.
- *  \return A new TCOD_color_t struct with the result.
- */
 TCOD_color_t TCOD_color_lerp(TCOD_color_t c1, TCOD_color_t c2, float coef) {
   TCOD_color_t new_color = {
       (uint8_t)(c1.r + (c2.r - c1.r) * coef),
@@ -530,21 +470,11 @@ TCOD_color_t TCOD_color_lerp(TCOD_color_t c1, TCOD_color_t c2, float coef) {
       (uint8_t)(c1.b + (c2.b - c1.b) * coef)};
   return new_color;
 }
-/**
-    Return floor modulo for float values.
- */
+/// Return floor modulo for float values.
 static float fabsmodf(float x, float n) {
   float m = fmodf(x, n);
   return m < 0 ? m + n : m;
 }
-/**
- *  \brief Sets a colors values from HSV values.
- *
- *  \param color The color to be changed.
- *  \param hue The colors hue (in degrees.)
- *  \param saturation The colors saturation (from 0 to 1)
- *  \param value The colors value (from 0 to 1)
- */
 void TCOD_color_set_HSV(TCOD_color_t* color, float hue, float saturation, float value) {
   int hue_section;
   float hue_fraction, p, q, t;
@@ -598,28 +528,12 @@ void TCOD_color_set_HSV(TCOD_color_t* color, float hue, float saturation, float 
       break;
   }
 }
-/**
- *  \brief Get a set of HSV values from a color.
- *
- *  \param color The color
- *  \param hue Pointer to a float, filled with the hue. (degrees)
- *  \param saturation Pointer to a float, filled with the saturation. (0 to 1)
- *  \param value Pointer to a float, filled with the value. (0 to 1)
- *
- *  The hue, saturation, and value parameters can not be NULL pointers,
- */
 void TCOD_color_get_HSV(TCOD_color_t color, float* hue, float* saturation, float* value) {
   *hue = TCOD_color_get_hue(color);
   *saturation = TCOD_color_get_saturation(color);
   *value = TCOD_color_get_value(color);
   return;
 }
-/**
- *  \brief Return a colors hue.
- *
- *  \param color A color struct.
- *  \return The colors hue. (degrees)
- */
 float TCOD_color_get_hue(TCOD_color_t color) {
   uint8_t max = TCOD_MAX(color.r, TCOD_MAX(color.g, color.b));
   uint8_t min = TCOD_MIN(color.r, TCOD_MIN(color.g, color.b));
@@ -639,21 +553,9 @@ float TCOD_color_get_hue(TCOD_color_t color) {
   hue = fabsmodf(hue, 360.0f);
   return hue;
 }
-/**
- *  \brief Change a colors hue.
- *
- *  \param color Pointer to a color struct.
- *  \param hue The hue in degrees.
- */
 void TCOD_color_set_hue(TCOD_color_t* color, float hue) {
   TCOD_color_set_HSV(color, hue, TCOD_color_get_saturation(*color), TCOD_color_get_value(*color));
 }
-/**
- *  \brief Return a colors saturation.
- *
- *  \param color A color struct.
- *  \return The colors saturation. (0 to 1)
- */
 float TCOD_color_get_saturation(TCOD_color_t color) {
   float max = (float)(TCOD_MAX(color.r, TCOD_MAX(color.g, color.b))) / 255.0f;
   float min = (float)(TCOD_MIN(color.r, TCOD_MIN(color.g, color.b))) / 255.0f;
@@ -663,39 +565,15 @@ float TCOD_color_get_saturation(TCOD_color_t color) {
   }
   return delta / max;
 }
-/**
- *  \brief Change a colors saturation.
- *
- *  \param color Pointer to a color struct.
- *  \param saturation The desired saturation value.
- */
 void TCOD_color_set_saturation(TCOD_color_t* color, float saturation) {
   TCOD_color_set_HSV(color, TCOD_color_get_hue(*color), saturation, TCOD_color_get_value(*color));
 }
-/**
- *  \brief Get a colors value.
- *
- *  \param color A color struct.
- *  \return The colors value. (0 to 1)
- */
 float TCOD_color_get_value(TCOD_color_t color) {
   return (float)(TCOD_MAX(color.r, TCOD_MAX(color.g, color.b))) / 255.0f;
 }
-/**
- *  \brief Change a colors value.
- *
- *  \param color Pointer to a color struct.
- *  \param value The desired value.
- */
 void TCOD_color_set_value(TCOD_color_t* color, float value) {
   TCOD_color_set_HSV(color, TCOD_color_get_hue(*color), TCOD_color_get_saturation(*color), value);
 }
-/**
- *  \brief Shift a colors hue by an amount.
- *
- *  \param color Pointer to a color struct.
- *  \param hue_shift The distance to shift the hue, in degrees.
- */
 void TCOD_color_shift_hue(TCOD_color_t* color, float hue_shift) {
   if (hue_shift == 0.0f) {
     return;
@@ -703,13 +581,6 @@ void TCOD_color_shift_hue(TCOD_color_t* color, float hue_shift) {
   TCOD_color_set_HSV(
       color, TCOD_color_get_hue(*color) + hue_shift, TCOD_color_get_saturation(*color), TCOD_color_get_value(*color));
 }
-/**
- *  \brief Scale a colors saturation and value.
- *
- *  \param color Pointer to a color struct.
- *  \param saturation_coef Multiplier for this colors saturation.
- *  \param value_coef Multiplier for this colors value.
- */
 void TCOD_color_scale_HSV(TCOD_color_t* color, float saturation_coef, float value_coef) {
   TCOD_color_set_HSV(
       color,
@@ -717,24 +588,6 @@ void TCOD_color_scale_HSV(TCOD_color_t* color, float saturation_coef, float valu
       TCOD_color_get_saturation(*color) * saturation_coef,
       TCOD_color_get_value(*color) * value_coef);
 }
-/**
- *  \brief Generate an interpolated gradient of colors.
- *
- *  \param map Array to fill with the new gradient.
- *  \param nb_key The array size of the key_color and key_index parameters.
- *  \param key_color An array of colors to use, in order.
- *  \param key_index An array mapping key_color items to the map array.
- *
- *  \verbatim embed:rst:leading-asterisk
- *  .. code-block:: c
- *
- *    TCOD_color_t[256] gradient;
- *    TCOD_color_t[4] key_color = {TCOD_black, TCOD_dark_amber,
- *                                 TCOD_cyan, TCOD_white};
- *    int[4] key_index = {0, 64, 192, 255};
- *    TCOD_color_gen_map(&gradient, 4, &key_color, &key_index);
- *  \endverbatim
- */
 void TCOD_color_gen_map(TCOD_color_t* map, int nb_key, const TCOD_color_t* key_color, const int* key_index) {
   int segment = 0;
   for (segment = 0; segment < nb_key - 1; ++segment) {
@@ -747,15 +600,11 @@ void TCOD_color_gen_map(TCOD_color_t* map, int nb_key, const TCOD_color_t* key_c
     }
   }
 }
-/**
- *  Perform alpha blending on a single channel.
- */
+/// Perform alpha blending on a single channel.
 static uint8_t alpha_blend_channel(int dst_c, int dst_a, int src_c, int src_a, int out_a) {
   return (uint8_t)(((src_c * src_a) + (dst_c * dst_a * (255 - src_a) / 255)) / out_a);
 }
-/**
- *  A modified lerp operation which can accept RGBA types.
- */
+/// A modified lerp operation which can accept RGBA types.
 void TCOD_color_alpha_blend(TCOD_ColorRGBA* dst, const TCOD_ColorRGBA* src) {
   if (!dst || !src) {
     return;

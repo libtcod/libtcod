@@ -4,13 +4,6 @@ include(FetchContent)
 include(GNUInstallDirs)
 
 target_compile_features(${PROJECT_NAME} PUBLIC c_std_99 cxx_std_17)
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    C_STANDARD 99
-    CXX_STANDARD 17
-    C_STANDARD_REQUIRED TRUE
-    CXX_STANDARD_REQUIRED TRUE
-    VERIFY_INTERFACE_HEADER_SETS TRUE
-)
 
 macro(fix_deprecated_link_setting LINK_OPTION)  # Replaces find_package/disable with ON/OFF
     if(${LINK_OPTION} STREQUAL "find_package")
@@ -110,9 +103,6 @@ endif()
 target_compile_definitions(${PROJECT_NAME} PRIVATE TCOD_IGNORE_DEPRECATED)
 
 include(sources.cmake)
-
-# Remove the "lib" prefix to prevent a library name like "liblibtcod".
-set_property(TARGET ${PROJECT_NAME} PROPERTY PREFIX "")
 
 if(MSVC)
   target_compile_options(${PROJECT_NAME} PRIVATE /W4)

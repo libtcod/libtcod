@@ -94,7 +94,9 @@ add_subdirectory(src)
 set_target_properties(${PROJECT_NAME} PROPERTIES
     C_VISIBILITY_PRESET hidden
     CXX_VISIBILITY_PRESET hidden
+    PREFIX "" # Remove the "lib" prefix to prevent a library name like "liblibtcod"
     VISIBILITY_INLINES_HIDDEN OFF
+    VERIFY_INTERFACE_HEADER_SETS TRUE
     VERSION ${PROJECT_VERSION}
     SOVERSION ${PROJECT_VERSION_MAJOR}
 )

@@ -16,6 +16,9 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 - `TCOD_heightmap_get_minmax` now outputs `FLT_MAX` and `-FLT_MAX` in exceptional cases instead of zero.
 - `TCOD_heightmap_get_value` and `TCOD_heightmap_set_value` are now inline.
 
+### CMake
+- Fixed installed or distributed packages not including headers at the correct prefixes.
+
 ### Fixed
 - Fixed `TCOD_heightmap_kernel_transform` reading modified values during in-place convolution.
 - `TCOD_heightmap_get_minmax` no longer writes to NULL outputs when the input heightmap has zero elements.

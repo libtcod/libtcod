@@ -10,6 +10,8 @@ set_and_check(LIBTCOD_INCLUDE_DIR "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@")
 
 include(${CMAKE_CURRENT_LIST_DIR}/libtcodTargets.cmake)
 
+target_include_directories(libtcod::libtcod INTERFACE ${LIBTCOD_INCLUDE_DIR})
+
 set(LIBTCOD_LIBRARY libtcod::libtcod)
 
 check_required_components(libtcod)

@@ -39,15 +39,9 @@
 
 #define TCOD_HEAP_DEFAULT_CAPACITY 256
 #define TCOD_HEAP_MAX_NODE_SIZE 256
-/***************************************************************************
-    @brief Clear a heap and free its data.
 
-    @param heap A pointer to a TCOD_Heap struct, the struct itself is not freed.
- */
 void TCOD_heap_uninit(struct TCOD_Heap* heap) {
-  if (heap->heap) {
-    free(heap->heap);
-  }
+  if (heap->heap) free(heap->heap);
   heap->heap = NULL;
   heap->size = 0;
   heap->capacity = 0;
@@ -55,13 +49,6 @@ void TCOD_heap_uninit(struct TCOD_Heap* heap) {
   heap->data_size = 0;
   heap->data_offset = 0;
 }
-/***************************************************************************
-    @brief Initialize a heap with the given data_size.
-
-    @param heap A pointer to an existing TCOD_Heap struct.
-    @param data_size The size of the user data in bytes.
-    @return int Returns a negative value on error.
- */
 int TCOD_heap_init(struct TCOD_Heap* heap, size_t data_size) {
   size_t node_size = sizeof(int) + data_size;
   if (node_size > TCOD_HEAP_MAX_NODE_SIZE) {
@@ -76,11 +63,6 @@ int TCOD_heap_init(struct TCOD_Heap* heap, size_t data_size) {
   heap->priority_type = -4;  // Signed int type.
   return 0;
 }
-/***************************************************************************
-    @brief Clear all elements from this heap.
-
-    @param heap A TCOD_Heap pointer.
- */
 void TCOD_heap_clear(struct TCOD_Heap* heap) { heap->size = 0; }
 /// Return a pointer to the node at index in heap.  This points directly to the priority value.
 /// Used internally.
@@ -122,62 +104,37 @@ static bool TCOD_minheap_compare_(struct TCOD_Heap* minheap, int lhs_index, int 
 }
 /// Sort a heap element downwards, away from the root.
 /// Used internally.
-static void TCOD_TCOD_minheap_heapify_down_(struct TCOD_Heap* minheap, int index) {
+static void TCOD_minheap_heapify_down_(struct TCOD_Heap* minheap, int index) {
   int candidate = index;
   const int left = index * 2 + 1;
   const int right = index * 2 + 2;
-  if (left < minheap->size && TCOD_minheap_compare_(minheap, left, candidate)) {
-    candidate = left;
-  }
-  if (right < minheap->size && TCOD_minheap_compare_(minheap, right, candidate)) {
-    candidate = right;
-  }
+  if (left < minheap->size && TCOD_minheap_compare_(minheap, left, candidate)) candidate = left;
+  if (right < minheap->size && TCOD_minheap_compare_(minheap, right, candidate)) candidate = right;
   if (candidate != index) {
     TCOD_heap_swap_(minheap, index, candidate);
-    TCOD_TCOD_minheap_heapify_down_(minheap, candidate);
+    TCOD_minheap_heapify_down_(minheap, candidate);
   }
 }
 /// Sort a heap element upwards, towards from the root.
 /// Used internally.
-static void TCOD_TCOD_minheap_heapify_up_(struct TCOD_Heap* minheap, int index) {
+static void TCOD_minheap_heapify_up_(struct TCOD_Heap* minheap, int index) {
   if (index == 0) return;  // No element is higher than the current one.
   const int parent = (index - 1) >> 1;
   if (TCOD_minheap_compare_(minheap, index, parent)) {
     TCOD_heap_swap_(minheap, index, parent);
-    TCOD_TCOD_minheap_heapify_up_(minheap, parent);
+    TCOD_minheap_heapify_up_(minheap, parent);
   }
 }
-/***************************************************************************
-    @brief Sort the heap elements into a valid heap.
-
-    @param minheap A TCOD_Heap pointer.
- */
 void TCOD_minheap_heapify(struct TCOD_Heap* minheap) {
-  for (int i = minheap->size / 2; i >= 0; --i) {
-    TCOD_TCOD_minheap_heapify_down_(minheap, i);
-  }
+  for (int i = minheap->size / 2; i >= 0; --i) TCOD_minheap_heapify_down_(minheap, i);
 }
-/***************************************************************************
-    @brief Remove the smallest element from the heap and keep it sorted.
-
-    @param minheap A TCOD_Heap pointer.
-    @param out An optional pointer to store the data from the removed element.
- */
 void TCOD_minheap_pop(struct TCOD_Heap* __restrict minheap, void* __restrict out) {
   if (minheap->size == 0) return;  // No element to pop.
   if (out) memcpy(out, minheap->heap + minheap->data_offset, minheap->data_size);
   TCOD_heap_copy_(minheap, 0, minheap->size - 1);
   --minheap->size;
-  TCOD_TCOD_minheap_heapify_down_(minheap, 0);
+  TCOD_minheap_heapify_down_(minheap, 0);
 }
-/***************************************************************************
-    @brief Push an element onto this minumum heap.
-
-    @param minheap A TCOD_Heap pointer.
-    @param priority The priority of the new element.
-    @param data The data to push onto the heap.  Can not be NULL.
-    @return Returns a negative error code on failures.
- */
 int TCOD_minheap_push(struct TCOD_Heap* __restrict minheap, int priority, const void* __restrict data) {
   if (minheap->size == minheap->capacity) {
     const int new_capacity = (minheap->capacity ? minheap->capacity * 2 : TCOD_HEAP_DEFAULT_CAPACITY);
@@ -191,6 +148,6 @@ int TCOD_minheap_push(struct TCOD_Heap* __restrict minheap, int priority, const 
   }
   ++minheap->size;
   TCOD_heap_set_(minheap, minheap->size - 1, priority, data);
-  TCOD_TCOD_minheap_heapify_up_(minheap, minheap->size - 1);
+  TCOD_minheap_heapify_up_(minheap, minheap->size - 1);
   return TCOD_E_OK;
 }

@@ -53,13 +53,47 @@ struct TCOD_Heap {
 #ifdef __cplusplus
 extern "C" {
 #endif  // __cplusplus
+/***************************************************************************
+    @brief Initialize a heap with the given data_size.
+
+    @param heap A pointer to an existing TCOD_Heap struct.
+    @param data_size The size of the user data in bytes.
+    @return int Returns a negative value on error.
+ */
 TCOD_PUBLIC int TCOD_heap_init(struct TCOD_Heap* heap, size_t data_size);
+/***************************************************************************
+    @brief Clear a heap and free its data.
+
+    @param heap A pointer to a TCOD_Heap struct, the struct itself is not freed.
+ */
 TCOD_PUBLIC void TCOD_heap_uninit(struct TCOD_Heap* heap);
+/***************************************************************************
+    @brief Clear all elements from this heap.
 
+    @param heap A TCOD_Heap pointer.
+ */
 TCOD_PUBLIC void TCOD_heap_clear(struct TCOD_Heap* heap);
+/***************************************************************************
+    @brief Push an element onto this minumum heap.
 
+    @param minheap A TCOD_Heap pointer.
+    @param priority The priority of the new element.
+    @param data The data to push onto the heap.  Can not be NULL.
+    @return Returns a negative error code on failures.
+ */
 TCOD_PUBLIC int TCOD_minheap_push(struct TCOD_Heap* __restrict minheap, int priority, const void* __restrict data);
+/***************************************************************************
+    @brief Remove the smallest element from the heap and keep it sorted.
+
+    @param minheap A TCOD_Heap pointer.
+    @param out An optional pointer to store the data from the removed element.
+ */
 TCOD_PUBLIC void TCOD_minheap_pop(struct TCOD_Heap* __restrict minheap, void* __restrict out);
+/***************************************************************************
+    @brief Sort the heap elements into a valid heap.
+
+    @param minheap A TCOD_Heap pointer.
+ */
 TCOD_PUBLIC void TCOD_minheap_heapify(struct TCOD_Heap* minheap);
 #ifdef __cplusplus
 }  // extern "C"

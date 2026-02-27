@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.24...4.2)
-
 project(libtcod_samples C CXX)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake OPTIONAL RESULT_VARIABLE CONAN_FILE)

@@ -1,4 +1,3 @@
-cmake_minimum_required(VERSION 3.24...4.2)
 project(PackageTest CXX)
 
 set(_IMPORT_CHECK_TARGETS "")  # Suppress undefined variable in Catch2Targets.cmake.

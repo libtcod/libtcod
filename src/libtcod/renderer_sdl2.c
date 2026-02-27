@@ -63,9 +63,9 @@ typedef struct VertexBuffer {
   VertexUV vertex_uv[BUFFER_TILES_MAX * 4];
 } VertexBuffer;
 
-static inline float minf(float a, float b) { return a < b ? a : b; }
-static inline float maxf(float a, float b) { return a > b ? a : b; }
-static inline float clampf(float v, float low, float high) { return maxf(low, minf(v, high)); }
+static float minf(float a, float b) { return a < b ? a : b; }
+static float maxf(float a, float b) { return a > b ? a : b; }
+static float clampf(float v, float low, float high) { return maxf(low, minf(v, high)); }
 // ----------------------------------------------------------------------------
 // SDL2 Atlas
 /**

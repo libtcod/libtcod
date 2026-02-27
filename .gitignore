@@ -533,3 +533,7 @@ Thumbs.db
 libtcod.pc
 .mypy_cache/
 buildsys/conan/conanworkspace.cmake
+
+# Hide vendored directories from tooling
+vcpkg/
+src/vendor/

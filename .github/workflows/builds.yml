@@ -205,7 +205,7 @@ jobs:
         run: cpack --config ${{env.CMAKE_BUILD_DIR}}/CPackConfig.cmake --verbose
       - name: Upload CPack
         if: matrix.cpack
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: cpack-dist-${{ matrix.triplet }}
           path: |
@@ -403,7 +403,7 @@ jobs:
         run: find ${{ env.CMAKE_BUILD_DIR }}
       - name: List bin files
         run: find ${{env.CMAKE_BIN_DIR}}
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: emscripten-builds
           path: ${{ env.CMAKE_BIN_DIR }}
@@ -428,7 +428,7 @@ jobs:
         working-directory: docs
         run: doxygen Doxyfile
       - name: Upload Doxygen HTML
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: doxygen-html
           path: docs/html
@@ -449,7 +449,7 @@ jobs:
           persist-credentials: false
       - name: Generate body
         run: scripts/get_release_description.py | tee release_body.md
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           pattern: cpack-dist-*
           path: artifacts

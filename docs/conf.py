@@ -14,10 +14,7 @@
 
 import re
 import subprocess
-import sys
-
-import sphinx
-import sphinx_rtd_theme
+import os
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -32,14 +29,7 @@ import sphinx_rtd_theme
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = [
-    "sphinx.ext.doctest",
-    "sphinx.ext.todo",
-    "sphinx.ext.ifconfig",
-    "breathe",
-    "exhale",
-    "myst_parser",
-]
+extensions: list[str] = []
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -53,12 +43,12 @@ source_suffix = ".rst"
 # source_encoding = 'utf-8-sig'
 
 # The master toctree document.
-master_doc = "index"
+master_doc = "sphinx-index"
 
 # General information about the project.
 project = "libtcod"
-copyright = "2008-2022, Richard Tew"
-author = "Richard Tew"
+copyright = "2008-2026, Jice and the libtcod contributors"
+author = "Jice"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -126,7 +116,7 @@ todo_include_todos = True
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = "sphinx_rtd_theme"
+# html_theme = "sphinx_rtd_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -134,7 +124,7 @@ html_theme = "sphinx_rtd_theme"
 # html_theme_options = {}
 
 # Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+# html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -155,14 +145,14 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static"]
+# html_static_path = ["_static"]
 
-html_css_files = ["css/custom.css"]
+# html_css_files = ["css/custom.css"]
 
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied
 # directly to the root of the documentation.
-# html_extra_path = []
+html_extra_path = ["html"]  # Doxygen HTML output folder
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
@@ -302,43 +292,6 @@ texinfo_documents = [
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 # texinfo_no_detailmenu = False
 
-# Breathe configuration
-breathe_projects = {"libtcod": "doxyxml/"}
-breathe_default_project = "libtcod"
-breathe_show_include = True
-
-# Setup the exhale extension
-exhale_args = {
-    # These arguments are required
-    "containmentFolder": "./library",
-    "rootFileName": "library_root.rst",
-    "doxygenStripFromPath": "../src",
-    # Heavily encouraged optional argument (see docs)
-    "rootFileTitle": "Library API",
-    # Suggested optional arguments
-    "createTreeView": True,
-    # TIP: if using the sphinx-bootstrap-theme, you need
-    # "treeViewIsBootstrap": True,
-    "exhaleExecutesDoxygen": True,
-    "exhaleUseDoxyfile": True,
-    # Other arguments
-    "unabridgedOrphanKinds": {"dir", "file", "page", "variable"},
-}
-
-
-def run_doxygen(app: sphinx.application.Sphinx) -> None:
-    """Runs the doxygen command."""
-    try:
-        process = subprocess.run(["doxygen", "Doxyfile"])
-        if process.returncode < 0:
-            print(
-                f"doxygen terminated with signal: {-process.returncode}",
-                file=sys.stderr,
-            )
-    except OSError as exc:
-        print(f"doxygen execution failed: {exc}", file=sys.stderr)
-
-
-def setup(app: sphinx.application.Sphinx) -> None:
-    # Add hook for building doxygen xml when needed
-    pass  # app.connect("builder-inited", run_doxygen)
+if os.environ.get("READTHEDOCS", None):
+    subprocess.run(("doxygen", "-V"), check=True)
+    subprocess.run(("doxygen", "Doxyfile"), check=True)  # Compile Doxygen HTML output

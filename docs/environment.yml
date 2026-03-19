@@ -1,0 +1,6 @@
+name: RTD
+channels:
+  - conda-forge
+dependencies:
+  - doxygen=1.13.2
+  - pip

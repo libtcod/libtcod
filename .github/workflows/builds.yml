@@ -275,7 +275,7 @@ jobs:
         run: find . | grep -e ".gc..$"
       - name: Generate coverage data
         run: gcov CMakeFiles/libtcod.dir/src/libtcod/*.o CMakeFiles/libtcod.dir/src/libtcod/*/*.o tests/CMakeFiles/unittest.dir/*.o
-      - uses: codecov/codecov-action@v5
+      - uses: codecov/codecov-action@v6
 
   Autotools:
     needs: [pre-commit]

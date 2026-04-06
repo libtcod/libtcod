@@ -455,8 +455,5 @@ jobs:
           path: artifacts
           merge-multiple: true
       - name: Create Release
-        uses: ncipollo/release-action@v1
-        with:
-          bodyFile: release_body.md
-          draft: true
-          artifacts: artifacts/*
+        # https://cli.github.com/manual/gh_release_create
+        run: gh release create "${GITHUB_REF_NAME}" artifacts/* --verify-tag --notes-file release_body.md

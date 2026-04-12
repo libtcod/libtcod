@@ -40,8 +40,9 @@
 #define MAX_JAVADOC_COMMENT_SIZE 16384
 
 char* TCOD_strdup(const char* str) {
-  char* duplicate = malloc(strlen(str) + 1);
-  if (duplicate) strcpy(duplicate, str);
+  const size_t length = strlen(str) + 1;
+  char* duplicate = malloc(length);
+  if (duplicate) memcpy(duplicate, str, length);
   return duplicate;
 }
 

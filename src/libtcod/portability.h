@@ -122,9 +122,7 @@
 /* bool type */
 #include <stdbool.h>
 
-/**
-    Allocate and return a duplicate of string `s`.  The returned memory must be freed manually.
- */
+/// Allocate and return a duplicate of the input string. The returned memory must be freed manually.
 TCODLIB_CAPI char* TCOD_strdup(const char* s);
 /***************************************************************************
     @brief Compare two ASCII strings ignoring case. Returns 0 if the strings are equal.

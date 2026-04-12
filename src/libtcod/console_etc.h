@@ -101,11 +101,11 @@ TCOD_DEPRECATED("Use SDL to check the keyboard state.")
 TCODLIB_API bool TCOD_console_is_key_pressed(TCOD_keycode_t key);
 
 /* ASCII paint file support */
-TCODLIB_API TCOD_console_t TCOD_console_from_file(const char* filename);
-TCODLIB_API bool TCOD_console_load_asc(TCOD_console_t con, const char* filename);
-TCODLIB_API bool TCOD_console_load_apf(TCOD_console_t con, const char* filename);
-TCODLIB_API bool TCOD_console_save_asc(TCOD_console_t con, const char* filename);
-TCODLIB_API bool TCOD_console_save_apf(TCOD_console_t con, const char* filename);
+TCODLIB_API TCOD_Console* TCOD_console_from_file(const char* filename);
+TCODLIB_API bool TCOD_console_load_asc(TCOD_Console* con, const char* filename);
+TCODLIB_API bool TCOD_console_load_apf(TCOD_Console* con, const char* filename);
+TCODLIB_API bool TCOD_console_save_asc(TCOD_Console* con, const char* filename);
+TCODLIB_API bool TCOD_console_save_apf(TCOD_Console* con, const char* filename);
 
 #ifndef NO_SDL
 TCODLIB_BEGIN_IGNORE_DEPRECATIONS

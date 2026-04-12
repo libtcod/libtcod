@@ -631,23 +631,21 @@ static int string_ends_with(const char* str, const char* suffix) {
   return (str_len >= suffix_len) && (0 == strcmp(str + (str_len - suffix_len), suffix));
 }
 
-TCOD_console_t TCOD_console_from_file(const char* filename) {
-  float version;
-  int width, height;
-  TCOD_console_t con;
-  FILE* f;
+TCOD_Console* TCOD_console_from_file(const char* filename) {
   TCOD_IFNOT(filename != NULL) { return NULL; }
 #ifndef TCOD_NO_ZLIB
   if (string_ends_with(filename, ".xp")) {
     return TCOD_console_from_xp(filename);
   }
 #endif  // TCOD_NO_ZLIB
-  f = fopen(filename, "rb");
+  FILE* f = fopen(filename, "rb");
   TCOD_IFNOT(f != NULL) { return NULL; }
+  float version;
   if (fscanf(f, "ASCII-Paint v%g", &version) != 1) {
     fclose(f);
     return NULL;
   }
+  int width, height;
   if (fscanf(f, "%i %i", &width, &height) != 2) {
     fclose(f);
     return NULL;
@@ -656,7 +654,7 @@ TCOD_console_t TCOD_console_from_file(const char* filename) {
     fclose(f);
     return NULL;
   }
-  con = TCOD_console_new(width, height);
+  TCOD_Console* con = TCOD_console_new(width, height);
   if (string_ends_with(filename, ".asc")) {
     TCOD_console_read_asc(con, f, width, height, version);
   }
@@ -664,18 +662,17 @@ TCOD_console_t TCOD_console_from_file(const char* filename) {
 }
 
 bool TCOD_console_load_asc(TCOD_Console* con, const char* filename) {
-  float version;
-  int width, height;
-  FILE* f;
   con = TCOD_console_validate_(con);
   TCOD_IFNOT(con != NULL) return false;
   TCOD_IFNOT(filename != NULL) { return false; }
-  f = fopen(filename, "rb");
+  FILE* f = fopen(filename, "rb");
   TCOD_IFNOT(f != NULL) { return false; }
+  float version;
   if (fscanf(f, "ASCII-Paint v%g", &version) != 1) {
     fclose(f);
     return false;
   }
+  int width, height;
   if (fscanf(f, "%i %i", &width, &height) != 2) {
     fclose(f);
     return false;
@@ -691,19 +688,17 @@ bool TCOD_console_load_asc(TCOD_Console* con, const char* filename) {
 
 bool TCOD_console_save_asc(TCOD_Console* con, const char* filename) {
   static float version = 0.3f;
-  FILE* f;
-  int x, y;
   con = TCOD_console_validate_(con);
   TCOD_IFNOT(con != NULL) return false;
   TCOD_IFNOT(filename != NULL) { return false; }
   TCOD_IFNOT(con->w > 0 && con->h > 0) return false;
-  f = fopen(filename, "wb");
+  FILE* f = fopen(filename, "wb");
   TCOD_IFNOT(f != NULL) return false;
   fprintf(f, "ASCII-Paint v%g\n", (double)version);
   fprintf(f, "%i %i\n", con->w, con->h);
   fputc('#', f);
-  for (x = 0; x < con->w; x++) {
-    for (y = 0; y < con->h; y++) {
+  for (int x = 0; x < con->w; x++) {
+    for (int y = 0; y < con->h; y++) {
       TCOD_color_t fore, back;
       int c = TCOD_console_get_char(con, x, y);
       fore = TCOD_console_get_char_foreground(con, x, y);
@@ -881,7 +876,7 @@ void fixLayer_v2(LayerV2* l) {
 
 /*********** ApfFile */
 
-bool TCOD_console_save_apf(TCOD_console_t con, const char* filename) {
+bool TCOD_console_save_apf(TCOD_Console* con, const char* filename) {
   con = TCOD_console_validate_(con);
   FILE* fp;
   TCOD_IFNOT(con != NULL) return false;
@@ -969,7 +964,8 @@ bool TCOD_console_save_apf(TCOD_console_t con, const char* filename) {
         int c = TCOD_console_get_char(con, x, y);
         fore = TCOD_console_get_char_foreground(con, x, y);
         back = TCOD_console_get_char_background(con, x, y);
-        put8(c, fp);
+        if (c < 0 || c > 255) c = (int)'?';  // Replace out-of-range codepoints
+        put8((uint8_t)c, fp);
         put8(fore.r, fp);
         put8(fore.g, fp);
         put8(fore.b, fp);
@@ -1014,12 +1010,11 @@ bool TCOD_console_load_apf(TCOD_Console* con, const char* filename) {
   uint32_t LAYR = fourCC("LAYR");
   */
   uint32_t layr = fourCC("layr");
-  FILE* fp;
-  Data data;
   con = TCOD_console_validate_(con);
   TCOD_IFNOT(con != NULL) return false;
 
   detectBigEndianness();
+  Data data = {0};
   data.details.width = 1;
   data.details.height = 1;
   data.details.filter = 0;
@@ -1043,7 +1038,7 @@ bool TCOD_console_load_apf(TCOD_Console* con, const char* filename) {
     return false;                                                                                                     \
   }
 
-  fp = fopen(filename, "rb");
+  FILE* fp = fopen(filename, "rb");
   if (fp == NULL) {
     printf("The file %s could not be loaded.\n", filename);
     return false;

@@ -40,6 +40,7 @@
 
 #include "namegen.h"
 #include "parser.h"
+#include "utility.h"
 
 /* ------------ *
  * the typedefs *
@@ -519,10 +520,9 @@ char* TCOD_namegen_generate_custom(const char* name, const char* rule, bool allo
     while (it <= rule + rule_len) {
       /* make sure the buffer is large enough */
       if (strlen(buf) >= buflen) {
-        char* tmp;
         while (strlen(buf) >= buflen) buflen *= 2;
-        tmp = malloc(buflen);
-        strcpy(tmp, buf);
+        char* tmp = malloc(buflen);
+        TCOD_strscpy(tmp, buf, buflen);
         free(buf);
         buf = tmp;
       }
@@ -611,7 +611,7 @@ char* TCOD_namegen_generate_custom(const char* name, const char* rule, bool allo
       free(namegen_name);
       namegen_name = malloc(namegen_name_size);
     }
-    strcpy(namegen_name, buf);
+    TCOD_strscpy(namegen_name, buf, namegen_name_size);
     free(buf);
     return namegen_name;
   }

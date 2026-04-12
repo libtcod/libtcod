@@ -455,6 +455,7 @@
         "strdup",
         "STREQUAL",
         "stringf",
+        "strscpy",
         "struct",
         "structs",
         "STRVERSION",

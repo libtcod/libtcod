@@ -37,6 +37,7 @@
 
 #include "error.h"
 #include "tileset_truetype.h"
+#include "utility.h"
 
 TCOD_Tileset* TCOD_tileset_load_fallback_font_(int tile_width, int tile_height) {
 #if defined(__EMSCRIPTEN__)
@@ -45,7 +46,7 @@ TCOD_Tileset* TCOD_tileset_load_fallback_font_(int tile_width, int tile_height) 
   const char* sys_root = getenv("SystemRoot");
   const char* filename = "\\Fonts\\LUCON.TTF";
   char path[4096] = "";
-  strncpy(path, sys_root, sizeof(path) - 1);
+  TCOD_strscpy(path, sys_root, sizeof(path));
   strncat(path, filename, sizeof(path) - 1 - strlen(path));
   return TCOD_load_truetype_font_(path, tile_width, tile_height);
 #elif defined(__APPLE__)  // MacOS.

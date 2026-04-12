@@ -458,20 +458,20 @@ TCOD_dice_t TCOD_random_dice_new(const char* dice_str) {
   size_t length;
   /* get multiplier */
   if ((length = strcspn(dice_str, "*x")) < strlen(dice_str)) {
-    strncpy(tmp, dice_str, sizeof(tmp) - 1);
+    TCOD_strscpy(tmp, dice_str, sizeof(tmp));
     tmp[length] = '\0';
     dice.multiplier = (float)atof(tmp);
     dice_str += length + 1;
   }
   /* get rolls */
   length = strcspn(dice_str, "dD");
-  strncpy(tmp, dice_str, sizeof(tmp) - 1);
+  TCOD_strscpy(tmp, dice_str, sizeof(tmp));
   tmp[length] = '\0';
   dice.nb_rolls = atoi(tmp);
   dice_str += length + 1;
   /* get faces */
   length = strcspn(dice_str, "-+");
-  strncpy(tmp, dice_str, sizeof(tmp) - 1);
+  TCOD_strscpy(tmp, dice_str, sizeof(tmp));
   tmp[length] = '\0';
   dice.nb_faces = atoi(tmp);
   dice_str += length;

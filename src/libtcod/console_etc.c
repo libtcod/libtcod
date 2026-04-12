@@ -162,7 +162,7 @@ void TCOD_console_set_dirty(int dx, int dy, int dw, int dh) {
  */
 TCOD_Error TCOD_console_set_custom_font(const char* fontFile, int flags, int nb_char_horiz, int nb_char_vertic) {
 #ifndef TCOD_NO_PNG
-  strncpy(TCOD_ctx.font_file, fontFile, sizeof(TCOD_ctx.font_file) - 1);
+  TCOD_strscpy(TCOD_ctx.font_file, fontFile, sizeof(TCOD_ctx.font_file));
   /* if layout not defined, assume ASCII_INCOL */
   if (!(flags & (TCOD_FONT_LAYOUT_ASCII_INCOL | TCOD_FONT_LAYOUT_ASCII_INROW | TCOD_FONT_LAYOUT_TCOD))) {
     flags |= TCOD_FONT_LAYOUT_ASCII_INCOL;

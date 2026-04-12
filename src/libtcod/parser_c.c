@@ -36,6 +36,7 @@
 
 #include "libtcod_int.h"
 #include "parser.h"
+#include "utility.h"
 
 #define MAX_NAME_LEN 128
 
@@ -536,7 +537,7 @@ static bool TCOD_parser_parse_entity(TCOD_Parser* parser, TCOD_ParserStruct* def
         TCOD_lex_savepoint(lex, &save);
         char type[MAX_NAME_LEN];
         string_copy(type, lex->tok, MAX_NAME_LEN);
-        strcpy(id, type);
+        TCOD_strscpy(id, type, sizeof(id));
         const char* subname = NULL;
         bool named = false;
         if (TCOD_lex_parse(lex) == TCOD_LEX_STRING) {
@@ -709,7 +710,7 @@ void TCOD_parser_run(TCOD_Parser* parser, const char* filename, TCOD_parser_list
     char type[MAX_NAME_LEN];
     string_copy(type, lex->tok, MAX_NAME_LEN);
     char id[MAX_NAME_LEN * 2 + 2];
-    strcpy(id, type);
+    TCOD_strscpy(id, type, sizeof(id));
     TCOD_lex_t save;
     TCOD_lex_savepoint(lex, &save);
     bool named = false;
@@ -835,7 +836,7 @@ static const TCOD_value_t* TCOD_get_property(TCOD_Parser* parser, TCOD_value_typ
   }
   /* property not found. Check if it exists */
   char tmp[512];
-  strcpy(tmp, name);
+  TCOD_strscpy(tmp, name, sizeof(tmp));
   sprintf(err, "Fatal error ! Try to read unknown property '%s'\n", name);
   char* ptr = strchr(tmp, '.');
   char* current_name = tmp;

@@ -36,6 +36,7 @@
 #include <string.h>
 
 #include "logging.h"
+#include "utility.h"
 
 // Maximum error length in bytes.
 #define MAX_ERROR_LENGTH 1024
@@ -44,7 +45,7 @@ static char error_msg_[MAX_ERROR_LENGTH] = "";
 
 const char* TCOD_get_error(void) { return error_msg_; }
 TCOD_Error TCOD_set_error(const char* msg) {
-  strncpy(error_msg_, msg, sizeof(error_msg_) - 1);
+  TCOD_strscpy(error_msg_, msg, sizeof(error_msg_));
   TCOD_log_error(msg);
   return TCOD_E_ERROR;
 }

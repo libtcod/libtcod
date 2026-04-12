@@ -48,6 +48,7 @@
 #include "parser.h"
 #include "sys.h"
 #include "tileset.h"
+#include "utility.h"
 
 #ifndef NO_SDL
 
@@ -181,7 +182,7 @@ TCOD_Error TCOD_sys_load_player_config(void) {
     /* custom font */
     if (TCOD_sys_file_exists(font)) {
       int fontNbCharHoriz, fontNbCharVertic;
-      strncpy(TCOD_ctx.font_file, font, sizeof(TCOD_ctx.font_file) - 1);
+      TCOD_strscpy(TCOD_ctx.font_file, font, sizeof(TCOD_ctx.font_file));
       TCOD_ctx.font_in_row = TCOD_parser_get_bool_property(parser, "libtcod.fontInRow");
       TCOD_ctx.font_greyscale = TCOD_parser_get_bool_property(parser, "libtcod.fontGreyscale");
       TCOD_ctx.font_tcod_layout = TCOD_parser_get_bool_property(parser, "libtcod.fontTcodLayout");
@@ -278,7 +279,7 @@ void TCOD_sys_set_scale_factor(float value) {
 }
 
 void TCOD_sys_set_window_title(const char* title) {
-  strncpy(TCOD_ctx.window_title, title, sizeof(TCOD_ctx.window_title) - 1);
+  TCOD_strscpy(TCOD_ctx.window_title, title, sizeof(TCOD_ctx.window_title));
   TCOD_ctx.window_title[sizeof(TCOD_ctx.window_title) - 1] = '\0';
   struct SDL_Window* window = TCOD_sys_get_sdl_window();
   if (window) {
@@ -952,7 +953,7 @@ TCOD_event_t TCOD_sys_handle_key_event(const SDL_Event* ev, TCOD_key_t* key) {
       key->vk = TCODK_TEXT;
       key->c = 0;
       key->pressed = 1;
-      strncpy(key->text, ev->text.text, TCOD_KEY_TEXT_SIZE - 1);
+      TCOD_strscpy(key->text, ev->text.text, TCOD_KEY_TEXT_SIZE);
       return TCOD_EVENT_KEY_PRESS;
     } break;
     default:

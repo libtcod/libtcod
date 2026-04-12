@@ -34,6 +34,8 @@
 #pragma once
 #ifndef LIBTCOD_UTILITY_H
 #define LIBTCOD_UTILITY_H
+#include <assert.h>
+#include <stddef.h>
 
 #define TCOD_MAX(a, b) (((a) > (b)) ? (a) : (b))
 #define TCOD_MIN(a, b) (((a) < (b)) ? (a) : (b))
@@ -41,4 +43,16 @@
 #define TCOD_CLAMP(a, b, x) ((x) < (a) ? (a) : ((x) > (b) ? (b) : (x)))
 #define TCOD_LERP(a, b, x) ((a) + (x) * ((b) - (a)))
 
+/// Copy `src` into a fixed-size buffer, return bytes copied excluding NULL and always NULL terminates `dest`.
+/// Safer and easier to understand than `strncpy` while also being faster.
+static inline size_t TCOD_strscpy(char* __restrict dest, const char* __restrict src, size_t count) {
+  assert(dest != NULL && src != NULL);
+  if (count <= 0) return 0;
+  for (size_t i = 0; i < count; ++i) {
+    dest[i] = src[i];
+    if (src[i] == '\0') return i;
+  }
+  dest[count - 1] = '\0';
+  return count - 1;
+}
 #endif

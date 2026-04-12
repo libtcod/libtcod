@@ -41,6 +41,7 @@
 #include "console_etc.h"
 #include "context_init.h"
 #include "libtcod_int.h"
+#include "utility.h"
 
 #ifndef NO_SDL
 TCOD_Error TCOD_console_init_root_(
@@ -58,7 +59,7 @@ TCOD_Error TCOD_console_init_root_(
   if (!TCOD_ctx.root) {
     return TCOD_E_ERROR;
   }
-  strncpy(TCOD_ctx.window_title, title ? title : "", sizeof(TCOD_ctx.window_title) - 1);
+  TCOD_strscpy(TCOD_ctx.window_title, title ? title : "", sizeof(TCOD_ctx.window_title));
   TCOD_ctx.fullscreen = fullscreen;
   struct TCOD_ContextParams params = {
       .tcod_version = 0,
@@ -81,7 +82,7 @@ TCOD_Error TCOD_console_init_root(int w, int h, const char* title, bool fullscre
 void TCOD_console_set_window_title(const char* title) {
   struct SDL_Window* window = TCOD_sys_get_sdl_window();
   SDL_SetWindowTitle(window, title);
-  strncpy(TCOD_ctx.window_title, title, sizeof(TCOD_ctx.window_title) - 1);
+  TCOD_strscpy(TCOD_ctx.window_title, title, sizeof(TCOD_ctx.window_title));
 }
 void TCOD_console_set_fullscreen(bool fullscreen) {
   TCOD_ctx.fullscreen = fullscreen;

@@ -304,7 +304,7 @@ void TCOD_console_credits(void) {
     }
     if (fade < 260) {
       fade -= 10;
-      TCOD_console_set_fade(fade, TCOD_black);
+      TCOD_console_set_fade((uint8_t)TCOD_CLAMP(0, 255, fade), TCOD_black);
       if (fade == 0) end = true;
     }
   }

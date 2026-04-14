@@ -233,7 +233,7 @@ int TCOD_zip_load_from_file(TCOD_zip_t zip, const char* filename) {
   }
   if (zip->buffer) {
     TCOD_list_delete(zip->buffer);
-    memset(zip, 0, sizeof(zip_data_t));
+    memset(zip, 0, sizeof(*zip));
   }
   zip->buffer = TCOD_list_allocate((length + wordsize - 1) / wordsize);
   TCOD_list_set_size(zip->buffer, (length + wordsize - 1) / wordsize);

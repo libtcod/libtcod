@@ -40,7 +40,7 @@
 #include "utility.h"
 
 typedef struct TCOD_Zip {
-  TCOD_list_t buffer; /* list<int> */
+  TCOD_List* buffer; /* list<int> */
   uintptr_t ibuffer; /* byte buffer. bytes are send into buffer 4 by 4 (32 bits OS) or 8 by 8(64 bits OS) */
   int isize; /* number of bytes in ibuffer */
   int bsize; /* number of bytes in buffer */
@@ -48,20 +48,18 @@ typedef struct TCOD_Zip {
 } zip_data_t;
 
 TCOD_zip_t TCOD_zip_new(void) {
-  zip_data_t* ret = (zip_data_t*)calloc(1, sizeof(zip_data_t));
-  return (TCOD_zip_t)ret;
+  zip_data_t* zip = calloc(1, sizeof(*zip));
+  return zip;
 }
 
-void TCOD_zip_delete(TCOD_zip_t pzip) {
-  zip_data_t* zip = (zip_data_t*)pzip;
-  if (zip->buffer != NULL) TCOD_list_delete(zip->buffer);
+void TCOD_zip_delete(TCOD_zip_t zip) {
+  if (zip->buffer) TCOD_list_delete(zip->buffer);
   free(zip);
 }
 
 /* output interface */
-void TCOD_zip_put_char(TCOD_zip_t pzip, char val) {
-  zip_data_t* zip = (zip_data_t*)pzip;
-  uintptr_t iv = (uintptr_t)(uint8_t)val;
+void TCOD_zip_put_char(TCOD_zip_t zip, char value) {
+  const uintptr_t iv = (uintptr_t)(uint8_t)value;
   /* store one byte in ibuffer */
   switch (zip->isize) {
     case 0:
@@ -92,8 +90,8 @@ void TCOD_zip_put_char(TCOD_zip_t pzip, char val) {
       break;
 #endif
   }
-  zip->isize++;
-  zip->bsize++;
+  ++zip->isize;
+  ++zip->bsize;
   if (zip->isize == sizeof(uintptr_t)) {
     /* ibuffer full. send it to buffer */
     if (!zip->buffer) zip->buffer = TCOD_list_new();
@@ -103,78 +101,76 @@ void TCOD_zip_put_char(TCOD_zip_t pzip, char val) {
   }
 }
 
-void TCOD_zip_put_int(TCOD_zip_t pzip, int val) {
+void TCOD_zip_put_int(TCOD_zip_t zip, int value) {
 #ifndef TCOD_64BITS
-  zip_data_t* zip = (zip_data_t*)pzip;
   if (zip->isize == 0) {
     /* the buffer is padded. read 4 bytes */
     if (!zip->buffer) zip->buffer = TCOD_list_new();
-    TCOD_list_push(zip->buffer, (void*)val);
+    TCOD_list_push(zip->buffer, (void*)value);
     zip->bsize += sizeof(uintptr_t);
   } else {
 #endif
     /* the buffer is not padded. read 4x1 byte */
-    TCOD_zip_put_char(pzip, (char)(val & 0xFF));
-    TCOD_zip_put_char(pzip, (char)((val & 0xFF00) >> 8));
-    TCOD_zip_put_char(pzip, (char)((val & 0xFF0000) >> 16));
-    TCOD_zip_put_char(pzip, (char)((val & 0xFF000000) >> 24));
+    TCOD_zip_put_char(zip, (char)(value & 0xFF));
+    TCOD_zip_put_char(zip, (char)((value & 0xFF00) >> 8));
+    TCOD_zip_put_char(zip, (char)((value & 0xFF0000) >> 16));
+    TCOD_zip_put_char(zip, (char)((value & 0xFF000000) >> 24));
 #ifndef TCOD_64BITS
   }
 #endif
 }
 
-void TCOD_zip_put_float(TCOD_zip_t pzip, float val) { TCOD_zip_put_int(pzip, *(int*)(&val)); }
+void TCOD_zip_put_float(TCOD_zip_t zip, float value) { TCOD_zip_put_int(zip, *(int*)(&value)); }
 
-void TCOD_zip_put_string(TCOD_zip_t pzip, const char* val) {
-  if (val == NULL)
-    TCOD_zip_put_int(pzip, -1);
+void TCOD_zip_put_string(TCOD_zip_t zip, const char* value) {
+  if (value == NULL)
+    TCOD_zip_put_int(zip, -1);
   else {
-    size_t l = strlen(val), i;
-    TCOD_zip_put_int(pzip, (int)l);
-    for (i = 0; i <= l; i++) TCOD_zip_put_char(pzip, val[i]);
+    const size_t length = strlen(value);
+    TCOD_zip_put_int(zip, (int)length);
+    for (size_t i = 0; i <= length; ++i) TCOD_zip_put_char(zip, value[i]);
   }
 }
 
-void TCOD_zip_put_data(TCOD_zip_t pzip, int nbBytes, const void* data) {
+void TCOD_zip_put_data(TCOD_zip_t zip, int nbBytes, const void* data) {
   if (data == NULL)
-    TCOD_zip_put_int(pzip, -1);
+    TCOD_zip_put_int(zip, -1);
   else {
-    char* val = (char*)data;
-    int i;
-    TCOD_zip_put_int(pzip, nbBytes);
-    for (i = 0; i < nbBytes; i++) TCOD_zip_put_char(pzip, val[i]);
+    const char* value = (const char*)data;
+    TCOD_zip_put_int(zip, nbBytes);
+    for (int i = 0; i < nbBytes; ++i) TCOD_zip_put_char(zip, value[i]);
   }
 }
 
-void TCOD_zip_put_color(TCOD_zip_t zip, const TCOD_color_t val) {
-  TCOD_zip_put_char(zip, val.r);
-  TCOD_zip_put_char(zip, val.g);
-  TCOD_zip_put_char(zip, val.b);
+void TCOD_zip_put_color(TCOD_zip_t zip, const TCOD_color_t value) {
+  TCOD_zip_put_char(zip, value.r);
+  TCOD_zip_put_char(zip, value.g);
+  TCOD_zip_put_char(zip, value.b);
 }
 
-void TCOD_zip_put_image(TCOD_zip_t zip, const TCOD_Image* val) {
-  int w, h, x, y;
-  TCOD_image_get_size(val, &w, &h);
+void TCOD_zip_put_image(TCOD_zip_t zip, const TCOD_Image* value) {
+  int w, h;
+  TCOD_image_get_size(value, &w, &h);
   TCOD_zip_put_int(zip, w);
   TCOD_zip_put_int(zip, h);
-  for (y = 0; y < h; y++) {
-    for (x = 0; x < w; x++) {
-      TCOD_zip_put_color(zip, TCOD_image_get_pixel(val, x, y));
+  for (int y = 0; y < h; ++y) {
+    for (int x = 0; x < w; ++x) {
+      TCOD_zip_put_color(zip, TCOD_image_get_pixel(value, x, y));
     }
   }
 }
 
-void TCOD_zip_put_console(TCOD_zip_t zip, const TCOD_Console* val) {
-  int w, h, x, y;
-  w = TCOD_console_get_width(val);
-  h = TCOD_console_get_height(val);
+void TCOD_zip_put_console(TCOD_zip_t zip, const TCOD_Console* value) {
+  int w, h;
+  w = TCOD_console_get_width(value);
+  h = TCOD_console_get_height(value);
   TCOD_zip_put_int(zip, w);
   TCOD_zip_put_int(zip, h);
-  for (y = 0; y < h; y++) {
-    for (x = 0; x < w; x++) {
-      TCOD_zip_put_char(zip, TCOD_console_get_char(val, x, y) & 0xff);
-      TCOD_zip_put_color(zip, TCOD_console_get_char_foreground(val, x, y));
-      TCOD_zip_put_color(zip, TCOD_console_get_char_background(val, x, y));
+  for (int y = 0; y < h; ++y) {
+    for (int x = 0; x < w; ++x) {
+      TCOD_zip_put_char(zip, TCOD_console_get_char(value, x, y) & 0xff);
+      TCOD_zip_put_color(zip, TCOD_console_get_char_foreground(value, x, y));
+      TCOD_zip_put_color(zip, TCOD_console_get_char_background(value, x, y));
     }
   }
 }
@@ -197,15 +193,13 @@ void TCOD_zip_put_random(TCOD_zip_t zip, const TCOD_Random* rng) {
   TCOD_zip_put_data(zip, size, rng);
 }
 
-int TCOD_zip_save_to_file(TCOD_zip_t pzip, const char* filename) {
-  zip_data_t* zip = (zip_data_t*)pzip;
-  gzFile f = gzopen(filename, "wb");
-  int l = zip->bsize, ret;
-  void* buf;
-  if (!f) return 0;
-  gzwrite(f, &l, sizeof(int));
-  if (l == 0) {
-    gzclose(f);
+int TCOD_zip_save_to_file(TCOD_zip_t zip, const char* filename) {
+  gzFile file = gzopen(filename, "wb");
+  int length = zip->bsize;
+  if (!file) return 0;
+  gzwrite(file, &length, sizeof(int));
+  if (length == 0) {
+    gzclose(file);
     return 0;
   }
   if (zip->isize > 0) {
@@ -215,49 +209,46 @@ int TCOD_zip_save_to_file(TCOD_zip_t pzip, const char* filename) {
     zip->isize = 0;
     zip->ibuffer = 0;
   }
-  buf = (void*)TCOD_list_begin(zip->buffer);
-  ret = gzwrite(f, buf, l);
-  if (ret != l) {
-    gzclose(f);
+  void* buffer = (void*)TCOD_list_begin(zip->buffer);
+  int result = gzwrite(file, buffer, length);
+  if (result != length) {
+    gzclose(file);
     return 0;
   }
-  ret = gzclose(f);
-  if (ret != Z_OK) return 0;
-  return l;
+  result = gzclose(file);
+  if (result != Z_OK) return 0;
+  return length;
 }
 
 /* input interface */
-int TCOD_zip_load_from_file(TCOD_zip_t pzip, const char* filename) {
-  zip_data_t* zip = (zip_data_t*)pzip;
-  gzFile f = gzopen(filename, "rb");
-  int l, lread;
-  void* buf;
-  int wordsize = sizeof(uintptr_t);
-  if (!f) return 0;
-  gzread(f, &l, sizeof(int));
-  if (l == 0) {
-    gzclose(f);
+int TCOD_zip_load_from_file(TCOD_zip_t zip, const char* filename) {
+  static const int wordsize = sizeof(uintptr_t);
+  gzFile file = gzopen(filename, "rb");
+  if (!file) return 0;
+  int length;
+  gzread(file, &length, sizeof(int));
+  if (length == 0) {
+    gzclose(file);
     return 0;
   }
   if (zip->buffer) {
     TCOD_list_delete(zip->buffer);
     memset(zip, 0, sizeof(zip_data_t));
   }
-  zip->buffer = TCOD_list_allocate((l + wordsize - 1) / wordsize);
-  TCOD_list_set_size(zip->buffer, (l + wordsize - 1) / wordsize);
-  buf = (void*)TCOD_list_begin(zip->buffer);
-  lread = gzread(f, buf, l);
-  gzclose(f);
-  return lread == 0 ? l : lread;
+  zip->buffer = TCOD_list_allocate((length + wordsize - 1) / wordsize);
+  TCOD_list_set_size(zip->buffer, (length + wordsize - 1) / wordsize);
+  void* buffer = (void*)TCOD_list_begin(zip->buffer);
+  const int lread = gzread(file, buffer, length);
+  gzclose(file);
+  return lread == 0 ? length : lread;
 }
 
-char TCOD_zip_get_char(TCOD_zip_t pzip) {
-  zip_data_t* zip = (zip_data_t*)pzip;
+char TCOD_zip_get_char(TCOD_zip_t zip) {
   char c = 0;
   if (zip->isize == 0) {
     /* ibuffer is empty. get 4 or 8 new bytes from buffer */
     zip->ibuffer = (uintptr_t)TCOD_list_get(zip->buffer, zip->offset);
-    zip->offset++;
+    ++zip->offset;
     zip->isize = sizeof(uintptr_t);
   }
   /* read one byte from ibuffer */
@@ -304,25 +295,24 @@ char TCOD_zip_get_char(TCOD_zip_t pzip) {
       break;
   }
 #endif
-  zip->isize--;
+  --zip->isize;
   return c;
 }
 
-int TCOD_zip_get_int(TCOD_zip_t pzip) {
+int TCOD_zip_get_int(TCOD_zip_t zip) {
 #ifndef TCOD_64BITS
-  zip_data_t* zip = (zip_data_t*)pzip;
   if (zip->isize == 0) {
     /* buffer is padded. read 4 bytes */
-    int i = (int)TCOD_list_get(zip->buffer, zip->offset);
-    zip->offset++;
+    const int i = (int)TCOD_list_get(zip->buffer, zip->offset);
+    ++zip->offset;
     return i;
   } else {
 #endif
     /* buffer is not padded. read 4x 1 byte */
-    uint32_t i1 = (uint32_t)(uint8_t)TCOD_zip_get_char(pzip);
-    uint32_t i2 = (uint32_t)(uint8_t)TCOD_zip_get_char(pzip);
-    uint32_t i3 = (uint32_t)(uint8_t)TCOD_zip_get_char(pzip);
-    uint32_t i4 = (uint32_t)(uint8_t)TCOD_zip_get_char(pzip);
+    uint32_t i1 = (uint32_t)(uint8_t)TCOD_zip_get_char(zip);
+    uint32_t i2 = (uint32_t)(uint8_t)TCOD_zip_get_char(zip);
+    uint32_t i3 = (uint32_t)(uint8_t)TCOD_zip_get_char(zip);
+    uint32_t i4 = (uint32_t)(uint8_t)TCOD_zip_get_char(zip);
 
     return i1 | (i2 << 8) | (i3 << 16) | (i4 << 24);
 #ifndef TCOD_64BITS
@@ -330,28 +320,26 @@ int TCOD_zip_get_int(TCOD_zip_t pzip) {
 #endif
 }
 
-float TCOD_zip_get_float(TCOD_zip_t pzip) {
-  int i = TCOD_zip_get_int(pzip);
+float TCOD_zip_get_float(TCOD_zip_t zip) {
+  int i = TCOD_zip_get_int(zip);
   return *(float*)(&i);
 }
 
-TCOD_color_t TCOD_zip_get_color(TCOD_zip_t pzip) {
+TCOD_color_t TCOD_zip_get_color(TCOD_zip_t zip) {
   TCOD_color_t col;
-  col.r = TCOD_zip_get_char(pzip);
-  col.g = TCOD_zip_get_char(pzip);
-  col.b = TCOD_zip_get_char(pzip);
+  col.r = TCOD_zip_get_char(zip);
+  col.g = TCOD_zip_get_char(zip);
+  col.b = TCOD_zip_get_char(zip);
   return col;
 }
 
-const char* TCOD_zip_get_string(TCOD_zip_t pzip) {
-  zip_data_t* zip = (zip_data_t*)pzip;
-  int l = TCOD_zip_get_int(pzip);
-  const char* ret = (const char*)TCOD_list_begin(zip->buffer);
-  int b_offset; /* offset in bytes */
-  if (l == -1) return NULL;
-  b_offset = zip->offset * sizeof(uintptr_t) - zip->isize; /* current offset */
-  ret += b_offset; /* the string address in buffer */
-  b_offset += l + 1; /* new offset */
+const char* TCOD_zip_get_string(TCOD_zip_t zip) {
+  const int length = TCOD_zip_get_int(zip);
+  const char* result = (const char*)TCOD_list_begin(zip->buffer);
+  if (length == -1) return NULL;
+  int b_offset = zip->offset * sizeof(uintptr_t) - zip->isize; /* current offset in bytes */
+  result += b_offset; /* the string address in buffer */
+  b_offset += length + 1; /* new offset */
   /* update ibuffer */
   zip->offset = (b_offset + sizeof(uintptr_t) - 1) / sizeof(uintptr_t);
   zip->isize = b_offset % sizeof(uintptr_t);
@@ -359,22 +347,20 @@ const char* TCOD_zip_get_string(TCOD_zip_t pzip) {
     zip->isize = sizeof(uintptr_t) - zip->isize;
     zip->ibuffer = (uintptr_t)TCOD_list_get(zip->buffer, zip->offset - 1);
   }
-  return ret;
+  return result;
 }
 
-int TCOD_zip_get_data(TCOD_zip_t pzip, int nbBytes, void* data) {
-  zip_data_t* zip = (zip_data_t*)pzip;
-  int l = TCOD_zip_get_int(pzip), i;
+int TCOD_zip_get_data(TCOD_zip_t zip, int nbBytes, void* data) {
+  const int length = TCOD_zip_get_int(zip);
   const char* in = (const char*)TCOD_list_begin(zip->buffer);
-  char* out = (char*)data;
-  int b_offset; /* offset in bytes */
-  if (l == -1) return 0;
-  b_offset = zip->offset * sizeof(uintptr_t) - zip->isize; /* current offset */
+  if (length == -1) return 0;
+  int b_offset = zip->offset * sizeof(uintptr_t) - zip->isize; /* current offset in bytes */
   in += b_offset; /* the data address in buffer */
   /* copy it to data */
-  for (i = 0; i < TCOD_MIN(l, nbBytes); i++) {
+  char* out = (char*)data;
+  for (int i = 0; i < TCOD_MIN(length, nbBytes); ++i) {
     *(out++) = *(in++);
-    b_offset++;
+    ++b_offset;
   }
   /* update ibuffer */
   zip->offset = (b_offset + sizeof(uintptr_t) - 1) / sizeof(uintptr_t);
@@ -383,62 +369,55 @@ int TCOD_zip_get_data(TCOD_zip_t pzip, int nbBytes, void* data) {
     zip->isize = sizeof(uintptr_t) - zip->isize;
     zip->ibuffer = (uintptr_t)TCOD_list_get(zip->buffer, zip->offset - 1);
   }
-  return l;
+  return length;
 }
 
-TCOD_Image* TCOD_zip_get_image(TCOD_zip_t pzip) {
-  TCOD_Image* ret;
-  int w, h, x, y;
-  w = TCOD_zip_get_int(pzip);
-  h = TCOD_zip_get_int(pzip);
-  ret = TCOD_image_new(w, h);
-  for (y = 0; y < h; y++) {
-    for (x = 0; x < w; x++) {
-      TCOD_image_put_pixel(ret, x, y, TCOD_zip_get_color(pzip));
+TCOD_Image* TCOD_zip_get_image(TCOD_zip_t zip) {
+  const int w = TCOD_zip_get_int(zip);
+  const int h = TCOD_zip_get_int(zip);
+  TCOD_Image* result = TCOD_image_new(w, h);
+  for (int y = 0; y < h; ++y) {
+    for (int x = 0; x < w; ++x) {
+      TCOD_image_put_pixel(result, x, y, TCOD_zip_get_color(zip));
     }
   }
-  return ret;
+  return result;
 }
 
-TCOD_console_t TCOD_zip_get_console(TCOD_zip_t pzip) {
-  TCOD_console_t ret;
-  int w, h, x, y;
-  w = TCOD_zip_get_int(pzip);
-  h = TCOD_zip_get_int(pzip);
-  ret = TCOD_console_new(w, h);
-  for (y = 0; y < h; y++) {
-    for (x = 0; x < w; x++) {
-      TCOD_console_set_char(ret, x, y, (unsigned char)TCOD_zip_get_char(pzip));
-      TCOD_console_set_char_foreground(ret, x, y, TCOD_zip_get_color(pzip));
-      TCOD_console_set_char_background(ret, x, y, TCOD_zip_get_color(pzip), TCOD_BKGND_SET);
+TCOD_console_t TCOD_zip_get_console(TCOD_zip_t zip) {
+  const int w = TCOD_zip_get_int(zip);
+  const int h = TCOD_zip_get_int(zip);
+  TCOD_console_t result = TCOD_console_new(w, h);
+  for (int y = 0; y < h; ++y) {
+    for (int x = 0; x < w; ++x) {
+      TCOD_console_set_char(result, x, y, (unsigned char)TCOD_zip_get_char(zip));
+      TCOD_console_set_char_foreground(result, x, y, TCOD_zip_get_color(zip));
+      TCOD_console_set_char_background(result, x, y, TCOD_zip_get_color(zip), TCOD_BKGND_SET);
     }
   }
-  return ret;
+  return result;
 }
 
 TCODLIB_API TCOD_Random* TCOD_zip_get_random(TCOD_zip_t zip) {
   const int s = TCOD_zip_get_int(zip);
   if (s <= 0) return NULL;
-  TCOD_Random* ret = malloc(s);
-  TCOD_zip_get_data(zip, s, ret);
-  return ret;
+  TCOD_Random* result = malloc(s);
+  TCOD_zip_get_data(zip, s, result);
+  return result;
 }
 
-uint32_t TCOD_zip_get_current_bytes(TCOD_zip_t pzip) {
-  zip_data_t* zip = (zip_data_t*)pzip;
+uint32_t TCOD_zip_get_current_bytes(TCOD_zip_t zip) {
   if (!zip->buffer) zip->buffer = TCOD_list_new();
   return TCOD_list_size(zip->buffer) * sizeof(uintptr_t) + zip->isize;
 }
 
-uint32_t TCOD_zip_get_remaining_bytes(TCOD_zip_t pzip) {
-  zip_data_t* zip = (zip_data_t*)pzip;
+uint32_t TCOD_zip_get_remaining_bytes(TCOD_zip_t zip) {
   if (!zip->buffer) zip->buffer = TCOD_list_new();
   return (TCOD_list_size(zip->buffer) - zip->offset) * sizeof(uintptr_t) + zip->isize;
 }
 
-void TCOD_zip_skip_bytes(TCOD_zip_t pzip, uint32_t nbBytes) {
-  zip_data_t* zip = (zip_data_t*)pzip;
-  uint32_t b_offset = zip->offset * sizeof(uintptr_t) - zip->isize + nbBytes; /* new offset */
+void TCOD_zip_skip_bytes(TCOD_zip_t zip, uint32_t nbBytes) {
+  const uint32_t b_offset = zip->offset * sizeof(uintptr_t) - zip->isize + nbBytes; /* new offset */
   TCOD_IFNOT(b_offset <= TCOD_list_size(zip->buffer) * sizeof(uintptr_t)) return;
   zip->offset = (b_offset + sizeof(uintptr_t) - 1) / sizeof(uintptr_t);
   zip->isize = b_offset % sizeof(uintptr_t);

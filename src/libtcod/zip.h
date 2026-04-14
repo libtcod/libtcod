@@ -53,19 +53,19 @@ TCODLIB_API TCOD_zip_t TCOD_zip_new(void);
 TCODLIB_API void TCOD_zip_delete(TCOD_zip_t zip);
 
 /* output interface */
-TCODLIB_API void TCOD_zip_put_char(TCOD_zip_t zip, char val);
-TCODLIB_API void TCOD_zip_put_int(TCOD_zip_t zip, int val);
-TCODLIB_API void TCOD_zip_put_float(TCOD_zip_t zip, float val);
-TCODLIB_API void TCOD_zip_put_string(TCOD_zip_t zip, const char* val);
-TCODLIB_API void TCOD_zip_put_color(TCOD_zip_t zip, const TCOD_color_t val);
-TCODLIB_API void TCOD_zip_put_image(TCOD_zip_t zip, const TCOD_Image* val);
+TCODLIB_API void TCOD_zip_put_char(TCOD_zip_t zip, char value);
+TCODLIB_API void TCOD_zip_put_int(TCOD_zip_t zip, int value);
+TCODLIB_API void TCOD_zip_put_float(TCOD_zip_t zip, float value);
+TCODLIB_API void TCOD_zip_put_string(TCOD_zip_t zip, const char* value);
+TCODLIB_API void TCOD_zip_put_color(TCOD_zip_t zip, const TCOD_color_t value);
+TCODLIB_API void TCOD_zip_put_image(TCOD_zip_t zip, const TCOD_Image* value);
 TCOD_DEPRECATED("This function will corrupt console characters greater than 255.")
-TCODLIB_API void TCOD_zip_put_console(TCOD_zip_t zip, const TCOD_Console* val);
+TCODLIB_API void TCOD_zip_put_console(TCOD_zip_t zip, const TCOD_Console* value);
 /**
     Write a TCOD_Random* object.
     @versionadded{1.16}
  */
-TCODLIB_API void TCOD_zip_put_random(TCOD_zip_t zip, const TCOD_Random* val);
+TCODLIB_API void TCOD_zip_put_random(TCOD_zip_t zip, const TCOD_Random* value);
 TCODLIB_API void TCOD_zip_put_data(TCOD_zip_t zip, int nbBytes, const void* data);
 TCODLIB_API uint32_t TCOD_zip_get_current_bytes(TCOD_zip_t zip);
 TCODLIB_API int TCOD_zip_save_to_file(TCOD_zip_t zip, const char* filename);

@@ -43,6 +43,7 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/lvandeve/lodepng
     GIT_TAG d41d4aa8c63dea277e25c94ad85046b6c5335ccc
     PATCH_COMMAND git apply ${CMAKE_CURRENT_SOURCE_DIR}/cmake/lodepng-c.patch
+    UPDATE_DISCONNECTED TRUE  # Only apply the patch once
     FIND_PACKAGE_ARGS CONFIG
 )
 
@@ -52,6 +53,7 @@ FetchContent_Declare(
     GIT_TAG e5e799221b45bbb90f5fdc5c69b6b8dfbf017e78 # v2.11.3
     GIT_SHALLOW TRUE
     PATCH_COMMAND git apply ${CMAKE_CURRENT_SOURCE_DIR}/cmake/utf8proc.patch
+    UPDATE_DISCONNECTED TRUE  # Only apply the patch once
     FIND_PACKAGE_ARGS
 )
 set(UTF8PROC_INSTALL ${LIBTCOD_INSTALL} CACHE BOOL "")
@@ -61,6 +63,7 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/nothings/stb
     GIT_TAG f1c79c02822848a9bed4315b12c8c8f3761e1296
     PATCH_COMMAND git apply ${CMAKE_CURRENT_SOURCE_DIR}/cmake/stb.patch
+    UPDATE_DISCONNECTED TRUE  # Only apply the patch once
     FIND_PACKAGE_ARGS
 )
 

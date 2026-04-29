@@ -35,7 +35,8 @@ include(FetchContent)
 FetchContent_Declare(
     libtcod
     GIT_REPOSITORY https://github.com/libtcod/libtcod
-    GIT_TAG main  # Replace main with desired version or revision later than 2.2.1
+    GIT_SUBMODULES
+    GIT_TAG main  # Replace with desired version-tag or git-reference
 )
 FetchContent_MakeAvailable(libtcod)
 ```

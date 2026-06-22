@@ -93,9 +93,9 @@ static void view_array_remove(ActiveViewArray* view_array, ptrdiff_t index) {
 
 /// @brief Insert a view into the active views array.
 static void view_array_insert(ActiveViewArray* view_array, ptrdiff_t index, View* view_ptr) {
-  ++view_array->count;
-  for (ptrdiff_t i = view_array->count - 1; i >= index; --i) view_array->view_ptrs[i + 1] = view_array->view_ptrs[i];
+  for (ptrdiff_t i = view_array->count; i > index; --i) view_array->view_ptrs[i] = view_array->view_ptrs[i - 1];
   view_array->view_ptrs[index] = view_ptr;
+  ++view_array->count;
 }
 
 /// @brief Return a past-the-end pointer for the active view array.

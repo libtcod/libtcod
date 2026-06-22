@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.3
         with:
           persist-credentials: false
           submodules: false
@@ -127,7 +127,7 @@ jobs:
       VCPKG_LIBRARY_LINKAGE: ${{matrix.shared}}
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.3
         with:
           persist-credentials: false
           submodules: false
@@ -226,7 +226,7 @@ jobs:
           - os: ubuntu-24.04
             triplet: x64-linux
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.3
         with:
           persist-credentials: false
           submodules: false
@@ -286,7 +286,7 @@ jobs:
       matrix:
         os: [macos-15]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.3
         with:
           persist-credentials: false
       - name: Checkout vendored libraries
@@ -323,7 +323,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.3
         with:
           persist-credentials: false
           submodules: false
@@ -359,7 +359,7 @@ jobs:
       EM_CACHE_FOLDER: "emsdk-cache"
       VCPKG_ROOT: ${{github.workspace}}/vcpkg
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.3
         with:
           persist-credentials: false
           submodules: false
@@ -420,7 +420,7 @@ jobs:
         uses: ssciwr/doxygen-install@v2
         with:
           version: ${{env.DOXYGEN_VERSION}}
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.3
         with:
           persist-credentials: false
           submodules: false
@@ -444,7 +444,7 @@ jobs:
     permissions:
       contents: write # Publish GitHub Releases
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.3
         with:
           persist-credentials: false
       - name: Generate body

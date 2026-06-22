@@ -244,7 +244,7 @@ TCOD_Error TCOD_map_compute_fov_restrictive_shadowcasting(
   map->cells[pov_x + (pov_y * map->width)].fov = true;
 
   /* calculate an approximated (excessive, just in case) maximum number of obstacles per octant */
-  const int max_obstacles = map->nbcells / 7;
+  const int max_obstacles = TCOD_MAX(map->nbcells / 7, 16);
   double* start_angle = malloc(max_obstacles * sizeof(*start_angle));
   double* end_angle = malloc(max_obstacles * sizeof(*end_angle));
   if (!start_angle || !end_angle) {

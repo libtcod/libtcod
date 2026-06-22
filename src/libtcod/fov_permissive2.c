@@ -298,7 +298,8 @@ TCOD_Error TCOD_map_compute_fov_permissive2(
 
   // Preallocate views and bumps, assuming there will be no more bumps or active views than the number of map tiles.
   View* views = malloc(map->width * map->height * sizeof(*views));
-  ViewBumpContainer bumps = {.data = malloc(map->width * map->height * sizeof(*bumps.data))};
+  const int bump_cap = TCOD_MAX(map->nbcells, 16);  // maps <= 6 cells can overflow, minimum of 16 for memory safety
+  ViewBumpContainer bumps = {.data = malloc(bump_cap * sizeof(*bumps.data))};
   ActiveViewArray active_views = {.view_ptrs = malloc(map->width * map->height * sizeof(*active_views.view_ptrs))};
   if (!views || !bumps.data || !active_views.view_ptrs) {
     free(bumps.data);

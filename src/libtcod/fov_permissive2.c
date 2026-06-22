@@ -93,9 +93,9 @@ static void view_array_remove(ActiveViewArray* view_array, ptrdiff_t index) {
 
 /// @brief Insert a view into the active views array.
 static void view_array_insert(ActiveViewArray* view_array, ptrdiff_t index, View* view_ptr) {
-  ++view_array->count;
-  for (ptrdiff_t i = view_array->count - 1; i >= index; --i) view_array->view_ptrs[i + 1] = view_array->view_ptrs[i];
+  for (ptrdiff_t i = view_array->count; i > index; --i) view_array->view_ptrs[i] = view_array->view_ptrs[i - 1];
   view_array->view_ptrs[index] = view_ptr;
+  ++view_array->count;
 }
 
 /// @brief Return a past-the-end pointer for the active view array.
@@ -298,7 +298,8 @@ TCOD_Error TCOD_map_compute_fov_permissive2(
 
   // Preallocate views and bumps, assuming there will be no more bumps or active views than the number of map tiles.
   View* views = malloc(map->width * map->height * sizeof(*views));
-  ViewBumpContainer bumps = {.data = malloc(map->width * map->height * sizeof(*bumps.data))};
+  const int bump_cap = TCOD_MAX(map->nbcells, 16);  // maps <= 6 cells can overflow, minimum of 16 for memory safety
+  ViewBumpContainer bumps = {.data = malloc(bump_cap * sizeof(*bumps.data))};
   ActiveViewArray active_views = {.view_ptrs = malloc(map->width * map->height * sizeof(*active_views.view_ptrs))};
   if (!views || !bumps.data || !active_views.view_ptrs) {
     free(bumps.data);

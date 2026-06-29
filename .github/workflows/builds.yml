@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
           submodules: false
@@ -127,7 +127,7 @@ jobs:
       VCPKG_LIBRARY_LINKAGE: ${{matrix.shared}}
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
           submodules: false
@@ -143,7 +143,7 @@ jobs:
         run: sudo apt-get install ${{ env.SDL_LINUX_DEPENDENCIES }}
       # Restore both vcpkg and its artifacts from the GitHub cache service.
       - name: Restore vcpkg and its artifacts.
-        uses: actions/cache@v5
+        uses: actions/cache@v5.0.5
         with:
           # The first path is where vcpkg generates artifacts while consuming the vcpkg.json manifest file.
           # The second path is the location of vcpkg (it contains the vcpkg executable and data files).
@@ -226,7 +226,7 @@ jobs:
           - os: ubuntu-24.04
             triplet: x64-linux
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
           submodules: false
@@ -241,7 +241,7 @@ jobs:
         if: runner.os == 'Linux'
         run: sudo apt-get install ${{ env.SDL_LINUX_DEPENDENCIES }}
       - name: Restore vcpkg and its artifacts.
-        uses: actions/cache@v5
+        uses: actions/cache@v5.0.5
         with:
           path: |
             ${{ env.CMAKE_BUILD_DIR }}/vcpkg_installed/
@@ -286,13 +286,13 @@ jobs:
       matrix:
         os: [macos-15]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - name: Checkout vendored libraries
         run: git submodule update --init src/vendor/utf8proc
       - name: Set up Python 3
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v6.2.0
         with:
           python-version: 3.x
       - name: Install APT dependencies
@@ -323,7 +323,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
           submodules: false
@@ -359,14 +359,14 @@ jobs:
       EM_CACHE_FOLDER: "emsdk-cache"
       VCPKG_ROOT: ${{github.workspace}}/vcpkg
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
           submodules: false
       - name: Fetch Vcpkg commits
         run: git submodule update --init --depth=${{env.VCPKG_FETCH_DEPTH}} vcpkg
       - name: Restore vcpkg and its artifacts
-        uses: actions/cache@v5
+        uses: actions/cache@v5.0.5
         with:
           path: |
             ${{ env.CMAKE_BUILD_DIR }}/vcpkg_installed/
@@ -377,7 +377,7 @@ jobs:
           key: wasm32-emscripten-${{ hashFiles('vcpkg.json', '.git/modules/vcpkg/HEAD') }}
       - name: Setup cache
         id: cache-system-libraries
-        uses: actions/cache@v5
+        uses: actions/cache@v5.0.5
         with:
           path: ${{ env.EM_CACHE_FOLDER }}
           key: ${{ env.EM_VERSION }}-${{ runner.os }}
@@ -420,7 +420,7 @@ jobs:
         uses: ssciwr/doxygen-install@v2
         with:
           version: ${{env.DOXYGEN_VERSION}}
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
           submodules: false
@@ -444,7 +444,7 @@ jobs:
     permissions:
       contents: write # Publish GitHub Releases
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - name: Generate body

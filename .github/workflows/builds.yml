@@ -292,7 +292,7 @@ jobs:
       - name: Checkout vendored libraries
         run: git submodule update --init src/vendor/utf8proc
       - name: Set up Python 3
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v6.3.0
         with:
           python-version: 3.x
       - name: Install APT dependencies

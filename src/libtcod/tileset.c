@@ -353,11 +353,23 @@ TCOD_Tileset* TCOD_tileset_load_raw(
   }
   tileset->tiles_count = font_tiles;
   tileset->virtual_columns = columns;
-  // Check for a color key in the first tile.
-  const struct TCOD_ColorRGBA* color_key = &pixels[0];
+  // Prefer the mapped space for the color key, falling back to the first tile.
+  int color_key_tile = 0;
+  if (charmap) {
+    for (int i = 0; i < n && i < font_tiles; ++i) {
+      if (charmap[i] == ' ') {
+        color_key_tile = i;
+      }
+    }
+  } else if (font_tiles > ' ') {
+    color_key_tile = ' ';
+  }
+  const struct TCOD_ColorRGBA* color_key_pixels = pixels + color_key_tile / columns * columns * tileset->tile_length +
+                                                  color_key_tile % columns * tileset->tile_width;
+  const struct TCOD_ColorRGBA* color_key = color_key_pixels;
   for (int y = 0; y < tileset->tile_height; ++y) {
     for (int x = 0; x < tileset->tile_width; ++x) {
-      struct TCOD_ColorRGBA pixel = pixels[y * width + x];
+      struct TCOD_ColorRGBA pixel = color_key_pixels[y * width + x];
       if (color_key &&
           (pixel.r != color_key->r || pixel.g != color_key->g || pixel.b != color_key->b || pixel.a != color_key->a)) {
         color_key = NULL;

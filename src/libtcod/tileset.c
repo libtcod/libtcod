@@ -334,6 +334,33 @@ static void upload_tile_by_id_normalized(
     }
   }
 }
+/** Return the first assigned space tile from charmap, or 0x20 if charmap is NULL, or -1 if no space is assigned. */
+static int get_space_tile_index(int n, const int* charmap) {
+  if (!charmap) return ' ';  // Assume index matches codepoint
+  for (int i = 0; i < n; ++i) {
+    if (charmap[i] == ' ') return i;  // Index of space character found
+  }
+  return -1;  // Space not assigned in charmap
+}
+/** Return a tile's solid RGBA color using the same origin and stride as upload. */
+static const struct TCOD_ColorRGBA* get_tile_color_key(
+    const TCOD_Tileset* tileset, const struct TCOD_ColorRGBA* pixels, int width, int columns, int tile_id) {
+  if (tile_id < 0 || tile_id >= tileset->tiles_count) {
+    return NULL;
+  }
+  const struct TCOD_ColorRGBA* tile_pixels =
+      pixels + tile_id / columns * columns * tileset->tile_length + tile_id % columns * tileset->tile_width;
+  const struct TCOD_ColorRGBA* color_key = tile_pixels;
+  for (int y = 0; y < tileset->tile_height; ++y) {
+    for (int x = 0; x < tileset->tile_width; ++x) {
+      const struct TCOD_ColorRGBA pixel = tile_pixels[y * width + x];
+      if (pixel.r != color_key->r || pixel.g != color_key->g || pixel.b != color_key->b || pixel.a != color_key->a) {
+        return NULL;
+      }
+    }
+  }
+  return color_key;
+}
 TCOD_Tileset* TCOD_tileset_load_raw(
     int width,
     int height,
@@ -353,16 +380,9 @@ TCOD_Tileset* TCOD_tileset_load_raw(
   }
   tileset->tiles_count = font_tiles;
   tileset->virtual_columns = columns;
-  // Check for a color key in the first tile.
-  const struct TCOD_ColorRGBA* color_key = &pixels[0];
-  for (int y = 0; y < tileset->tile_height; ++y) {
-    for (int x = 0; x < tileset->tile_width; ++x) {
-      struct TCOD_ColorRGBA pixel = pixels[y * width + x];
-      if (color_key &&
-          (pixel.r != color_key->r || pixel.g != color_key->g || pixel.b != color_key->b || pixel.a != color_key->a)) {
-        color_key = NULL;
-      }
-    }
+  const struct TCOD_ColorRGBA* color_key = get_tile_color_key(tileset, pixels, width, columns, 0);
+  if (!color_key) {
+    color_key = get_tile_color_key(tileset, pixels, width, columns, get_space_tile_index(n, charmap));
   }
   for (int tile_id = 0; tile_id < font_tiles; ++tile_id) {
     int font_x = tile_id % columns;

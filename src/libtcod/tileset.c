@@ -334,18 +334,13 @@ static void upload_tile_by_id_normalized(
     }
   }
 }
-/** Return the last assigned space tile, or -1 when no space is assigned. */
-static int get_space_tile_index(int font_tiles, int n, const int* charmap) {
-  if (!charmap) {
-    return font_tiles > ' ' ? ' ' : -1;
+/** Return the first assigned space tile from charmap, or 0x20 if charmap is NULL, or -1 if no space is assigned. */
+static int get_space_tile_index(int n, const int* charmap) {
+  if (!charmap) return ' ';  // Assume index matches codepoint
+  for (int i = 0; i < n; ++i) {
+    if (charmap[i] == ' ') return i;  // Index of space character found
   }
-  int space_tile = -1;
-  for (int i = 0; i < n && i < font_tiles; ++i) {
-    if (charmap[i] == ' ') {
-      space_tile = i;
-    }
-  }
-  return space_tile;
+  return -1;  // Space not assigned in charmap
 }
 /** Return a tile's solid RGBA color using the same origin and stride as upload. */
 static const struct TCOD_ColorRGBA* get_tile_color_key(
@@ -385,10 +380,9 @@ TCOD_Tileset* TCOD_tileset_load_raw(
   }
   tileset->tiles_count = font_tiles;
   tileset->virtual_columns = columns;
-  const struct TCOD_ColorRGBA* color_key =
-      get_tile_color_key(tileset, pixels, width, columns, get_space_tile_index(font_tiles, n, charmap));
+  const struct TCOD_ColorRGBA* color_key = get_tile_color_key(tileset, pixels, width, columns, 0);
   if (!color_key) {
-    color_key = get_tile_color_key(tileset, pixels, width, columns, 0);
+    color_key = get_tile_color_key(tileset, pixels, width, columns, get_space_tile_index(n, charmap));
   }
   for (int tile_id = 0; tile_id < font_tiles; ++tile_id) {
     int font_x = tile_id % columns;

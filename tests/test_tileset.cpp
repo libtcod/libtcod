@@ -99,14 +99,14 @@ TEST_CASE("Load a tilesheet keeps color when both fallback tiles contain glyphs.
   CHECK(TCOD_tileset_get_tile(tileset.get(), ' ')[1] == pixels[3]);
 }
 
-TEST_CASE("Load a tilesheet prefers solid space over a different solid first tile.", "[tileset]") {
+TEST_CASE("Load a tilesheet prefers solid first tile over a different solid space.", "[tileset]") {
   const std::array<TCOD_ColorRGBA, 4> pixels{
       {{0, 255, 0, 255}, {0, 255, 0, 255}, {255, 0, 255, 255}, {255, 0, 255, 255}}};
   const std::array<int, 2> charmap{{'A', ' '}};
   auto tileset = tcod::TilesetPtr{TCOD_tileset_load_raw(4, 1, pixels.data(), 2, 1, 2, charmap.data())};
   REQUIRE(tileset);
-  CHECK(TCOD_tileset_get_tile(tileset.get(), 'A')[0] == pixels[0]);
-  CHECK(TCOD_tileset_get_tile(tileset.get(), ' ')[0] == TCOD_ColorRGBA{0, 0, 0, 0});
+  CHECK(TCOD_tileset_get_tile(tileset.get(), 'A')[0] == TCOD_ColorRGBA{0, 0, 0, 0});
+  CHECK(TCOD_tileset_get_tile(tileset.get(), ' ')[0] == pixels[2]);
 }
 
 TEST_CASE("Load a tilesheet without a map falls back from a space glyph.", "[tileset]") {
@@ -120,18 +120,18 @@ TEST_CASE("Load a tilesheet without a map falls back from a space glyph.", "[til
   CHECK(TCOD_tileset_get_tile(tileset.get(), 32)[1] == pixels[65]);
 }
 
-TEST_CASE("Load a tilesheet uses the last mapping of a space.", "[tileset]") {
+TEST_CASE("Load a tilesheet uses the first space mapping for the color key.", "[tileset]") {
   const std::array<TCOD_ColorRGBA, 6> pixels{
-      {{0, 255, 0, 255},
+      {{255, 255, 255, 255},
+       {255, 0, 255, 255},
+       {255, 0, 255, 255},
+       {255, 0, 255, 255},
        {0, 255, 0, 255},
-       {255, 255, 255, 255},
-       {255, 0, 255, 255},
-       {255, 0, 255, 255},
-       {255, 0, 255, 255}}};
-  const std::array<int, 3> charmap{{' ', 'A', ' '}};
+       {0, 255, 0, 255}}};
+  const std::array<int, 3> charmap{{'A', ' ', ' '}};
   auto tileset = tcod::TilesetPtr{TCOD_tileset_load_raw(6, 1, pixels.data(), 3, 1, 3, charmap.data())};
   REQUIRE(tileset);
-  CHECK(TCOD_tileset_get_tile(tileset.get(), ' ')[0] == TCOD_ColorRGBA{0, 0, 0, 0});
+  CHECK(TCOD_tileset_get_tile(tileset.get(), ' ')[0] == pixels[4]);
   CHECK(TCOD_tileset_get_tile(tileset.get(), 'A')[1] == TCOD_ColorRGBA{0, 0, 0, 0});
 }
 
@@ -142,6 +142,14 @@ TEST_CASE("Load a tilesheet only considers assigned characters.", "[tileset]") {
   auto tileset = tcod::TilesetPtr{TCOD_tileset_load_raw(4, 1, pixels.data(), 2, 1, 1, charmap.data())};
   REQUIRE(tileset);
   CHECK(TCOD_tileset_get_tile(tileset.get(), 'A')[0] == TCOD_ColorRGBA{0, 0, 0, 0});
+}
+
+TEST_CASE("Load a tilesheet rejects a space mapping beyond its tile count.", "[tileset]") {
+  const std::array<TCOD_ColorRGBA, 4> pixels{
+      {{255, 255, 255, 255}, {255, 0, 255, 255}, {0, 255, 0, 255}, {0, 0, 255, 255}}};
+  const std::array<int, 3> charmap{{'A', 'B', ' '}};
+  auto tileset = tcod::TilesetPtr{TCOD_tileset_load_raw(4, 1, pixels.data(), 2, 1, 3, charmap.data())};
+  CHECK_FALSE(tileset);
 }
 
 TEST_CASE("Load a tilesheet preserves grayscale normalization.", "[tileset]") {

@@ -261,6 +261,7 @@
         "libibus",
         "liblibtcod",
         "libltdl",
+        "libm",
         "libsdl",
         "libtcod",
         "libtcod's",

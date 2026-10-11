@@ -185,6 +185,10 @@ else()
     target_compile_definitions(${PROJECT_NAME} PUBLIC TCOD_NO_THREADS)
 endif()
 
+if(NOT MSVC)
+    target_link_libraries(${PROJECT_NAME} PRIVATE m)  # Common math functions
+endif()
+
 target_include_directories(${PROJECT_NAME} INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>

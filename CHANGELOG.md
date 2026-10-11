@@ -26,6 +26,7 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 - `TCOD_heightmap_get_minmax` no longer writes to NULL outputs when the input heightmap has zero elements.
 - Fixed memory crashes with using the permissive or restrictive field-of-view algorithms on very small maps.
   [#184](https://github.com/libtcod/libtcod/pull/184)
+- Basic math functions from `libm` were not linked in C.
 
 ### Removed
 - SCons support has been officially removed.

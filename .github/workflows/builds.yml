@@ -58,6 +58,12 @@ jobs:
             config: Release
             cpack: true
 
+          - os: ubuntu-26.04-arm
+            triplet: arm64-linux
+            shared: dynamic
+            config: Release
+            cpack: false # Can't package until Doxygen is installable: https://github.com/ssciwr/doxygen-install/issues/12
+
           - os: macos-26-intel
             triplet: x64-osx
             shared: dynamic

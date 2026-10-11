@@ -20,6 +20,8 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 - Fixed installed or distributed packages not including headers at the correct prefixes.
 
 ### Fixed
+- Tilesheet color-key detection now works with an empty space glyph when the zeroth tile is not empty.
+  [#190](https://github.com/libtcod/libtcod/pull/190)
 - Fixed `TCOD_heightmap_kernel_transform` reading modified values during in-place convolution.
 - `TCOD_heightmap_get_minmax` no longer writes to NULL outputs when the input heightmap has zero elements.
 - Fixed memory crashes with using the permissive or restrictive field-of-view algorithms on very small maps.

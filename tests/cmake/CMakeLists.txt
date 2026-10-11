@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(libtcod_package_test LANGUAGES CXX)
+project(libtcod_package_test LANGUAGES C)
 
 option(TEST_EXISTING_ALIAS "Load the package with an existing namespaced alias." OFF)
 
@@ -24,6 +24,6 @@ if(TEST_EXISTING_ALIAS)
         message(FATAL_ERROR "find_package changed the existing alias target.")
     endif()
 else()
-    add_executable(package_test main.cpp)
+    add_executable(package_test main.c)
     target_link_libraries(package_test PRIVATE libtcod::libtcod)
 endif()

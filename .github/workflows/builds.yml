@@ -229,18 +229,22 @@ jobs:
           submodules: false
       - name: Install latest CMake
         uses: lukka/get-cmake@latest
-      - name: Build and install minimal package
+      - name: Configure library
+        run: cmake -S . -B package-library-build -G Ninja -D CMAKE_BUILD_TYPE=Debug -D BUILD_SHARED_LIBS=${{ matrix.shared }} -D LIBTCOD_SDL3=OFF -D LIBTCOD_ZLIB=OFF -D LIBTCOD_LODEPNG=OFF -D LIBTCOD_UTF8PROC=OFF
+      - name: Build library
+        run: cmake --build package-library-build
+      - name: Install library
         run: |
-          cmake -S . -B package-library-build -G Ninja -D CMAKE_BUILD_TYPE=Debug -D BUILD_SHARED_LIBS=${{ matrix.shared }} -D LIBTCOD_SDL3=OFF -D LIBTCOD_ZLIB=OFF -D LIBTCOD_LODEPNG=OFF -D LIBTCOD_UTF8PROC=OFF
-          cmake --build package-library-build
           cmake --install package-library-build --prefix "$PWD/package-prefix"
-          mv package-prefix package-relocated
-      - name: Test installed package
-        run: |
-          cmake -S tests/cmake -B package-build -G Ninja -D CMAKE_BUILD_TYPE=Debug -D libtcod_DIR="$PWD/package-relocated/share/libtcod"
-          cmake --build package-build
-          ./package-build/package_test
-          cmake -S tests/cmake -B package-alias-build -G Ninja -D TEST_EXISTING_ALIAS=ON -D libtcod_DIR="$PWD/package-relocated/share/libtcod"
+          mv --verbose package-prefix package-relocated
+      - name: Configure test package
+        run: cmake -S tests/cmake -B package-build -G Ninja -D CMAKE_BUILD_TYPE=Debug -D libtcod_DIR="$PWD/package-relocated/share/libtcod"
+      - name: Build test package
+        run: cmake --build package-build
+      - name: Run test package
+        run: ./package-build/package_test
+      - name: Test existing alias
+        run: cmake -S tests/cmake -B package-alias-build -G Ninja -D TEST_EXISTING_ALIAS=ON -D libtcod_DIR="$PWD/package-relocated/share/libtcod"
 
   coverage:
     needs: [pre-commit]

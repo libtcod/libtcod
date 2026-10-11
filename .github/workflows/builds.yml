@@ -27,7 +27,7 @@ env:
 
 jobs:
   pre-commit:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04-arm
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
@@ -90,8 +90,8 @@ jobs:
             cpack: true
 
           # Test libtcod without SDL.
-          - os: ubuntu-26.04
-            triplet: x64-linux
+          - os: ubuntu-26.04-arm
+            triplet: arm64-linux
             shared: dynamic
             config: Debug
             cmake_extra_args: "-D LIBTCOD_SAMPLES=OFF -D LIBTCOD_THREADS=OFF -D LIBTCOD_SDL=OFF"
@@ -102,29 +102,29 @@ jobs:
             cmake_extra_args: "-D LIBTCOD_SAMPLES=OFF -D LIBTCOD_THREADS=OFF -D LIBTCOD_SDL=OFF"
 
           # Test libtcod without zlib.
-          - os: ubuntu-26.04
-            triplet: x64-linux
+          - os: ubuntu-26.04-arm
+            triplet: arm64-linux
             shared: dynamic
             config: Debug
             cmake_extra_args: "-D LIBTCOD_SAMPLES=OFF -D LIBTCOD_THREADS=OFF -D LIBTCOD_ZLIB=OFF"
 
           # Test libtcod without PNG.
-          - os: ubuntu-26.04
-            triplet: x64-linux
+          - os: ubuntu-26.04-arm
+            triplet: arm64-linux
             shared: dynamic
             config: Debug
             cmake_extra_args: "-D LIBTCOD_SAMPLES=OFF -D LIBTCOD_THREADS=OFF -D LIBTCOD_LODEPNG=OFF"
 
           # Test libtcod without utf8proc.
-          - os: ubuntu-26.04
-            triplet: x64-linux
+          - os: ubuntu-26.04-arm
+            triplet: arm64-linux
             shared: dynamic
             config: Debug
             cmake_extra_args: "-D LIBTCOD_SAMPLES=OFF -D LIBTCOD_THREADS=OFF -D LIBTCOD_UTF8PROC=OFF"
 
           # Test libtcod without everything.
-          - os: ubuntu-26.04
-            triplet: x64-linux
+          - os: ubuntu-26.04-arm
+            triplet: arm64-linux
             shared: dynamic
             config: Debug
             cmake_extra_args: "-D LIBTCOD_SAMPLES=OFF -D LIBTCOD_THREADS=OFF -D LIBTCOD_SDL=OFF -D LIBTCOD_ZLIB=OFF -D LIBTCOD_LODEPNG=OFF -D LIBTCOD_UTF8PROC=OFF"
@@ -261,8 +261,8 @@ jobs:
       fail-fast: true
       matrix:
         include:
-          - os: ubuntu-26.04
-            triplet: x64-linux
+          - os: ubuntu-26.04-arm
+            triplet: arm64-linux
     steps:
       - uses: actions/checkout@v7
         with:
@@ -358,7 +358,7 @@ jobs:
 
   FetchContent:
     needs: [pre-commit]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04-arm
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7

@@ -44,80 +44,80 @@ jobs:
       fail-fast: true
       matrix:
         include:
-          - os: ubuntu-24.04
+          - os: ubuntu-26.04
             triplet: x64-linux
             shared: dynamic
             config: Debug
-          - os: ubuntu-24.04
+          - os: ubuntu-26.04
             triplet: x64-linux
             shared: static
             config: Debug
-          - os: ubuntu-24.04
+          - os: ubuntu-26.04
             triplet: x64-linux
             shared: dynamic
             config: Release
             cpack: true
 
-          - os: macos-15-intel
+          - os: macos-26-intel
             triplet: x64-osx
             shared: dynamic
             config: Release
             cpack: true
-          - os: macos-15
+          - os: macos-26
             triplet: arm64-osx
             shared: static
             config: Debug
-          - os: macos-15
+          - os: macos-26
             triplet: arm64-osx
             shared: dynamic
             config: Release
             cpack: true
 
-          - os: windows-2022
+          - os: windows-2025
             triplet: x64-windows
             shared: static
             config: Debug
-          - os: windows-2022
+          - os: windows-2025
             triplet: x64-windows
             shared: dynamic
             config: Release
             cpack: true
 
           # Test libtcod without SDL.
-          - os: ubuntu-24.04
+          - os: ubuntu-26.04
             triplet: x64-linux
             shared: dynamic
             config: Debug
             cmake_extra_args: "-D LIBTCOD_SAMPLES=OFF -D LIBTCOD_THREADS=OFF -D LIBTCOD_SDL=OFF"
-          - os: windows-2022
+          - os: windows-2025
             triplet: x64-windows
             shared: dynamic
             config: Debug
             cmake_extra_args: "-D LIBTCOD_SAMPLES=OFF -D LIBTCOD_THREADS=OFF -D LIBTCOD_SDL=OFF"
 
           # Test libtcod without zlib.
-          - os: ubuntu-24.04
+          - os: ubuntu-26.04
             triplet: x64-linux
             shared: dynamic
             config: Debug
             cmake_extra_args: "-D LIBTCOD_SAMPLES=OFF -D LIBTCOD_THREADS=OFF -D LIBTCOD_ZLIB=OFF"
 
           # Test libtcod without PNG.
-          - os: ubuntu-24.04
+          - os: ubuntu-26.04
             triplet: x64-linux
             shared: dynamic
             config: Debug
             cmake_extra_args: "-D LIBTCOD_SAMPLES=OFF -D LIBTCOD_THREADS=OFF -D LIBTCOD_LODEPNG=OFF"
 
           # Test libtcod without utf8proc.
-          - os: ubuntu-24.04
+          - os: ubuntu-26.04
             triplet: x64-linux
             shared: dynamic
             config: Debug
             cmake_extra_args: "-D LIBTCOD_SAMPLES=OFF -D LIBTCOD_THREADS=OFF -D LIBTCOD_UTF8PROC=OFF"
 
           # Test libtcod without everything.
-          - os: ubuntu-24.04
+          - os: ubuntu-26.04
             triplet: x64-linux
             shared: dynamic
             config: Debug
@@ -217,7 +217,7 @@ jobs:
 
   CMake-package:
     needs: [pre-commit]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 10
     strategy:
       matrix:
@@ -250,7 +250,7 @@ jobs:
       fail-fast: true
       matrix:
         include:
-          - os: ubuntu-24.04
+          - os: ubuntu-26.04
             triplet: x64-linux
     steps:
       - uses: actions/checkout@v7
@@ -311,7 +311,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [macos-15]
+        os: [macos-26]
     steps:
       - uses: actions/checkout@v7
         with:

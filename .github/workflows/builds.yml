@@ -322,7 +322,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [macos-26]
+        os: [macos-26, ubuntu-26.04-arm]
     steps:
       - uses: actions/checkout@v7
         with:

@@ -1,5 +1,6 @@
 #include <catch2/catch_all.hpp>
 #include <cfloat>
+#include <cmath>
 #include <cstdlib>
 
 #include "libtcod/heightmap.h"
@@ -304,5 +305,41 @@ TEST_CASE("TCOD_heightmap_kernel_transform edge handling", "[heightmap][kernel]"
     REQUIRE(TCOD_heightmap_get_value(hm, 2, 0) == Catch::Approx(8.0f / 3.0f));
 
     TCOD_heightmap_delete(hm);
+  }
+}
+
+TEST_CASE("Heightmap slopes are nonnegative inclinations", "[heightmap][slope]") {
+  const auto axis = GENERATE(0, 1);
+  const auto sign = GENERATE(-1.0f, 1.0f);
+  TCODHeightMap plane{3, 3};
+  for (int y = 0; y < 3; ++y) {
+    for (int x = 0; x < 3; ++x) plane.setValue(x, y, sign * (axis == 0 ? x : y));
+  }
+  CHECK(plane.getSlope(1, 1) == Catch::Approx(std::atan(1.0f)));
+  CHECK(plane.getSlope(0, 0) == Catch::Approx(std::atan(1.0f)));
+}
+
+TEST_CASE("Heightmap diagonal slopes use diagonal distance", "[heightmap][slope]") {
+  TCODHeightMap plane{3, 3};
+  for (int y = 0; y < 3; ++y) {
+    for (int x = 0; x < 3; ++x) plane.setValue(x, y, (x + y) / std::sqrt(2.0f));
+  }
+  CHECK(plane.getSlope(1, 1) == Catch::Approx(std::atan(1.0f)));
+}
+
+TEST_CASE("Heightmap peaks and valleys have the same slope", "[heightmap][slope]") {
+  const auto sign = GENERATE(-1.0f, 1.0f);
+  TCODHeightMap hill{3, 3};
+  hill.setValue(1, 1, sign);
+  CHECK(hill.getSlope(1, 1) == Catch::Approx(std::atan(1.0f)));
+}
+
+TEST_CASE("Flat and isolated heightmap slopes stay zero", "[heightmap][slope]") {
+  const auto width = GENERATE(1, 3);
+  const auto height = GENERATE(1, 3);
+  TCODHeightMap flat{width, height};
+  flat.add(7.0f);
+  for (int y = 0; y < height; ++y) {
+    for (int x = 0; x < width; ++x) CHECK(flat.getSlope(x, y) == 0.0f);
   }
 }

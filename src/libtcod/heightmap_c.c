@@ -336,18 +336,18 @@ float TCOD_heightmap_get_slope(const TCOD_heightmap_t* hm, int x, int y) {
   if (!TCOD_heightmap_in_bounds(hm, x, y)) return 0;
   static const int dix[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
   static const int diy[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
-  float min_dy = 0.0f, max_dy = 0.0f;
+  float max_slope = 0.0f;
   const float v = GET_VALUE(hm, x, y);
   for (int i = 0; i < 8; i++) {
     const int nx = x + dix[i];
     const int ny = y + diy[i];
     if (TCOD_heightmap_in_bounds(hm, nx, ny)) {
-      const float n_slope = GET_VALUE(hm, nx, ny) - v;
-      min_dy = TCOD_MIN(min_dy, n_slope);
-      max_dy = TCOD_MAX(max_dy, n_slope);
+      const float distance = sqrtf((float)(dix[i] * dix[i] + diy[i] * diy[i]));
+      const float n_slope = fabsf(GET_VALUE(hm, nx, ny) - v) / distance;
+      max_slope = TCOD_MAX(max_slope, n_slope);
     }
   }
-  return atan2f(max_dy + min_dy, 1.0f);
+  return atanf(max_slope);
 }
 
 void TCOD_heightmap_rain_erosion(

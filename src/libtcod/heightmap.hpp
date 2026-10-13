@@ -438,7 +438,8 @@ class TCODLIB_API TCODHeightMap {
 	/**
 	@PageName heightmap_read
 	@FuncTitle Get the map slope
-	@FuncDesc This function returns the slope between 0 and PI/2 at given coordinates.
+	@FuncDesc This function returns the maximum absolute inclination to the eight neighboring cells,
+	assuming unit grid spacing. The result is an angle in radians between 0 and PI/2.
 	@Cpp float TCODHeightMap::getSlope(int x, int y) const
 	@C float TCOD_heightmap_get_slope(const TCOD_heightmap_t *hm, int x, int y)
 	@Py heightmap_get_slope(hm, x, y)

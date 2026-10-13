@@ -91,6 +91,12 @@ TCODLIB_API TCOD_heightmap_t* TCOD_heightmap_new(int w, int h);
 TCODLIB_API void TCOD_heightmap_delete(TCOD_heightmap_t* hm);
 
 TCODLIB_API float TCOD_heightmap_get_interpolated_value(const TCOD_heightmap_t* hm, float x, float y);
+/***************************************************************************
+    @brief Return the maximum absolute inclination to the eight neighboring cells.
+
+    @details Assumes unit spacing between grid cells.  Returns an angle in radians
+             between zero and PI/2, or zero when no neighbor exists.
+ */
 TCODLIB_API float TCOD_heightmap_get_slope(const TCOD_heightmap_t* hm, int x, int y);
 TCODLIB_API void TCOD_heightmap_get_normal(
     const TCOD_heightmap_t* __restrict hm, float x, float y, float n[3], float waterLevel);

@@ -9,6 +9,7 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 
 ## [Unreleased]
 ### Added
+- Added `TCOD_bresenham` to output line coordinates into a caller-provided C buffer.
 - Added `TCOD_heightmap_kernel_transform_out` for convolution with separate source and destination heightmaps.
 - Added `TCOD_heightmap_is_valid` and `TCOD_heightmap_in_bounds`.
 

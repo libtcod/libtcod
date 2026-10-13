@@ -29,6 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+// https://sourceware.org/glibc/manual/latest/html_node/Feature-Test-Macros.html
+#define _POSIX_C_SOURCE 2  // request popen/pclose from stdio.h on Unix
 #include "tileset_fallback.h"
 
 #include <stdio.h>

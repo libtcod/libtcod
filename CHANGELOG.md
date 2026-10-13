@@ -30,6 +30,7 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
   [#184](https://github.com/libtcod/libtcod/pull/184)
 - Basic math functions from `libm` were not linked in C.
 - Voronoi terrain generation now includes distant sites for extra large maps.
+- Internally used `popen`, `pclose` were undeclared due to missing feature test macros on Linux
 
 ### Removed
 - SCons support has been officially removed.

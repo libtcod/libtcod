@@ -27,6 +27,7 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 - Fixed memory crashes with using the permissive or restrictive field-of-view algorithms on very small maps.
   [#184](https://github.com/libtcod/libtcod/pull/184)
 - Basic math functions from `libm` were not linked in C.
+- Voronoi terrain generation now includes distant sites and computes their squared distances in floating point.
 
 ### Removed
 - SCons support has been officially removed.

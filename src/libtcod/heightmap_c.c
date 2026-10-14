@@ -520,13 +520,13 @@ void TCOD_heightmap_add_voronoi(
     for (int x = 0; x < hm->w; x++) {
       /* calculate distance to voronoi points */
       for (int i = 0; i < nbPoints; i++) {
-        const int dx = pt[i].x - x;
-        const int dy = pt[i].y - y;
-        pt[i].dist = (float)(dx * dx + dy * dy);
+        const float dx = (float)(pt[i].x - x);
+        const float dy = (float)(pt[i].y - y);
+        pt[i].dist = dx * dx + dy * dy;
       }
       for (int i = 0; i < nbCoef; i++) {
         /* get closest point */
-        float minDist = 1E8f;
+        float minDist = INFINITY;
         int idx = -1;
         for (int j = 0; j < nbPoints; j++) {
           if (pt[j].dist < minDist) {
@@ -536,7 +536,7 @@ void TCOD_heightmap_add_voronoi(
         }
         if (idx == -1) break;
         GET_VALUE(hm, x, y) += coef[i] * pt[idx].dist;
-        pt[idx].dist = 1E8f;
+        pt[idx].dist = INFINITY;
       }
     }
   }

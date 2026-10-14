@@ -6,6 +6,33 @@
 #include "libtcod/heightmap.h"
 #include "libtcod/heightmap.hpp"
 
+TEST_CASE("Bezier carving includes its starting cell", "[heightmap][bezier]") {
+  auto hm = TCODHeightMap{16, 12};
+  int px[4] = {2, 5, 8, 11};
+  int py[4] = {0, 0, 0, 0};
+  const float depth = GENERATE(-2.0f, 2.0f);
+  hm.digBezier(px, py, 0.25f, depth, 0.25f, depth);
+  REQUIRE(hm.getValue(2, 0) == depth);
+  REQUIRE(hm.getValue(3, 0) == depth);
+  REQUIRE(hm.getValue(11, 0) == depth);
+  REQUIRE(hm.getValue(2, 1) == 0.0f);
+}
+
+TEST_CASE("A stationary Bezier curve carves its starting hill", "[heightmap][bezier]") {
+  auto hm = TCODHeightMap{8, 8};
+  auto expected = TCODHeightMap{8, 8};
+  int px[4] = {0, 0, 0, 0};
+  int py[4] = {0, 0, 0, 0};
+  const float depth = GENERATE(-3.0f, 3.0f);
+  hm.digBezier(px, py, 0.5f, depth, 0.5f, depth);
+  expected.digHill(0, 0, 0.5f, depth);
+  for (int y = 0; y < hm.h; ++y) {
+    for (int x = 0; x < hm.w; ++x) {
+      REQUIRE(hm.getValue(x, y) == expected.getValue(x, y));
+    }
+  }
+}
+
 TEST_CASE("TCODHeightmap") {
   auto hm = TCODHeightMap(0, 0);  // Test zero size
   hm = TCODHeightMap(1, 1);  // Test assign new shape

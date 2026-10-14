@@ -251,6 +251,7 @@ void TCOD_heightmap_dig_bezier(
   if (!TCOD_heightmap_is_valid(hm)) return;
   int xFrom = px[0];
   int yFrom = py[0];
+  TCOD_heightmap_dig_hill(hm, (float)xFrom, (float)yFrom, startRadius, startDepth);
   for (int i = 0; i <= 1000; ++i) {
     const float t = i / 1000.f;
     const float it = 1.0f - t;

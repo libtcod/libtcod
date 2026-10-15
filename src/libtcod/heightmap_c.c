@@ -221,20 +221,21 @@ void TCOD_heightmap_get_normal(const TCOD_heightmap_t* __restrict hm, float x, f
   n[0] = 0.0f;
   n[1] = 0.0f;
   n[2] = 1.0f;
-  if (x >= hm->w - 1 || y >= hm->h - 1) return;
-  // Sample map heights at x,y; x+1,y; and x,y+1
+  if (hm->w < 2 || hm->h < 2 || x >= hm->w || y >= hm->h) return;
+  x = TCOD_MIN(x, hm->w - 1);
+  y = TCOD_MIN(y, hm->h - 1);
+  // Use backward samples near the far edges, where a forward step would be clamped.
+  const float sample_x = x <= hm->w - 2 ? x + 1 : TCOD_MAX(0, x - 1);
+  const float sample_y = y <= hm->h - 2 ? y + 1 : TCOD_MAX(0, y - 1);
   float height_0 = TCOD_heightmap_get_interpolated_value(hm, x, y);
   height_0 = TCOD_MAX(height_0, waterLevel);
-  float height_x = TCOD_heightmap_get_interpolated_value(hm, x + 1, y);
+  float height_x = TCOD_heightmap_get_interpolated_value(hm, sample_x, y);
   height_x = TCOD_MAX(height_x, waterLevel);
-  float height_y = TCOD_heightmap_get_interpolated_value(hm, x, y + 1);
+  float height_y = TCOD_heightmap_get_interpolated_value(hm, x, sample_y);
   height_y = TCOD_MAX(height_y, waterLevel);
-  // vx = 1                 vy = 0
-  //      0                      1
-  //      height_x-height_0      height_y-height_0
-  // vz = vx cross vy
-  n[0] = 255 * (height_0 - height_x);
-  n[1] = 255 * (height_0 - height_y);
+  // Account for the signed sample spacing while keeping the existing vertical scale.
+  n[0] = 255 * (height_0 - height_x) / (sample_x - x);
+  n[1] = 255 * (height_0 - height_y) / (sample_y - y);
   n[2] = 16.0f;
   // Normalize
   const float invlen = 1.0f / sqrtf(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]);

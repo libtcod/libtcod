@@ -20,6 +20,7 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 - Fixed installed or distributed packages not including headers at the correct prefixes.
 
 ### Fixed
+- Terrain normals no longer become flat at map edges; fractional edge samples use their actual spacing.
 - Midpoint terrain generation now seeds the corners of its working square using the heightmap stride.
 - Bezier terrain carving now includes the starting hill, even when the curve stays in one cell.
 - Heightmap normalization preserves ranges with better precision and no longer ignores very small values.

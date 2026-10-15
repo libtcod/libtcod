@@ -146,6 +146,55 @@ TEST_CASE("TCODHeightmap::getMinMax", "[heightmap]") {
   REQUIRE(max == 1.0f);
 }
 
+TEST_CASE("Heightmap normals preserve tilted planes at map edges", "[heightmap][normal]") {
+  const int width = GENERATE(2, 5);
+  const int height = GENERATE(2, 7);
+  auto hm = TCODHeightMap{width, height};
+  constexpr float slope_x = 0.125f;
+  constexpr float slope_y = -0.0625f;
+  for (int y = 0; y < height; ++y) {
+    for (int x = 0; x < width; ++x) hm.setValue(x, y, 4 + slope_x * x + slope_y * y);
+  }
+  const float expected[] = {-255 * slope_x, -255 * slope_y, 16};
+  const float length = std::sqrt(expected[0] * expected[0] + expected[1] * expected[1] + expected[2] * expected[2]);
+  for (const float x : {0.f, 0.5f, width - 1.25f, width - 1.f}) {
+    for (const float y : {0.f, 0.5f, height - 1.25f, height - 1.f}) {
+      CAPTURE(width, height, x, y);
+      float normal[3];
+      hm.getNormal(x, y, normal, 0);
+      for (int axis = 0; axis < 3; ++axis)
+        REQUIRE(normal[axis] == Catch::Approx(expected[axis] / length).margin(1e-6f));
+    }
+  }
+}
+
+TEST_CASE("Heightmap normals keep submerged terrain flat at map edges", "[heightmap][normal]") {
+  auto hm = TCODHeightMap{3, 3};
+  for (int y = 0; y < hm.h; ++y) {
+    for (int x = 0; x < hm.w; ++x) hm.setValue(x, y, static_cast<float>(x + y));
+  }
+  for (const float x : {0.f, 1.5f, 2.f}) {
+    for (const float y : {0.f, 1.5f, 2.f}) {
+      float normal[3];
+      hm.getNormal(x, y, normal, 10);
+      REQUIRE(normal[0] == 0);
+      REQUIRE(normal[1] == 0);
+      REQUIRE(normal[2] == 1);
+    }
+  }
+}
+
+TEST_CASE("Heightmap normals remain flat for a missing axis", "[heightmap][normal]") {
+  const int width = GENERATE(1, 3);
+  const int height = width == 1 ? 3 : 1;
+  auto hm = TCODHeightMap{width, height};
+  float normal[3];
+  hm.getNormal(0, 0, normal, 0);
+  REQUIRE(normal[0] == 0);
+  REQUIRE(normal[1] == 0);
+  REQUIRE(normal[2] == 1);
+}
+
 TEST_CASE("TCOD_heightmap_kernel_transform null handling", "[heightmap][kernel]") {
   // Identity kernel for simple testing
   const int dx[] = {0};

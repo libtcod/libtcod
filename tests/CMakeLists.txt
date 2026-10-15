@@ -22,7 +22,7 @@ set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
 
 file(GLOB SRC_FILES CONFIGURE_DEPENDS test_*.cpp)
 
-add_executable(unittest unittest.cpp ${SRC_FILES})
+add_executable(unittest unittest.cpp ${SRC_FILES} test_bresenham_c.c)
 target_link_libraries(unittest libtcod::libtcod Catch2::Catch2 Catch2::Catch2WithMain)
 target_compile_features(unittest PUBLIC cxx_std_17)
 target_compile_definitions(unittest PRIVATE CATCH_CONFIG_ENABLE_BENCHMARKING)

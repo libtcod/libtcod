@@ -54,6 +54,32 @@ extern "C" {
  *          next x,y point on the line.
  */
 typedef bool (*TCOD_line_listener_t)(int x, int y);
+/***************************************************************************
+    @brief Fill a buffer with interleaved x,y coordinates from a Bresenham line.
+
+    @details Includes both endpoints and follows the same path as tcod::BresenhamLine.
+    Writes the first `min(n, length)` points, leaving the rest of the buffer unchanged.
+    Passing NULL for `out` or zero for `n` queries the length without iterating over the line.
+    This function does not allocate memory or use the global line state.
+
+    @param xFrom The starting x position.
+    @param yFrom The starting y position.
+    @param xTo The ending x position.
+    @param yTo The ending y position.
+    @param n The capacity of `out` in points, not integers.  Must be non-negative.
+    @param out A buffer with room for `n` pairs of integers, or NULL for a length query.
+    @return The total number of points, even when `out` is too small.
+            Returns a negative error code and writes nothing if `n` is negative or
+            the total number of points exceeds INT_MAX.  Use TCOD_get_error to get details.
+
+    @code{.c}
+      int coordinates[10];
+      int length = TCOD_bresenham(0, 0, 4, 4, 0, NULL);  // Returns 5 points.
+      TCOD_bresenham(0, 0, 4, 4, 5, coordinates);  // Writes 0,0, 1,1, 2,2, 3,3, 4,4.
+    @endcode
+    @versionadded{Unreleased}
+ */
+TCODLIB_API int TCOD_bresenham(int xFrom, int yFrom, int xTo, int yTo, int n, int* out);
 /**
  *  \brief Initialize a line using a global state.
  *

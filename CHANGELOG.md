@@ -8,6 +8,8 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 Versions since `2.0.0` only track API breaks and no longer guarantee ABI compatibility.
 
 ## [Unreleased]
+
+- Preserve nonconstant heightmap ranges when normalizing small or large finite values.
 ### Added
 - Added `TCOD_heightmap_kernel_transform_out` for convolution with separate source and destination heightmaps.
 - Added `TCOD_heightmap_is_valid` and `TCOD_heightmap_in_bounds`.

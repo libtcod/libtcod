@@ -86,12 +86,15 @@ void TCOD_heightmap_normalize(TCOD_heightmap_t* hm, float min, float max) {
   float current_max = 0;
   TCOD_heightmap_get_minmax(hm, &current_min, &current_max);
 
-  if (current_max - current_min < FLT_EPSILON) {
+  if (current_max == current_min) {
     for (int i = 0; i != hm->w * hm->h; ++i) hm->values[i] = min;
 
   } else {
-    const float normalize_scale = (max - min) / (current_max - current_min);
-    for (int i = 0; i != hm->w * hm->h; ++i) hm->values[i] = min + (hm->values[i] - current_min) * normalize_scale;
+    const double current_range = (double)current_max - current_min;
+    for (int i = 0; i != hm->w * hm->h; ++i) {
+      const double fraction = ((double)hm->values[i] - current_min) / current_range;
+      hm->values[i] = (float)((1.0 - fraction) * min + fraction * max);
+    }
   }
 }
 

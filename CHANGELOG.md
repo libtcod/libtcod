@@ -22,6 +22,7 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 ### Fixed
 - Midpoint terrain generation now seeds the corners of its working square using the heightmap stride.
 - Bezier terrain carving now includes the starting hill, even when the curve stays in one cell.
+- Heightmap normalization preserves ranges with better precision and no longer ignores very small values.
 - Fixed heightmap slopes cancelling on tilted planes or becoming negative at peaks; diagonal neighbors now use their geometric distance.
 - Tilesheet color-key detection now works with an empty space glyph when the zeroth tile is not empty.
   [#190](https://github.com/libtcod/libtcod/pull/190)

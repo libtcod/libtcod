@@ -30,6 +30,53 @@ TEST_CASE("Midpoint displacement seeds the working square corners", "[heightmap]
   REQUIRE(hm.getValue(last, last) == bottom_right);
 }
 
+TEST_CASE("Heightmap normalization preserves small nonconstant ranges", "[heightmap][normalize]") {
+  auto hm = TCODHeightMap{2, 2};
+  const float scale = GENERATE(1.0f, 1e-9f, 1e-20f, std::ldexp(1.0f, -140));
+  const float offset = GENERATE(0.0f, 2.0f);
+  hm.values[0] = offset * scale;
+  hm.values[1] = (offset + 1.0f) * scale;
+  hm.values[2] = (offset + 2.0f) * scale;
+  hm.values[3] = (offset + 4.0f) * scale;
+  hm.normalize(-1.0f, 1.0f);
+  REQUIRE(hm.values[0] == -1.0f);
+  REQUIRE(hm.values[1] == Catch::Approx(-0.5f).margin(1e-6));
+  REQUIRE(hm.values[2] == Catch::Approx(0.0f).margin(1e-6));
+  REQUIRE(hm.values[3] == 1.0f);
+}
+
+TEST_CASE("Heightmap normalization handles finite ranges wider than float", "[heightmap][normalize]") {
+  auto hm = TCODHeightMap{3, 1};
+  hm.values[0] = -FLT_MAX;
+  hm.values[1] = 0.0f;
+  hm.values[2] = FLT_MAX;
+  hm.normalize(-1.0f, 1.0f);
+  REQUIRE(hm.values[0] == -1.0f);
+  REQUIRE(hm.values[1] == 0.0f);
+  REQUIRE(hm.values[2] == 1.0f);
+  hm.normalize(-FLT_MAX, FLT_MAX);
+  REQUIRE(hm.values[0] == -FLT_MAX);
+  REQUIRE(hm.values[1] == 0.0f);
+  REQUIRE(hm.values[2] == FLT_MAX);
+}
+
+TEST_CASE("Heightmap normalization preserves unequal target endpoints", "[heightmap][normalize]") {
+  auto hm = TCODHeightMap{2, 1};
+  hm.values[0] = 0.0f;
+  hm.values[1] = 1.0f;
+  hm.normalize(-FLT_MAX, 1e-20f);
+  REQUIRE(hm.values[0] == -FLT_MAX);
+  REQUIRE(hm.values[1] == 1e-20f);
+}
+
+TEST_CASE("Heightmap normalization maps constant fields to the minimum", "[heightmap][normalize]") {
+  auto hm = TCODHeightMap{2, 2};
+  const float value = GENERATE(0.0f, 1e-20f, FLT_MAX);
+  for (int i = 0; i < 4; ++i) hm.values[i] = value;
+  hm.normalize(-1.0f, 1.0f);
+  for (int i = 0; i < 4; ++i) REQUIRE(hm.values[i] == -1.0f);
+}
+
 TEST_CASE("Bezier carving includes its starting cell", "[heightmap][bezier]") {
   auto hm = TCODHeightMap{16, 12};
   int px[4] = {2, 5, 8, 11};

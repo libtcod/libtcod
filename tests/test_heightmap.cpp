@@ -1,3 +1,4 @@
+#include <array>
 #include <catch2/catch_all.hpp>
 #include <cfloat>
 #include <cmath>
@@ -5,6 +6,29 @@
 
 #include "libtcod/heightmap.h"
 #include "libtcod/heightmap.hpp"
+#include "libtcod/mersenne.hpp"
+
+TEST_CASE("Midpoint displacement seeds the working square corners", "[heightmap][midpoint]") {
+  const auto dimensions =
+      GENERATE(std::array{3, 3}, std::array{5, 5}, std::array{9, 9}, std::array{5, 9}, std::array{9, 5});
+  const auto algorithm = GENERATE(TCOD_RNG_MT, TCOD_RNG_CMWC);
+  const auto seed = GENERATE(0U, 42U);
+  const auto roughness = GENERATE(0.4f, 0.6f);
+  auto rng = TCODRandom{seed, algorithm};
+  auto reference_rng = TCODRandom{seed, algorithm};
+  reference_rng.getFloat(0.0f, 1.0f);  // Top-left seed.
+  const auto top_right = reference_rng.getFloat(0.0f, 1.0f);
+  const auto bottom_left = reference_rng.getFloat(0.0f, 1.0f);
+  const auto bottom_right = reference_rng.getFloat(0.0f, 1.0f);
+  auto hm = TCODHeightMap{dimensions[0], dimensions[1]};
+
+  hm.midPointDisplacement(&rng, roughness);
+
+  const int last = std::min(hm.w, hm.h) - 1;
+  REQUIRE(hm.getValue(last, 0) == top_right);
+  REQUIRE(hm.getValue(0, last) == bottom_left);
+  REQUIRE(hm.getValue(last, last) == bottom_right);
+}
 
 TEST_CASE("Bezier carving includes its starting cell", "[heightmap][bezier]") {
   auto hm = TCODHeightMap{16, 12};

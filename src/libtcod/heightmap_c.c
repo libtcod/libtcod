@@ -582,9 +582,9 @@ void TCOD_heightmap_mid_point_displacement(
   int initsz = TCOD_MIN(hm->w, hm->h) - 1;
   int sz = initsz;
   hm->values[0] = TCOD_random_get_float(rnd, 0.0f, 1.0f);
-  hm->values[sz - 1] = TCOD_random_get_float(rnd, 0.0f, 1.0f);
-  hm->values[(sz - 1) * sz] = TCOD_random_get_float(rnd, 0.0f, 1.0f);
-  hm->values[sz * sz - 1] = TCOD_random_get_float(rnd, 0.0f, 1.0f);
+  GET_VALUE(hm, sz, 0) = TCOD_random_get_float(rnd, 0.0f, 1.0f);
+  GET_VALUE(hm, 0, sz) = TCOD_random_get_float(rnd, 0.0f, 1.0f);
+  GET_VALUE(hm, sz, sz) = TCOD_random_get_float(rnd, 0.0f, 1.0f);
   while (sz > 0) {
     /* diamond step */
     for (int y = 0; y < step; y++) {

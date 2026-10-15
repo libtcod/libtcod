@@ -29,7 +29,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -401,8 +400,20 @@ static void TCOD_path_set_cells(TCOD_Path* path) {
           if (previousCovered == 0) {
             /* put a new cell in the heap */
             const int offset = cx + cy * path->w;
-            /* A* heuristic : remaining distance */
-            const float remaining = (float)sqrt((cx - path->dx) * (cx - path->dx) + (cy - path->dy) * (cy - path->dy));
+            /* Lower bound from the cardinal and diagonal steps needed to reach the destination. */
+            const int delta_x = abs(cx - path->dx);
+            const int delta_y = abs(cy - path->dy);
+            float remaining = (float)(delta_x + delta_y);
+            if (path->diagonalCost > 0.0f && path->diagonalCost < 2.0f) {
+              int diagonal_steps = delta_x < delta_y ? delta_x : delta_y;
+              int cardinal_steps = abs(delta_x - delta_y);
+              if (path->diagonalCost < 1.0f) {
+                /* Pairs of cardinal steps can use two cheaper diagonal moves. */
+                diagonal_steps += cardinal_steps - cardinal_steps % 2;
+                cardinal_steps %= 2;
+              }
+              remaining = (float)cardinal_steps + diagonal_steps * path->diagonalCost;
+            }
             path->grid[offset] = covered;
             path->heuristic[offset] = covered + remaining;
             path->prev[offset] = previous_dirs[i];

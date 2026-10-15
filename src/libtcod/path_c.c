@@ -376,10 +376,12 @@ static void TCOD_path_get_cell(TCOD_Path* path, int* x, int* y, float* distance)
 }
 /* fill the grid, starting from the origin until we reach the destination */
 static void TCOD_path_set_cells(TCOD_Path* path) {
-  while (path->grid[path->dx + path->dy * path->w] == 0 && !TCOD_list_is_empty(path->heap)) {
+  while (!TCOD_list_is_empty(path->heap)) {
     int x, y;
     float distance;
     TCOD_path_get_cell(path, &x, &y, &distance);
+    /* A discovered destination can still have a cheaper route through another queued cell. */
+    if (x == path->dx && y == path->dy) return;
     const int i_max = (path->diagonalCost == 0.0f ? 4 : 8);
     for (int i = 0; i < i_max; i++) {
       /* convert i to dx,dy */

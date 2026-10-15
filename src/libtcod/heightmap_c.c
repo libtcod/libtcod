@@ -106,9 +106,9 @@ void TCOD_heightmap_add_hill(TCOD_heightmap_t* hm, float hx, float hy, float h_r
   const int miny = TCOD_MAX((int)(hy - h_radius), 0);
   const int maxx = (int)TCOD_MIN(ceilf(hx + h_radius), hm->w);
   const int maxy = (int)TCOD_MIN(ceilf(hy + h_radius), hm->h);
-  for (int y = miny; y < maxy; y++) {
+  for (int y = miny; y < maxy; ++y) {
     const float y_dist = (y - hy) * (y - hy);
-    for (int x = minx; x < maxx; x++) {
+    for (int x = minx; x < maxx; ++x) {
       const float x_dist = (x - hx) * (x - hx);
       const float z = h_radius2 - x_dist - y_dist;
       if (z > 0) GET_VALUE(hm, x, y) += z * coef;
@@ -124,8 +124,8 @@ void TCOD_heightmap_dig_hill(TCOD_heightmap_t* hm, float hx, float hy, float h_r
   const int miny = TCOD_MAX((int)(hy - h_radius), 0);
   const int maxx = (int)TCOD_MIN(ceilf(hx + h_radius), hm->w);
   const int maxy = (int)TCOD_MIN(ceilf(hy + h_radius), hm->h);
-  for (int y = miny; y < maxy; y++) {
-    for (int x = minx; x < maxx; x++) {
+  for (int y = miny; y < maxy; ++y) {
+    for (int x = minx; x < maxx; ++x) {
       const float x_dist = (x - hx) * (x - hx);
       const float y_dist = (y - hy) * (y - hy);
       const float dist = x_dist + y_dist;
@@ -159,8 +159,8 @@ void TCOD_heightmap_add_fbm(
   if (!TCOD_heightmap_is_valid(hm)) return;
   const float x_coefficient = mul_x / hm->w;
   const float y_coefficient = mul_y / hm->h;
-  for (int y = 0; y < hm->h; y++) {
-    for (int x = 0; x < hm->w; x++) {
+  for (int y = 0; y < hm->h; ++y) {
+    for (int x = 0; x < hm->w; ++x) {
       float f[2] = {(x + add_x) * x_coefficient, (y + add_y) * y_coefficient};
       GET_VALUE(hm, x, y) += delta + TCOD_noise_get_fbm(noise, f, octaves) * scale;
     }
@@ -180,8 +180,8 @@ void TCOD_heightmap_scale_fbm(
   if (!TCOD_heightmap_is_valid(hm)) return;
   const float x_coefficient = mul_x / hm->w;
   const float y_coefficient = mul_y / hm->h;
-  for (int y = 0; y < hm->h; y++) {
-    for (int x = 0; x < hm->w; x++) {
+  for (int y = 0; y < hm->h; ++y) {
+    for (int x = 0; x < hm->w; ++x) {
       float f[2] = {(x + add_x) * x_coefficient, (y + add_y) * y_coefficient};
       GET_VALUE(hm, x, y) *= delta + TCOD_noise_get_fbm(noise, f, octaves) * scale;
     }
@@ -272,10 +272,10 @@ void TCOD_heightmap_dig_bezier(
 
 bool TCOD_heightmap_has_land_on_border(const TCOD_heightmap_t* hm, float waterLevel) {
   if (!TCOD_heightmap_is_valid(hm)) return false;
-  for (int x = 0; x < hm->w; x++) {
+  for (int x = 0; x < hm->w; ++x) {
     if (GET_VALUE(hm, x, 0) > waterLevel || GET_VALUE(hm, x, hm->h - 1) > waterLevel) return true;
   }
-  for (int y = 0; y < hm->h; y++) {
+  for (int y = 0; y < hm->h; ++y) {
     if (GET_VALUE(hm, 0, y) > waterLevel || GET_VALUE(hm, hm->w - 1, y) > waterLevel) return true;
   }
   return false;
@@ -317,7 +317,7 @@ void TCOD_heightmap_lerp_hm(
     TCOD_heightmap_t* __restrict hm_out,
     float coef) {
   if (!TCOD_heightmap_is_same_size(hm1, hm2) || !TCOD_heightmap_is_same_size(hm1, hm_out)) return;
-  for (int i = 0; i < hm1->w * hm1->h; i++) hm_out->values[i] = TCOD_LERP(hm1->values[i], hm2->values[i], coef);
+  for (int i = 0; i < hm1->w * hm1->h; ++i) hm_out->values[i] = TCOD_LERP(hm1->values[i], hm2->values[i], coef);
 }
 
 void TCOD_heightmap_add_hm(
@@ -325,7 +325,7 @@ void TCOD_heightmap_add_hm(
     const TCOD_heightmap_t* __restrict hm2,
     TCOD_heightmap_t* __restrict hm_out) {
   if (!TCOD_heightmap_is_same_size(hm1, hm2) || !TCOD_heightmap_is_same_size(hm1, hm_out)) return;
-  for (int i = 0; i < hm1->w * hm1->h; i++) hm_out->values[i] = hm1->values[i] + hm2->values[i];
+  for (int i = 0; i < hm1->w * hm1->h; ++i) hm_out->values[i] = hm1->values[i] + hm2->values[i];
 }
 
 void TCOD_heightmap_multiply_hm(
@@ -333,7 +333,7 @@ void TCOD_heightmap_multiply_hm(
     const TCOD_heightmap_t* __restrict hm2,
     TCOD_heightmap_t* __restrict hm_out) {
   if (!TCOD_heightmap_is_same_size(hm1, hm2) || !TCOD_heightmap_is_same_size(hm1, hm_out)) return;
-  for (int i = 0; i < hm1->w * hm1->h; i++) hm_out->values[i] = hm1->values[i] * hm2->values[i];
+  for (int i = 0; i < hm1->w * hm1->h; ++i) hm_out->values[i] = hm1->values[i] * hm2->values[i];
 }
 
 float TCOD_heightmap_get_slope(const TCOD_heightmap_t* hm, int x, int y) {
@@ -342,7 +342,7 @@ float TCOD_heightmap_get_slope(const TCOD_heightmap_t* hm, int x, int y) {
   static const int diy[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
   float max_slope = 0.0f;
   const float v = GET_VALUE(hm, x, y);
-  for (int i = 0; i < 8; i++) {
+  for (int i = 0; i < 8; ++i) {
     const int nx = x + dix[i];
     const int ny = y + diy[i];
     if (TCOD_heightmap_in_bounds(hm, nx, ny)) {
@@ -361,18 +361,18 @@ void TCOD_heightmap_rain_erosion(
     float aggregationCoef,
     TCOD_Random* __restrict rnd) {
   if (!TCOD_heightmap_is_valid(hm)) return;
-  while (nbDrops-- > 0) {
+  for (; nbDrops > 0; --nbDrops) {
     int curx = TCOD_random_get_int(rnd, 0, hm->w - 1);
     int cury = TCOD_random_get_int(rnd, 0, hm->h - 1);
     static const int dx[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
     static const int dy[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
     float sediment = 0.0f;
-    do {
+    while (1) {
       int next_x = 0, next_y = 0;
       float v = GET_VALUE(hm, curx, cury);
       /* calculate slope at x,y */
       float slope = -INFINITY;
-      for (int i = 0; i < 8; i++) {
+      for (int i = 0; i < 8; ++i) {
         const int nx = curx + dx[i];
         const int ny = cury + dy[i];
         if (!TCOD_heightmap_in_bounds(hm, nx, ny)) continue;
@@ -394,7 +394,7 @@ void TCOD_heightmap_rain_erosion(
         GET_VALUE(hm, curx, cury) += aggregationCoef * sediment;
         break;
       }
-    } while (1);
+    }
   }
 }
 
@@ -405,15 +405,15 @@ static void setMDPHeightSquare(TCOD_heightmap_t *hm, TCOD_Random* rnd,int x, int
 void TCOD_heightmap_heat_erosion(TCOD_heightmap_t *hm, int nbPass,float minSlope,float erosionCoef,float aggregationCoef,TCOD_Random* rnd) {
 	if (!TCOD_heightmap_is_valid(hm)) { return; }
 	while ( nbPass-- > 0 ) {
-		for (int y=0; y < hm->h; y++) {
-			for (int x=0; x < hm->w; x++) {
+		for (int y=0; y < hm->h; ++y) {
+			for (int x=0; x < hm->w; ++x) {
 				static const int dx[8]={-1,0,1,-1,1,-1,0,1};
 				static const int dy[8]={-1,-1,-1,0,0,1,1,1};
 				int next_x=0,next_y=0,i;
 				const float v=GET_VALUE(hm, x, y);
 				/* calculate slope at x,y */
 				float slope=0.0f;
-				for (i=0; i < 8; i++ ) { /* 4 : von neumann neighborhood 8 : moore neighborhood */
+				for (i=0; i < 8; ++i ) { /* 4 : von neumann neighborhood 8 : moore neighborhood */
 					const int nx=x+dx[i];
 					const int ny=y+dy[i];
 					if (TCOD_heightmap_in_bounds(hm, nx, ny)) {
@@ -438,7 +438,7 @@ void TCOD_heightmap_heat_erosion(TCOD_heightmap_t *hm, int nbPass,float minSlope
 void TCOD_heightmap_threshold_mask(
     const TCOD_heightmap_t* __restrict hm, uint8_t* __restrict mask, float minLevel, float maxLevel) {
   if (!TCOD_heightmap_is_valid(hm) || !mask) return;
-  for (int i = 0; i < hm->w * hm->h; i++) mask[i] = (hm->values[i] >= minLevel && hm->values[i] <= maxLevel) ? 1 : 0;
+  for (int i = 0; i < hm->w * hm->h; ++i) mask[i] = (hm->values[i] >= minLevel && hm->values[i] <= maxLevel) ? 1 : 0;
 }
 
 void TCOD_heightmap_kernel_transform_out(
@@ -450,14 +450,14 @@ void TCOD_heightmap_kernel_transform_out(
     const float* __restrict weight,
     const uint8_t* __restrict mask) {
   if (!TCOD_heightmap_is_same_size(hm_src, hm_dst)) return;
-  for (int y = 0; y < hm_src->h; y++) {
-    for (int x = 0; x < hm_src->w; x++) {
+  for (int y = 0; y < hm_src->h; ++y) {
+    for (int x = 0; x < hm_src->w; ++x) {
       const int idx = x + y * hm_src->w;
       // Transform if no mask, or mask value is non-zero
       if (!mask || mask[idx]) {
         float val = 0.0f;
         float totalWeight = 0.0f;
-        for (int i = 0; i < kernel_size; i++) {
+        for (int i = 0; i < kernel_size; ++i) {
           const int nx = x + dx[i];
           const int ny = y + dy[i];
           if (TCOD_heightmap_in_bounds(hm_src, nx, ny)) {
@@ -516,23 +516,23 @@ void TCOD_heightmap_add_voronoi(
   if (nbPoints <= 0) return;
   point_t* pt = malloc(nbPoints * sizeof(*pt));
   nbCoef = TCOD_MIN(nbCoef, nbPoints);
-  for (int i = 0; i < nbPoints; i++) {
+  for (int i = 0; i < nbPoints; ++i) {
     pt[i].x = TCOD_random_get_int(rnd, 0, hm->w - 1);
     pt[i].y = TCOD_random_get_int(rnd, 0, hm->h - 1);
   }
-  for (int y = 0; y < hm->h; y++) {
-    for (int x = 0; x < hm->w; x++) {
+  for (int y = 0; y < hm->h; ++y) {
+    for (int x = 0; x < hm->w; ++x) {
       /* calculate distance to voronoi points */
-      for (int i = 0; i < nbPoints; i++) {
+      for (int i = 0; i < nbPoints; ++i) {
         const float dx = (float)(pt[i].x - x);
         const float dy = (float)(pt[i].y - y);
         pt[i].dist = dx * dx + dy * dy;
       }
-      for (int i = 0; i < nbCoef; i++) {
+      for (int i = 0; i < nbCoef; ++i) {
         /* get closest point */
         float minDist = INFINITY;
         int idx = -1;
-        for (int j = 0; j < nbPoints; j++) {
+        for (int j = 0; j < nbPoints; ++j) {
           if (pt[j].dist < minDist) {
             idx = j;
             minDist = pt[j].dist;
@@ -554,24 +554,24 @@ static void setMPDHeight(
 }
 
 static void setMDPHeightSquare(
-    TCOD_heightmap_t* __restrict hm, TCOD_Random* __restrict rnd, int x, int y, int initsz, int sz, float offset) {
+    TCOD_heightmap_t* __restrict hm, TCOD_Random* __restrict rnd, int x, int y, int init_size, int size, float offset) {
   float z = 0;
   int count = 0;
-  if (y >= sz) {
-    z += GET_VALUE(hm, x, y - sz);
-    count++;
+  if (y >= size) {
+    z += GET_VALUE(hm, x, y - size);
+    ++count;
   }
-  if (x >= sz) {
-    z += GET_VALUE(hm, x - sz, y);
-    count++;
+  if (x >= size) {
+    z += GET_VALUE(hm, x - size, y);
+    ++count;
   }
-  if (y + sz < initsz) {
-    z += GET_VALUE(hm, x, y + sz);
-    count++;
+  if (y + size < init_size) {
+    z += GET_VALUE(hm, x, y + size);
+    ++count;
   }
-  if (x + sz < initsz) {
-    z += GET_VALUE(hm, x + sz, y);
-    count++;
+  if (x + size < init_size) {
+    z += GET_VALUE(hm, x + size, y);
+    ++count;
   }
   z /= count;
   setMPDHeight(hm, rnd, x, y, z, offset);
@@ -582,43 +582,43 @@ void TCOD_heightmap_mid_point_displacement(
   if (!TCOD_heightmap_is_valid(hm)) return;
   int step = 1;
   float offset = 1.0f;
-  int initsz = TCOD_MIN(hm->w, hm->h) - 1;
-  int sz = initsz;
+  const int init_size = TCOD_MIN(hm->w, hm->h) - 1;
+  int size = init_size;
   hm->values[0] = TCOD_random_get_float(rnd, 0.0f, 1.0f);
-  GET_VALUE(hm, sz, 0) = TCOD_random_get_float(rnd, 0.0f, 1.0f);
-  GET_VALUE(hm, 0, sz) = TCOD_random_get_float(rnd, 0.0f, 1.0f);
-  GET_VALUE(hm, sz, sz) = TCOD_random_get_float(rnd, 0.0f, 1.0f);
-  while (sz > 0) {
+  GET_VALUE(hm, size, 0) = TCOD_random_get_float(rnd, 0.0f, 1.0f);
+  GET_VALUE(hm, 0, size) = TCOD_random_get_float(rnd, 0.0f, 1.0f);
+  GET_VALUE(hm, size, size) = TCOD_random_get_float(rnd, 0.0f, 1.0f);
+  while (size > 0) {
     /* diamond step */
-    for (int y = 0; y < step; y++) {
-      for (int x = 0; x < step; x++) {
-        const int diamond_x = sz / 2 + x * sz;
-        const int diamond_y = sz / 2 + y * sz;
-        float z = GET_VALUE(hm, x * sz, y * sz);
-        z += GET_VALUE(hm, (x + 1) * sz, y * sz);
-        z += GET_VALUE(hm, (x + 1) * sz, (y + 1) * sz);
-        z += GET_VALUE(hm, x * sz, (y + 1) * sz);
+    for (int y = 0; y < step; ++y) {
+      for (int x = 0; x < step; ++x) {
+        const int diamond_x = size / 2 + x * size;
+        const int diamond_y = size / 2 + y * size;
+        float z = GET_VALUE(hm, x * size, y * size);
+        z += GET_VALUE(hm, (x + 1) * size, y * size);
+        z += GET_VALUE(hm, (x + 1) * size, (y + 1) * size);
+        z += GET_VALUE(hm, x * size, (y + 1) * size);
         z *= 0.25f;
         setMPDHeight(hm, rnd, diamond_x, diamond_y, z, offset);
       }
     }
     offset *= roughness;
     /* square step */
-    for (int y = 0; y < step; y++) {
-      for (int x = 0; x < step; x++) {
-        int diamond_x = sz / 2 + x * sz;
-        int diamond_y = sz / 2 + y * sz;
+    for (int y = 0; y < step; ++y) {
+      for (int x = 0; x < step; ++x) {
+        const int diamond_x = size / 2 + x * size;
+        const int diamond_y = size / 2 + y * size;
         /* north */
-        setMDPHeightSquare(hm, rnd, diamond_x, diamond_y - sz / 2, initsz, sz / 2, offset);
+        setMDPHeightSquare(hm, rnd, diamond_x, diamond_y - size / 2, init_size, size / 2, offset);
         /* south */
-        setMDPHeightSquare(hm, rnd, diamond_x, diamond_y + sz / 2, initsz, sz / 2, offset);
+        setMDPHeightSquare(hm, rnd, diamond_x, diamond_y + size / 2, init_size, size / 2, offset);
         /* west */
-        setMDPHeightSquare(hm, rnd, diamond_x - sz / 2, diamond_y, initsz, sz / 2, offset);
+        setMDPHeightSquare(hm, rnd, diamond_x - size / 2, diamond_y, init_size, size / 2, offset);
         /* east */
-        setMDPHeightSquare(hm, rnd, diamond_x + sz / 2, diamond_y, initsz, sz / 2, offset);
+        setMDPHeightSquare(hm, rnd, diamond_x + size / 2, diamond_y, init_size, size / 2, offset);
       }
     }
-    sz /= 2;
+    size /= 2;
     step *= 2;
   }
 }

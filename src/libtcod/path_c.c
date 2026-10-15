@@ -402,7 +402,11 @@ static void TCOD_path_set_cells(TCOD_Path* path) {
             /* put a new cell in the heap */
             const int offset = cx + cy * path->w;
             /* A* heuristic : remaining distance */
-            const float remaining = (float)sqrt((cx - path->dx) * (cx - path->dx) + (cy - path->dy) * (cy - path->dy));
+            float remaining = (float)sqrt((cx - path->dx) * (cx - path->dx) + (cy - path->dy) * (cy - path->dy));
+            if (path->diagonalCost == 1.0f) {
+              /* Equal-cost diagonal moves require the Chebyshev lower bound. */
+              remaining = fmaxf(abs(cx - path->dx), abs(cy - path->dy));
+            }
             path->grid[offset] = covered;
             path->heuristic[offset] = covered + remaining;
             path->prev[offset] = previous_dirs[i];

@@ -35,6 +35,7 @@
 
 #include "libtcod_int.h"
 #include "path.h"
+#include "utility.h"
 enum { NORTH_WEST, NORTH, NORTH_EAST, WEST, NONE, EAST, SOUTH_WEST, SOUTH, SOUTH_EAST };
 typedef unsigned char dir_t;
 
@@ -405,7 +406,7 @@ static void TCOD_path_set_cells(TCOD_Path* path) {
             const int delta_y = abs(cy - path->dy);
             float remaining = (float)(delta_x + delta_y);
             if (path->diagonalCost > 0.0f && path->diagonalCost < 2.0f) {
-              int diagonal_steps = delta_x < delta_y ? delta_x : delta_y;
+              int diagonal_steps = TCOD_MIN(delta_x, delta_y);
               int cardinal_steps = abs(delta_x - delta_y);
               if (path->diagonalCost < 1.0f) {
                 /* Pairs of cardinal steps can use two cheaper diagonal moves. */

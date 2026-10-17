@@ -610,15 +610,20 @@ bool TCOD_dijkstra_path_set(TCOD_Dijkstra* data, int x, int y) {
   int lowest_index;
   do {
     TCOD_list_push(data->path, (const void*)(uintptr_t)((py * data->width) + px));
+    const unsigned int current_distance = dijkstra_get_int_distance(data, px, py);
     for (int i = 0; i < i_max; i++) {
       const int cx = px + dx[i];
       const int cy = py + dy[i];
-      if ((unsigned)cx < (unsigned)data->width && (unsigned)cy < (unsigned)data->height)
-        distances[i] = dijkstra_get_int_distance(data, cx, cy);
-      else
-        distances[i] = 0xFFFFFFFF;
+      distances[i] = 0xFFFFFFFF;
+      if ((unsigned)cx >= (unsigned)data->width || (unsigned)cy >= (unsigned)data->height) continue;
+      const unsigned int previous_distance = dijkstra_get_int_distance(data, cx, cy);
+      if (previous_distance >= current_distance) continue;
+      const float walk_cost = data->func ? data->func(cx, cy, px, py, data->user_data) : 1.0f;
+      if (walk_cost <= 0.0f) continue;
+      const unsigned int step_cost = (unsigned int)(walk_cost * (i < 4 ? 100 : data->diagonal_cost));
+      if (current_distance - previous_distance == step_cost) distances[i] = previous_distance;
     }
-    unsigned int lowest = dijkstra_get_int_distance(data, px, py);
+    unsigned int lowest = current_distance;
     lowest_index = 8;
     for (int i = 0; i < i_max; i++)
       if (distances[i] < lowest) {

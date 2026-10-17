@@ -20,6 +20,7 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 - Fixed installed or distributed packages not including headers at the correct prefixes.
 
 ### Fixed
+- Dijkstra routes now follow the computed movement costs, including diagonal costs and directed callbacks.
 - Fixed A* returning before a cheaper route to a weighted destination is settled.
 - Fixed A* computing non-ideal routes with non-Euclidean distance costs.
 - Terrain normals no longer become flat at map edges; fractional edge samples use their actual spacing.

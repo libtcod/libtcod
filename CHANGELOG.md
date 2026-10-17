@@ -21,6 +21,7 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 
 ### Fixed
 - Dijkstra routes now follow the computed movement costs, including diagonal costs and directed callbacks.
+- Symmetric shadowcasting rounds negative sector edges correctly, preserving visibility when a dungeon is rotated.
 - Fixed A* returning before a cheaper route to a weighted destination is settled.
 - Fixed A* computing non-ideal routes with non-Euclidean distance costs.
 - Terrain normals no longer become flat at map edges; fractional edge samples use their actual spacing.

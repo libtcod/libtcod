@@ -34,7 +34,6 @@
 
     Based on: https://www.albertford.com/shadowcasting/
  */
-#include <float.h>
 #include <math.h>
 #include <stdbool.h>
 
@@ -81,11 +80,11 @@ static float slope(int row_depth, int column) { return (2.0f * column - 1.0f) / 
 /**
     Round half numbers towards infinity.
  */
-static int round_half_up(float n) { return (int)roundf(n * (1 + FLT_EPSILON)); }
+static int round_half_up(float n) { return (int)floorf(n + 0.5f); }
 /**
     Round half numbers towards negative infinity.
  */
-static int round_half_down(float n) { return (int)roundf(n * (1 - FLT_EPSILON)); }
+static int round_half_down(float n) { return (int)ceilf(n - 0.5f); }
 /**
     Scan a row and recursively scan all of its children.
 

@@ -20,6 +20,7 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 - Fixed installed or distributed packages not including headers at the correct prefixes.
 
 ### Fixed
+- Image downsampling no longer counts source pixels twice at integer sampling boundaries.
 - Dijkstra routes now follow the computed movement costs, including diagonal costs and directed callbacks.
 - Symmetric shadowcasting rounds negative sector edges correctly, preserving visibility when a dungeon is rotated.
 - Fixed A* returning before a cheaper route to a weighted destination is settled.

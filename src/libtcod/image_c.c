@@ -624,7 +624,7 @@ void TCOD_image_scale(TCOD_Image* image, int new_w, int new_h) {
 
         float r = 0, g = 0, b = 0, sum_weight = 0.0f;
         /* left & right fractional edges */
-        for (int srcy = (int)y0 + 1; srcy < (int)y1; ++srcy) {
+        for (int srcy = iy0 + 1; srcy < iy1; ++srcy) {
           TCOD_color_t col_left = TCOD_image_get_pixel(image, ix0, srcy);
           TCOD_color_t col_right = TCOD_image_get_pixel(image, ix1, srcy);
           r += col_left.r * x0weight + col_right.r * x1weight;
@@ -633,7 +633,7 @@ void TCOD_image_scale(TCOD_Image* image, int new_w, int new_h) {
           sum_weight += x0weight + x1weight;
         }
         /* top & bottom fractional edges */
-        for (int srcx = (int)x0 + 1; srcx < (int)x1; ++srcx) {
+        for (int srcx = ix0 + 1; srcx < ix1; ++srcx) {
           TCOD_color_t col_top = TCOD_image_get_pixel(image, srcx, iy0);
           TCOD_color_t col_bottom = TCOD_image_get_pixel(image, srcx, iy1);
           r += col_top.r * y0weight + col_bottom.r * y1weight;
@@ -642,8 +642,8 @@ void TCOD_image_scale(TCOD_Image* image, int new_w, int new_h) {
           sum_weight += y0weight + y1weight;
         }
         /* center */
-        for (int srcy = (int)y0 + 1; srcy < (int)y1; ++srcy) {
-          for (int srcx = (int)x0 + 1; srcx < (int)x1; ++srcx) {
+        for (int srcy = iy0 + 1; srcy < iy1; ++srcy) {
+          for (int srcx = ix0 + 1; srcx < ix1; ++srcx) {
             TCOD_color_t sample = TCOD_image_get_pixel(image, srcx, srcy);
             r += sample.r;
             g += sample.g;

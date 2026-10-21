@@ -31,6 +31,36 @@
  */
 #include "bresenham.hpp"
 
+#include <algorithm>
+#include <climits>
+#include <cstdint>
+#include <cstdlib>
+
+#include "error.h"
+
+int TCOD_bresenham(int xFrom, int yFrom, int xTo, int yTo, int n, int* out) {
+  if (n < 0) {
+    TCOD_set_errorv("Bresenham output capacity must not be negative.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  const auto delta_x = std::abs(static_cast<int64_t>(xTo) - xFrom);
+  const auto delta_y = std::abs(static_cast<int64_t>(yTo) - yFrom);
+  const auto length = std::max(delta_x, delta_y) + 1;
+  if (length > INT_MAX) {
+    TCOD_set_errorv("Bresenham line length exceeds INT_MAX.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  if (!out || n == 0) return static_cast<int>(length);
+  auto line = tcod::BresenhamLine({xFrom, yFrom}, {xTo, yTo});
+  const int count = std::min(n, static_cast<int>(length));
+  for (int i = 0; i < count; ++i) {
+    const auto point = line[i];
+    *out++ = point[0];
+    *out++ = point[1];
+  }
+  return static_cast<int>(length);
+}
+
 // ********** bresenham line drawing **********
 void TCODLine::init(int xFrom, int yFrom, int xTo, int yTo) { TCOD_line_init(xFrom, yFrom, xTo, yTo); }
 

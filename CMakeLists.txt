@@ -20,7 +20,7 @@ set(LIBTCOD_STB "ON" CACHE STRING "How this library will be linked.")
 FetchContent_Declare(
     SDL3
     GIT_REPOSITORY https://github.com/libsdl-org/SDL
-    GIT_TAG f5e5f6588921eed3d7d048ce43d9eb1ff0da0ffc # release-3.2.30
+    GIT_TAG f00dc919ca35b9756316e86c4777392de442f9b2 # release-3.4.20
     GIT_SHALLOW TRUE
     FIND_PACKAGE_ARGS CONFIG
 )
@@ -31,7 +31,7 @@ set(SDL_INSTALL_DOCS OFF CACHE BOOL "")
 FetchContent_Declare(
     zlib
     GIT_REPOSITORY https://github.com/madler/zlib
-    GIT_TAG 570720b0c24f9686c33f35a1b3165c1f568b96be # v1.3.1.2
+    GIT_TAG 99623ef7097352da7993ba614161fd6a311e046e # v1.4
     GIT_SHALLOW TRUE
     FIND_PACKAGE_ARGS
 )
@@ -41,7 +41,7 @@ set(ZLIB_INSTALL ${LIBTCOD_INSTALL} CACHE BOOL "")
 FetchContent_Declare(
     lodepng-c
     GIT_REPOSITORY https://github.com/lvandeve/lodepng
-    GIT_TAG d41d4aa8c63dea277e25c94ad85046b6c5335ccc
+    GIT_TAG 7b2893e35891c0c85bee5595caafaf3c2044b409
     PATCH_COMMAND git apply ${CMAKE_CURRENT_SOURCE_DIR}/cmake/lodepng-c.patch
     UPDATE_DISCONNECTED TRUE  # Only apply the patch once
     FIND_PACKAGE_ARGS CONFIG
@@ -50,10 +50,8 @@ FetchContent_Declare(
 FetchContent_Declare(
     utf8proc
     GIT_REPOSITORY https://github.com/JuliaStrings/utf8proc
-    GIT_TAG e5e799221b45bbb90f5fdc5c69b6b8dfbf017e78 # v2.11.3
+    GIT_TAG 79cdd5ab40c79afa559f689ffc13b76812dee1ac # v2.12.0
     GIT_SHALLOW TRUE
-    PATCH_COMMAND git apply ${CMAKE_CURRENT_SOURCE_DIR}/cmake/utf8proc.patch
-    UPDATE_DISCONNECTED TRUE  # Only apply the patch once
     FIND_PACKAGE_ARGS
 )
 set(UTF8PROC_INSTALL ${LIBTCOD_INSTALL} CACHE BOOL "")
@@ -61,7 +59,7 @@ set(UTF8PROC_INSTALL ${LIBTCOD_INSTALL} CACHE BOOL "")
 FetchContent_Declare(
     Stb
     GIT_REPOSITORY https://github.com/nothings/stb
-    GIT_TAG f1c79c02822848a9bed4315b12c8c8f3761e1296
+    GIT_TAG 4e9b368bfc071e97206ea5c6adba68dd0cbf8897
     PATCH_COMMAND git apply ${CMAKE_CURRENT_SOURCE_DIR}/cmake/stb.patch
     UPDATE_DISCONNECTED TRUE  # Only apply the patch once
     FIND_PACKAGE_ARGS

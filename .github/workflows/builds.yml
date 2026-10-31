@@ -19,7 +19,7 @@ defaults:
 
 env:
   VCPKG_FETCH_DEPTH: 1 # Depth to fetch vcpkg commits, must include the baseline.
-  SDL_LINUX_DEPENDENCIES: autoconf autoconf-archive automake libtool libltdl-dev libx11-dev libxft-dev libxext-dev libwayland-dev libxkbcommon-dev libegl1-mesa-dev libibus-1.0-dev
+  SDL_LINUX_VCPKG_DEPENDENCIES: autoconf autoconf-archive automake libtool libltdl-dev libx11-dev libxft-dev libxext-dev libwayland-dev libxkbcommon-dev libegl1-mesa-dev libibus-1.0-dev
   CMAKE_BUILD_DIR: build
   CMAKE_BIN_DIR: ~/build/bin
   DOXYGEN_VERSION: "1.16.1" # https://github.com/doxygen/doxygen/releases
@@ -146,7 +146,7 @@ jobs:
         run: sudo apt-get update
       - name: Install APT dependencies
         if: runner.os == 'Linux'
-        run: sudo apt-get install ${{ env.SDL_LINUX_DEPENDENCIES }}
+        run: sudo apt-get install ${{ env.SDL_LINUX_VCPKG_DEPENDENCIES }}
       # Restore both vcpkg and its artifacts from the GitHub cache service.
       - name: Restore vcpkg and its artifacts.
         uses: actions/cache@v6
@@ -277,7 +277,7 @@ jobs:
         run: sudo apt-get update
       - name: Install APT dependencies
         if: runner.os == 'Linux'
-        run: sudo apt-get install ${{ env.SDL_LINUX_DEPENDENCIES }}
+        run: sudo apt-get install ${{ env.SDL_LINUX_VCPKG_DEPENDENCIES }}
       - name: Restore vcpkg and its artifacts.
         uses: actions/cache@v6
         with:
@@ -365,12 +365,10 @@ jobs:
         with:
           persist-credentials: false
           submodules: false
-      - name: Install latest CMake
-        uses: lukka/get-cmake@latest
       - name: Update APT packages
         run: sudo apt-get update
-      - name: Install APT dependencies
-        run: sudo apt-get install ${{ env.SDL_LINUX_DEPENDENCIES }}
+      - name: Install SDL3 dependencies
+        run: sudo apt-get install pkg-config cmake ninja-build gnome-desktop-testing libasound2-dev libpulse-dev libaudio-dev libfribidi-dev libjack-dev libsndio-dev libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev libthai-dev libusb-1.0-0-dev
       - name: CMake configure
         run: cmake -S . -B ${{env.CMAKE_BUILD_DIR}}
           -G Ninja

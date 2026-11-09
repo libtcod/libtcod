@@ -493,3 +493,5 @@ jobs:
       - name: Create Release
         # https://cli.github.com/manual/gh_release_create
         run: gh release create "${GITHUB_REF_NAME}" artifacts/* --verify-tag --notes-file release_body.md
+        env:
+          GH_TOKEN: ${{ github.token }}

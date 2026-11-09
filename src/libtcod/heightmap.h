@@ -167,7 +167,7 @@ TCODLIB_API void TCOD_heightmap_kernel_transform(
     @param minLevel Minimum value (inclusive) for cells to be marked.
     @param maxLevel Maximum value (inclusive) for cells to be marked.
 
-    @versionadded{Unreleased}
+    @versionadded{2.3}
  */
 TCODLIB_API void TCOD_heightmap_threshold_mask(
     const TCOD_heightmap_t* __restrict hm, uint8_t* __restrict mask, float minLevel, float maxLevel);
@@ -194,7 +194,7 @@ TCODLIB_API void TCOD_heightmap_threshold_mask(
     @param weight Array of weights for each kernel position.
     @param mask Optional mask array (hm->w * hm->h bytes, row-major). NULL transforms all cells.
 
-    @versionadded{Unreleased}
+    @versionadded{2.3}
  */
 TCODLIB_API void TCOD_heightmap_kernel_transform_out(
     const TCOD_heightmap_t* __restrict hm_src,

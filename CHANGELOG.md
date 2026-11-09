@@ -11,7 +11,7 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 
 ## [2.3.0] - 2026-11-09
 ### Added
-- Added `TCOD_heightmap_kernel_transform_out` for convolution with separate source and destination heightmaps.
+- Added `TCOD_heightmap_kernel_transform_out` for convolution with separate source and destination heightmaps. https://github.com/libtcod/libtcod/pull/175
 - Added `TCOD_heightmap_is_valid` and `TCOD_heightmap_in_bounds`.
 
 ### Changed
@@ -22,22 +22,20 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 - Fixed installed or distributed packages not including headers at the correct prefixes.
 
 ### Fixed
-- Image downsampling no longer counts source pixels twice at integer sampling boundaries.
-- Dijkstra routes now follow the computed movement costs, including diagonal costs and directed callbacks.
-- Symmetric shadowcasting rounds negative sector edges correctly, preserving visibility when a dungeon is rotated.
-- Fixed A* returning before a cheaper route to a weighted destination is settled.
-- Fixed A* computing non-ideal routes with non-Euclidean distance costs.
-- Terrain normals no longer become flat at map edges; fractional edge samples use their actual spacing.
-- Midpoint terrain generation now seeds the corners of its working square using the heightmap stride.
-- Bezier terrain carving now includes the starting hill, even when the curve stays in one cell.
-- Heightmap normalization preserves ranges with better precision and no longer ignores very small values.
-- Fixed heightmap slopes cancelling on tilted planes or becoming negative at peaks; diagonal neighbors now use their geometric distance.
-- Tilesheet color-key detection now works with an empty space glyph when the zeroth tile is not empty.
-  [#190](https://github.com/libtcod/libtcod/pull/190)
-- Fixed `TCOD_heightmap_kernel_transform` reading modified values during in-place convolution.
+- Image downsampling no longer counts source pixels twice at integer sampling boundaries. https://github.com/libtcod/libtcod/pull/205
+- Dijkstra routes now follow the computed movement costs, including diagonal costs and directed callbacks. https://github.com/libtcod/libtcod/pull/203
+- Symmetric shadowcasting rounds negative sector edges correctly, preserving visibility when a dungeon is rotated. https://github.com/libtcod/libtcod/pull/204
+- Fixed A* returning before a cheaper route to a weighted destination is settled. https://github.com/libtcod/libtcod/pull/201
+- Fixed A* computing non-ideal routes with non-Euclidean distance costs. https://github.com/libtcod/libtcod/pull/202
+- Terrain normals no longer become flat at map edges; fractional edge samples use their actual spacing. https://github.com/libtcod/libtcod/pull/200
+- Midpoint terrain generation now seeds the corners of its working square using the heightmap stride. https://github.com/libtcod/libtcod/pull/198
+- Bezier terrain carving now includes the starting hill, even when the curve stays in one cell. https://github.com/libtcod/libtcod/pull/197
+- Heightmap normalization preserves ranges with better precision and no longer ignores very small values. https://github.com/libtcod/libtcod/pull/199
+- Fixed heightmap slopes cancelling on tilted planes or becoming negative at peaks; diagonal neighbors now use their geometric distance. https://github.com/libtcod/libtcod/pull/195
+- Tilesheet color-key detection now works with an empty space glyph when the zeroth tile is not empty. https://github.com/libtcod/libtcod/pull/190
+- Fixed `TCOD_heightmap_kernel_transform` reading modified values during in-place convolution. https://github.com/libtcod/libtcod/pull/175
 - `TCOD_heightmap_get_minmax` no longer writes to NULL outputs when the input heightmap has zero elements.
-- Fixed memory crashes with using the permissive or restrictive field-of-view algorithms on very small maps.
-  [#184](https://github.com/libtcod/libtcod/pull/184)
+- Fixed memory crashes with using the permissive or restrictive field-of-view algorithms on very small maps. https://github.com/libtcod/libtcod/pull/184
 - Basic math functions from `libm` were not linked in C.
 - Voronoi terrain generation now includes distant sites for extra large maps.
 - Internally used `popen`, `pclose` were undeclared due to missing feature test macros on Linux
@@ -47,8 +45,7 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 
 ## [2.2.2] - 2026-01-06
 ### CMake
-- Now fully supports `FetchPackage` for dependency resolution.
-  [#141](https://github.com/libtcod/libtcod/issues/141)
+- Now fully supports `FetchPackage` for dependency resolution. https://github.com/libtcod/libtcod/issues/141
 - No longer sets output directories.
 - Now only configures Vcpkg or CPack when `LIBTCOD_VCPKG` or `LIBTCOD_CPACK` is enabled.
 - `LIBTCOD_UTF8PROC` now defaults to `ON` instead of `vcpkg`.

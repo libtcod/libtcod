@@ -8,9 +8,9 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 Versions since `2.0.0` only track API breaks and no longer guarantee ABI compatibility.
 
 ## [Unreleased]
-### Fixed
+### CMake
 
-- Fixed build with `vendored` dependencies. https://github.com/libtcod/libtcod/pull/206
+- Fixed build failures when selecting `vendored` dependencies. https://github.com/libtcod/libtcod/pull/206
 
 ## [2.3.0] - 2026-11-09
 ### Added

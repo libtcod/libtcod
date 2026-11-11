@@ -8,6 +8,10 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 Versions since `2.0.0` only track API breaks and no longer guarantee ABI compatibility.
 
 ## [Unreleased]
+### Fixed
+- `TCOD_List` will now gracefully handle failed memory allocations.
+- Safer handling of `NULL` `TCOD_List*` pointers passed to list functions.
+- `TCOD_list_get` now performs bounds checking.
 
 ## [2.3.1] - 2026-11-10
 ### CMake

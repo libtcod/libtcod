@@ -74,28 +74,75 @@ typedef TCOD_List* TCOD_list_t;
 TCODLIB_API TCOD_DEPRECATED("TCOD_List is not a suitable container.  Use a custom array or a C++ container instead.")
     TCOD_List* TCOD_list_new(void);
 
-TCODLIB_API TCOD_List* TCOD_list_allocate(int nb_elements);
-TCODLIB_API TCOD_List* TCOD_list_duplicate(TCOD_List* l);
-TCODLIB_API void TCOD_list_delete(TCOD_List* l);
-TCODLIB_API void TCOD_list_push(TCOD_List* l, const void* elt);
-TCODLIB_API void* TCOD_list_pop(TCOD_List* l);
-TCODLIB_API void* TCOD_list_peek(TCOD_List* l);
-TCODLIB_API void TCOD_list_add_all(TCOD_List* l, TCOD_List* l2);
-TCODLIB_API void* TCOD_list_get(TCOD_List* l, int idx);
-TCODLIB_API void TCOD_list_set(TCOD_List* l, const void* elt, int idx);
-TCODLIB_API void** TCOD_list_begin(TCOD_List* l);
-TCODLIB_API void** TCOD_list_end(TCOD_List* l);
-TCODLIB_API void TCOD_list_reverse(TCOD_List* l);
-TCODLIB_API void** TCOD_list_remove_iterator(TCOD_List* l, void** elt);
-TCODLIB_API void TCOD_list_remove(TCOD_List* l, const void* elt);
-TCODLIB_API void** TCOD_list_remove_iterator_fast(TCOD_List* l, void** elt);
-TCODLIB_API void TCOD_list_remove_fast(TCOD_List* l, const void* elt);
-TCODLIB_API bool TCOD_list_contains(TCOD_List* l, const void* elt);
-TCODLIB_API void TCOD_list_clear(TCOD_List* l);
-TCODLIB_API void TCOD_list_clear_and_delete(TCOD_List* l);
-TCODLIB_API int TCOD_list_size(TCOD_List* l);
-TCODLIB_API void** TCOD_list_insert_before(TCOD_List* l, const void* elt, int before);
-TCODLIB_API bool TCOD_list_is_empty(TCOD_List* l);
+/// @brief Return a new list which can hold up to `nb_elements` items.
+TCODLIB_API TCOD_DEPRECATED("TCOD_List is not a suitable container.  Use a custom array or a C++ container instead.")
+    TCOD_List* TCOD_list_allocate(int nb_elements);
+
+/// @brief Return a copy of `lst`.
+TCODLIB_API TCOD_List* TCOD_list_duplicate(TCOD_List* lst);
+
+/// @brief Delete a list.
+/// This only frees the list itself, if the list contains any pointers then those will need to be freed separately.
+TCODLIB_API void TCOD_list_delete(TCOD_List* lst);
+
+/// @brief Add `element` to the end of a list.
+TCODLIB_API void TCOD_list_push(TCOD_List* lst, const void* element);
+
+/// @brief Remove the last item from a list and return it. If the list is empty this will return NULL.
+TCODLIB_API void* TCOD_list_pop(TCOD_List* lst);
+
+/// @brief Return the list item from the list, without removing it. If the list is empty this will return NULL.
+TCODLIB_API void* TCOD_list_peek(TCOD_List* lst);
+
+/// @brief Add all items from `extend` to the end of `lst`.
+TCODLIB_API void TCOD_list_add_all(TCOD_List* lst, TCOD_List* extend);
+
+/// @brief Return the item at `index`.
+TCODLIB_API void* TCOD_list_get(TCOD_List* lst, int index);
+
+/// @brief Assign `element` to `lst` at `index`. The list will automatically resize to fit an item at `index`.
+TCODLIB_API void TCOD_list_set(TCOD_List* lst, const void* element, int index);
+
+/// @brief Return a pointer to the beginning of the list.
+TCODLIB_API void** TCOD_list_begin(TCOD_List* lst);
+
+/// @brief Return a pointer to the end of the list.
+TCODLIB_API void** TCOD_list_end(TCOD_List* lst);
+
+/// @brief Reverse the order of elements in the list.
+TCODLIB_API void TCOD_list_reverse(TCOD_List* lst);
+
+/// @brief Remove `iter_element` from the list and return the next iterator element.
+TCODLIB_API void** TCOD_list_remove_iterator(TCOD_List* lst, void** iter_element);
+
+/// @brief Remove `element` from the list.
+TCODLIB_API void TCOD_list_remove(TCOD_List* lst, const void* element);
+
+/// @brief Remove `iter_element` from the list and return a new iterator.
+/// This replaces the element with the element from the end of the list instead of preserving the order of elements.
+TCODLIB_API void** TCOD_list_remove_iterator_fast(TCOD_List* lst, void** iter_element);
+
+/// @brief Remove an item from the list.
+/// The removed item is replaced with an item from the end of the list instead of preserving the order of items.
+TCODLIB_API void TCOD_list_remove_fast(TCOD_List* lst, const void* element);
+
+/// @brief Return true if `element` is in the list.
+TCODLIB_API bool TCOD_list_contains(TCOD_List* lst, const void* element);
+
+/// @brief Remove all items from a list.
+TCODLIB_API void TCOD_list_clear(TCOD_List* lst);
+
+/// @brief Call ``free()`` on all items on the list, then remove them.
+TCODLIB_API void TCOD_list_clear_and_delete(TCOD_List* lst);
+
+/// @brief Return the current count of items in a list.
+TCODLIB_API int TCOD_list_size(TCOD_List* lst);
+
+/// @brief Insert `element` on the index before `index`.
+TCODLIB_API void** TCOD_list_insert_before(TCOD_List* lst, const void* element, int index);
+
+/// @brief Returns true if this list is empty.
+TCODLIB_API bool TCOD_list_is_empty(TCOD_List* lst);
 #ifdef __cplusplus
 }
 #endif

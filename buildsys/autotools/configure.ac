@@ -28,6 +28,8 @@ AC_SEARCH_LIBS([atan2], [m], [:], [AC_MSG_ERROR([can't find the maths library])]
 PKG_CHECK_MODULES([ZLIB], [zlib >= 1.2.0])
 PKG_CHECK_MODULES([SDL], [sdl3 >= 3.2.0])
 
+AC_SUBST([LIBTCOD_PKGCONFIG_REQUIRES_PRIVATE], [sdl3, zlib])
+
 AS_CASE([$host_os],
     [mingw*], [:],
     [darwin*], [:],

@@ -296,9 +296,9 @@ static TCOD_Error console_from_xp_stream(z_stream* stream, TCOD_Console** out) {
   stream->next_out = (unsigned char*)&xp_layer;
   stream->avail_out = sizeof(xp_layer);
   int z_err = inflate(stream, Z_SYNC_FLUSH);
-  if (z_err < 0) {
-    return TCOD_set_errorvf("Decoding error: %s", stream->msg);
-  }
+  if (z_err < 0) return TCOD_set_errorvf("Decoding error: %s", stream->msg);
+  if (stream->avail_out != 0) return TCOD_set_errorv("Unexpected end of stream.");
+
   xp_layer.width = SDL_Swap32LE(xp_layer.width);
   xp_layer.height = SDL_Swap32LE(xp_layer.height);
   *out = TCOD_console_new(xp_layer.width, xp_layer.height);
@@ -308,9 +308,9 @@ static TCOD_Error console_from_xp_stream(z_stream* stream, TCOD_Console** out) {
     RexPaintTile xp_tile;
     stream->next_out = (Bytef*)&xp_tile;
     stream->avail_out = sizeof(xp_tile);
-    if (inflate(stream, Z_SYNC_FLUSH) < 0) {
-      return TCOD_set_errorvf("Decoding error: %s", stream->msg);
-    }
+    if (inflate(stream, Z_SYNC_FLUSH) < 0) return TCOD_set_errorvf("Decoding error: %s", stream->msg);
+    if (stream->avail_out != 0) return TCOD_set_errorv("Unexpected end of stream.");
+
     xp_tile_to_console_tile(i, &xp_tile, *out);
   }
   return TCOD_E_OK;
@@ -327,6 +327,8 @@ int TCOD_load_xp_from_memory(int n_data, const unsigned char* data, int n_out, T
     inflateEnd(&stream);
     return TCOD_E_ERROR;
   }
+  if (stream.avail_out != 0) return TCOD_set_errorv("Unexpected end of stream.");
+
   header.version = SDL_Swap32LE(header.version);
   header.layer_count = SDL_Swap32LE(header.layer_count);
   if (n_out <= 0 || !out) {

@@ -17,6 +17,7 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 - Prevent unsafe interactions with memory when loading untrusted size values from REXPaint files.
   - `TCOD_List` will now gracefully handle failed memory allocations.
   - Consoles now refuse to allocate when combined width and height would overflow.
+  - `TCOD_load_xp_from_memory` will check for incomplete compressed streams.
 
 ## [2.3.1] - 2026-11-10
 ### CMake

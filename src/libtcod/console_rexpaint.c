@@ -48,26 +48,35 @@
 #define SDL_Swap32LE(x) (x)
 #endif  // NO_SDL
 
+// REXPaint Specification:
+// https://steveasleep.com/rexpaint_manual.html#appendix-b:-.xp-format-specification-(and-import-libraries)
+
 #pragma pack(push, 1)
-/** REXPaint header struct, always at the beginning of the gzip stream. */
+/// @brief REXPaint header struct, always at the beginning of the gzip stream.
 typedef struct RexPaintHeader {
-  int32_t version;
-  int32_t layer_count;
+  int32_t version;  // Typically ``-1`` is expected here.
+  int32_t layer_count;  // Official specification is 1 to 9 layer but more can be handled
 } RexPaintHeader;
-/** The struct at the start of each REXPaint layer. */
+/// @brief The struct header at the start of each REXPaint layer.
 typedef struct RexPaintLayerChunk {
   int32_t width;
   int32_t height;
 } RexPaintLayerChunk;
-/** The layout of REXPaint's tile data. */
+/// @brief The layout of REXPaint's tile data.
 typedef struct RexPaintTile {
-  int32_t ch;
-  TCOD_color_t fg;
-  TCOD_color_t bg;
+  int32_t ch;  // REXPaint uses EASCII but libtcod will typically use UCS-4. Any decoding happens later.
+  TCOD_ColorRGB fg;
+  TCOD_ColorRGB bg;
 } RexPaintTile;
 #pragma pack(pop)
-/* Convert a list of consoles into a single console, deleting the list.
-  Follows REXPaint's rules for transparency. */
+
+/// @brief REXPaint uses this color as its transparency key color.
+static const TCOD_ColorRGB XP_KEY_COLOR = {255, 0, 255};
+
+/// @brief Convert a list of consoles into a single console, deleting the list when done.
+///     Follows REXPaint's rules for transparency.
+/// @param console_list Will be taken and deleted by this call.
+/// @return A new console or NULL on error.
 static TCOD_Console* combine_console_list(TCOD_list_t console_list) {
   TCOD_Console* main_console;
   if (!console_list) {
@@ -78,16 +87,20 @@ static TCOD_Console* combine_console_list(TCOD_list_t console_list) {
   main_console = TCOD_list_pop(console_list);
   while (!TCOD_list_is_empty(console_list)) {
     TCOD_Console* console = TCOD_list_pop(console_list);
-    /* Set key color to {255, 0, 255} before blit. */
-    TCOD_console_set_key_color(console, TCOD_fuchsia);
-    /* This blit may fail if the consoles do not match shapes. */
+    TCOD_console_set_key_color(console, XP_KEY_COLOR);  // Set key color before blit.
+    // This blit may fail if the consoles do not match shapes.
     TCOD_console_blit(console, 0, 0, 0, 0, main_console, 0, 0, 1.0f, 1.0f);
     TCOD_console_delete(console);
   }
   TCOD_list_delete(console_list);
   return main_console;
 }
-void xp_tile_to_console_tile(int i, const RexPaintTile* xp_tile, TCOD_Console* console) {
+/// @brief Convert a REXPaint tile to a Console tile and output it to a console.
+/// @param i Index of the REXPaint tile.
+/// @param xp_tile Raw uncompressed data of the REXPaint tile.
+/// @param console Output console with the same width/height as the input.
+static void xp_tile_to_console_tile(int i, const RexPaintTile* xp_tile, TCOD_Console* console) {
+  // Input is column-major, output is row-major
   const int x = i / console->h;
   const int y = i % console->h;
   console->tiles[x + y * console->w] = (TCOD_ConsoleTile){
@@ -96,19 +109,21 @@ void xp_tile_to_console_tile(int i, const RexPaintTile* xp_tile, TCOD_Console* c
       {xp_tile->bg.r, xp_tile->bg.g, xp_tile->bg.b, 0xff},
   };
 }
-/**
-    Read a console from a REXPaint gzFile file.
- */
-static int console_from_xp_file(gzFile gz_file, TCOD_Console** out) {
+/// @brief Read a console from a REXPaint gzFile file.
+/// @param gz_file Input file for reading.
+/// @param out New console will be outputted here.
+/// @return
+static TCOD_Error console_from_xp_file(gzFile gz_file, TCOD_Console** out) {
   RexPaintLayerChunk xp_layer;
   int z_errno = gzread(gz_file, &xp_layer, sizeof(xp_layer));
   if (z_errno < 0) {
     return TCOD_set_errorvf("Error decoding REXPaint file: %s", gzerror(gz_file, &z_errno));
   }
+  // Untrusted width/height input values
   xp_layer.width = SDL_Swap32LE(xp_layer.width);
   xp_layer.height = SDL_Swap32LE(xp_layer.height);
   *out = TCOD_console_new(xp_layer.width, xp_layer.height);
-  if (!*out) return -1;
+  if (!*out) return TCOD_E_ERROR;
   const int layer_total = xp_layer.width * xp_layer.height;
   for (int i = 0; i < layer_total; ++i) {
     RexPaintTile xp_tile;
@@ -153,13 +168,13 @@ int TCOD_load_xp(const char* path, int n, TCOD_Console** out) {
   gzclose(gz_file);
   return xp_header.layer_count;
 }
-/**
-    Append a console to a REXPaint gzFile.
- */
+/// @brief Append a console to a REXPaint gzFile.
+/// @param console Console to save, should not be NULL.
+/// @param gz_file Output file for writing.
+/// @return Negative values on failure.
 static TCOD_Error console_to_xp_file(const TCOD_Console* console, gzFile gz_file) {
-  if (console->w < 0 || console->h < 0) {
-    return TCOD_set_errorv("Console data is corrupt.");
-  }
+  if (!console) return TCOD_set_errorv("Console was NULL.");
+  if (console->w < 0 || console->h < 0) return TCOD_set_errorv("Console data is corrupt.");
   RexPaintLayerChunk xp_layer = {.width = SDL_Swap32LE(console->w), .height = SDL_Swap32LE(console->h)};
   int z_err = gzwrite(gz_file, &xp_layer, sizeof(xp_layer));
   if (z_err < 0) {
@@ -272,12 +287,11 @@ bool TCOD_console_list_save_xp(TCOD_list_t console_list, const char* filename, i
           filename,
           compress_level) == TCOD_E_OK);
 }
-/**
-    Load a console from a REXPaint chunk from a zlib `stream` to `out`.
-
-    Returns a negative value on error.
- */
-static int console_from_xp_stream(z_stream* stream, TCOD_Console** out) {
+/// @brief Load a console from a REXPaint chunk from a zlib `stream` to `out`.
+/// @param stream Stream input.
+/// @param out Where to output a new console.
+/// @return Negative values on error.
+static TCOD_Error console_from_xp_stream(z_stream* stream, TCOD_Console** out) {
   RexPaintLayerChunk xp_layer;
   stream->next_out = (unsigned char*)&xp_layer;
   stream->avail_out = sizeof(xp_layer);
@@ -288,7 +302,7 @@ static int console_from_xp_stream(z_stream* stream, TCOD_Console** out) {
   xp_layer.width = SDL_Swap32LE(xp_layer.width);
   xp_layer.height = SDL_Swap32LE(xp_layer.height);
   *out = TCOD_console_new(xp_layer.width, xp_layer.height);
-  if (!*out) return -1;
+  if (!*out) return TCOD_E_ERROR;
   const int layer_total = xp_layer.width * xp_layer.height;
   for (int i = 0; i < layer_total; ++i) {
     RexPaintTile xp_tile;

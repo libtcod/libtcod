@@ -142,7 +142,7 @@ TCODLIB_API int TCOD_load_xp_from_memory(int n_data, const unsigned char* data, 
 
     @param n_consoles The length of the input `consoles` array.
     @param consoles An array of tcod consoles, can not be NULL.
-    @param n_out The size of the `out` buffer, if this is zero then upper bound to be returned.
+    @param n_out The size of the `out` buffer, if zero then an upper bound will be returned.
     @param out A pointer to an output buffer, can be NULL.
     @param compression_level A compression level for the zlib library.
     @return If `out=NULL` then returns the upper bound of the buffer size needed.

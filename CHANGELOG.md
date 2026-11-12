@@ -9,10 +9,11 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 
 ## [Unreleased]
 ### Security
-- `TCOD_List` will now gracefully handle failed memory allocations.
 - Safer handling of `NULL` `TCOD_List*` pointers passed to list functions.
 - `TCOD_list_get` now performs bounds checking.
-- Consoles now refuse to allocate when combined width and height would overflow.
+- Prevent unsafe interactions with memory when loading untrusted size values from REXPaint files.
+  - `TCOD_List` will now gracefully handle failed memory allocations.
+  - Consoles now refuse to allocate when combined width and height would overflow.
 
 ## [2.3.1] - 2026-11-10
 ### CMake

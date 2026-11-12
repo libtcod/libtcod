@@ -6,6 +6,6 @@ includedir=@includedir@
 Name: libtcod
 Description: A roguelike development library.
 Version: @PACKAGE_VERSION@
-Requires.private: sdl3, zlib
+Requires.private: @LIBTCOD_PKGCONFIG_REQUIRES_PRIVATE@
 Cflags: -I${includedir}
 Libs: -L${libdir} -ltcod

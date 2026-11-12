@@ -8,6 +8,8 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 Versions since `2.0.0` only track API breaks and no longer guarantee ABI compatibility.
 
 ## [Unreleased]
+
+## [2.3.2] - 2026-11-12
 ### CMake
 - `Requires.private` in pkg-config file now only includes the packages requested by the current configuration. https://github.com/libtcod/libtcod/pull/207
 

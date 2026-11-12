@@ -256,14 +256,14 @@ typedef struct TCOD_Console* TCOD_console_t;
 #ifdef __cplusplus
 extern "C" {
 #endif  // __cplusplus
-/**
- *  Return a new console with a specific number of columns and rows.
- *
- *  \param w Number of columns.
- *  \param h Number of columns.
- *  \return A pointer to the new console, or NULL on error.
+/***************************************************************************
+    @brief Return a new console with a specific number of columns and rows.
+
+    @param width Number of columns.
+    @param height Number of rows.
+    @return A pointer to the new console, or NULL on error.
  */
-TCOD_PUBLIC TCOD_NODISCARD TCOD_Console* TCOD_console_new(int w, int h);
+TCOD_PUBLIC TCOD_NODISCARD TCOD_Console* TCOD_console_new(int width, int height);
 /**
  *  Return the width of a console.
  */

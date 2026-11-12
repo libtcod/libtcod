@@ -31,6 +31,7 @@
  */
 #include "console.h"
 
+#include <limits.h>
 #include <stdlib.h>
 
 #include "libtcod_int.h"
@@ -70,26 +71,30 @@ static bool TCOD_console_init_(TCOD_Console* con) {
   TCOD_console_clear(con);
   return true;
 }
-TCOD_Console* TCOD_console_new(int w, int h) {
-  if (w < 0 || h < 0) {
-    TCOD_set_errorvf("Width and height can not be negative: got %i,%i", w, h);
+TCOD_Console* TCOD_console_new(int width, int height) {
+  if (width < 0 || height < 0) {
+    TCOD_set_errorvf("Width and height can not be negative: got %i,%i", width, height);
     return NULL;
   }
-  struct TCOD_Console* con = calloc(1, sizeof(*con));
-  if (!con) {
+  if ((uintmax_t)width * (uintmax_t)height > INT_MAX) {
+    TCOD_set_errorv("Console size is too large.");
+    return NULL;
+  }
+  struct TCOD_Console* new_console = calloc(1, sizeof(*new_console));
+  if (!new_console) {
     TCOD_set_errorv("Could not allocate memory for a console.");
     return NULL;
   }
-  con->w = w;
-  con->h = h;
-  con->elements = w * h;
-  TCOD_console_init_(con);
+  new_console->w = width;
+  new_console->h = height;
+  new_console->elements = width * height;
+  TCOD_console_init_(new_console);
   if (TCOD_ctx.root) {
     // Default values for the root console are set by TCOD_console_init_.
-    con->alignment = TCOD_ctx.root->alignment;
-    con->bkgnd_flag = TCOD_ctx.root->bkgnd_flag;
+    new_console->alignment = TCOD_ctx.root->alignment;
+    new_console->bkgnd_flag = TCOD_ctx.root->bkgnd_flag;
   }
-  return con;
+  return new_console;
 }
 void TCOD_console_delete(TCOD_Console* con) {
   TCOD_Console* console = (con ? con : TCOD_ctx.root);

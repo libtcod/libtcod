@@ -26,8 +26,10 @@ TEST_CASE("REXPaint in-memory.") {
       static_cast<int>(console_array.size()), console_array.data(), 0, nullptr, COMPRESSION_LEVEL);
   REQUIRE(buffer_size > 0);
   std::vector<unsigned char> buffer(buffer_size);
-  TCOD_save_xp_to_memory(
-      static_cast<int>(console_array.size()), console_array.data(), buffer_size, &buffer[0], COMPRESSION_LEVEL);
+  REQUIRE(
+      TCOD_save_xp_to_memory(
+          static_cast<int>(console_array.size()), console_array.data(), buffer_size, &buffer[0], COMPRESSION_LEVEL) >=
+      0);
   std::array<TCOD_Console*, 2> console_out{nullptr, nullptr};
   REQUIRE(TCOD_load_xp_from_memory(buffer_size, buffer.data(), 0, nullptr) == console_out.size());
   REQUIRE(

@@ -7,5 +7,5 @@ Name: libtcod
 Description: A roguelike development library.
 Version: @PACKAGE_VERSION@
 Requires.private: @LIBTCOD_PKGCONFIG_REQUIRES_PRIVATE@
-Cflags: -I${includedir}
-Libs: -L${libdir} -ltcod
+Cflags: -I${includedir}@LIBTCOD_PKGCONFIG_CFLAGS@
+Libs: -L${libdir} @LIBTCOD_PKGCONFIG_LIBS@

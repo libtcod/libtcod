@@ -280,7 +280,29 @@ if(LIBTCOD_INSTALL)
         set(prefix "${CMAKE_INSTALL_PREFIX}")
         set(exec_prefix "\${prefix}")
         set(libdir "\${exec_prefix}/${CMAKE_INSTALL_LIBDIR}")
-        set(includedir "\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}")
+        if(IS_ABSOLUTE "${CMAKE_INSTALL_INCLUDEDIR}")
+            file(RELATIVE_PATH LIBTCOD_PKGCONFIG_INCLUDEDIR
+                "${CMAKE_INSTALL_PREFIX}"
+                "${CMAKE_INSTALL_INCLUDEDIR}")
+            if(IS_ABSOLUTE "${LIBTCOD_PKGCONFIG_INCLUDEDIR}")
+                set(includedir "${CMAKE_INSTALL_INCLUDEDIR}")
+            else()
+                set(includedir "\${prefix}/${LIBTCOD_PKGCONFIG_INCLUDEDIR}")
+            endif()
+        else()
+            set(includedir "\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}")
+        endif()
+
+        set(LIBTCOD_PKGCONFIG_LIBS "-ltcod")
+        set(LIBTCOD_PKGCONFIG_CFLAGS "")
+        if(MSVC)
+            set(LIBTCOD_PKGCONFIG_LIBS "-llibtcod")
+            if(NOT BUILD_SHARED_LIBS)
+                # This is appended to the include flag in the .pc template.
+                set(LIBTCOD_PKGCONFIG_CFLAGS " -DLIBTCOD_STATIC")
+            endif()
+        endif()
+
         set(PACKAGE_VERSION "${LIBTCOD_VERSION_FULL}")
         configure_file(
             ${CMAKE_CURRENT_SOURCE_DIR}/buildsys/autotools/libtcod.pc.in

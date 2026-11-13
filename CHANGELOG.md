@@ -8,6 +8,8 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 Versions since `2.0.0` only track API breaks and no longer guarantee ABI compatibility.
 
 ## [Unreleased]
+### CMake
+- CMake-installed pkg-config files now handle absolute include paths and link to the correct library on MSVC.
 
 ## [2.3.2] - 2026-11-12
 ### CMake

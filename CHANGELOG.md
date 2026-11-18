@@ -11,6 +11,9 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 ### CMake
 - CMake-installed pkg-config files now handle absolute include paths and link to the correct library on MSVC.
 
+### Security
+- Loading REXPaint files is no longer allowed an unlimited amount of memory.
+
 ## [2.3.2] - 2026-11-12
 ### CMake
 - `Requires.private` in pkg-config file now only includes the packages requested by the current configuration. https://github.com/libtcod/libtcod/pull/207

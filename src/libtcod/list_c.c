@@ -73,7 +73,9 @@ static TCOD_Error list_reserve(TCOD_List* lst, int desired_size) {
 }
 void TCOD_list_set_size(TCOD_List* lst, int size) {
   assert(lst);
-  if (lst) lst->fillSize = TCOD_MIN(size, lst->allocSize);
+  assert(size >= 0);
+  assert(size <= lst->allocSize);
+  if (lst) lst->fillSize = TCOD_MAX(0, TCOD_MIN(size, lst->allocSize));
 }
 TCOD_List* TCOD_list_new(void) { return (TCOD_List*)calloc(1, sizeof(struct TCOD_List)); }
 TCOD_List* TCOD_list_allocate(int nb_elements) {

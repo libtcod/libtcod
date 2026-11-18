@@ -170,10 +170,10 @@ TCODLIB_API int TCOD_load_xp(const char* path, int n, TCOD_Console** out);
     Partially initialized consoles are released on failures.
 
     @param n The number of consoles in the `consoles` array.
-    @param consoles An array of consoles.
+    @param consoles An array of consoles. On error nothing will be outputted.
     @param path The path write the REXPaint file, can not be NULL.
     @param compress_level A compression level for the zlib library.
-    @return Returns an error code on failure.
+    @return Returns an error code on failure. Otherwise returns the number of layers of this file.
 
     @versionadded{1.18}
  */

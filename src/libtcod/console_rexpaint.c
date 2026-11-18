@@ -42,6 +42,7 @@
 #include "console.h"
 #include "console_types.h"
 #include "libtcod_int.h"
+#include "utility.h"
 
 #ifndef NO_SDL
 #include <SDL3/SDL_endian.h>
@@ -91,7 +92,7 @@ enum ZipMode {
 struct ZipStreamIO {
   enum ZipType type;  // Always ZIP_TYPE_STREAM
   enum ZipMode mode;  // Stream compression/decompression configuration
-  z_stream z_stream;
+  z_streamp z_stream;
 };
 /// @brief Zipped file stream.
 struct ZipFileIO {
@@ -112,24 +113,28 @@ typedef union ZipIO {
 /// @param out_buffer Output buffer to read data to.
 /// @return Negative value on error.
 TCOD_NODISCARD
-static TCOD_Error zip_read(ZipIO* zip, unsigned int out_n, void* out_buffer) {
+static TCOD_Error zip_read(ZipIO* __restrict zip, unsigned int out_n, void* __restrict out_buffer) {
+  assert(zip);
+  if (!zip) return TCOD_E_INVALID_ARGUMENT;
   if (zip->stream.mode != ZIP_MODE_READ) {
     assert(false);
     return TCOD_E_INVALID_ARGUMENT;
   }
   switch (zip->type) {
-    case ZIP_TYPE_FILE:
+    case ZIP_TYPE_FILE: {
       const int z_errno = gzread(zip->file.gz_file, out_buffer, out_n);
       if (z_errno < 0) return TCOD_set_errorvf("Error decoding REXPaint file: %s", gzerror(zip->file.gz_file, NULL));
       return TCOD_E_OK;
-    case ZIP_TYPE_STREAM:
-      zip->stream.z_stream.next_out = (Bytef*)out_buffer;
-      zip->stream.z_stream.avail_out = out_n;
-      if (inflate(&zip->stream.z_stream, Z_SYNC_FLUSH) < 0) {
-        return TCOD_set_errorvf("Decoding error: %s", zip->stream.z_stream.msg);
-      }
-      if (zip->stream.z_stream.avail_out != 0) return TCOD_set_errorv("Unexpected end of stream.");
+    }
+    case ZIP_TYPE_STREAM: {
+      zip->stream.z_stream->next_out = (Bytef*)out_buffer;
+      zip->stream.z_stream->avail_out = out_n;
+      const int z_errno = inflate(zip->stream.z_stream, Z_SYNC_FLUSH);
+      assert(z_errno != Z_STREAM_ERROR);
+      if (z_errno < 0) return TCOD_set_errorvf("Decoding error: %s", zip->stream.z_stream->msg);
+      if (zip->stream.z_stream->avail_out != 0) return TCOD_set_errorv("Unexpected end of stream.");
       return TCOD_E_OK;
+    }
     default:
     case ZIP_TYPE_UNDEFINED:
       assert(false);
@@ -142,23 +147,27 @@ static TCOD_Error zip_read(ZipIO* zip, unsigned int out_n, void* out_buffer) {
 /// @param in_buffer Input buffer to save.
 /// @return Negative value on error.
 TCOD_NODISCARD
-static TCOD_Error zip_write(ZipIO* zip, unsigned int in_n, const void* in_buffer) {
+static TCOD_Error zip_write(ZipIO* __restrict zip, unsigned int in_n, const void* __restrict in_buffer) {
+  assert(zip);
+  if (!zip) return TCOD_E_INVALID_ARGUMENT;
   if (zip->stream.mode != ZIP_MODE_WRITE) {
     assert(false);
     return TCOD_E_INVALID_ARGUMENT;
   }
   switch (zip->type) {
-    case ZIP_TYPE_FILE:
+    case ZIP_TYPE_FILE: {
       const int z_errno = gzwrite(zip->file.gz_file, in_buffer, in_n);
       if (z_errno < 0) return TCOD_set_errorvf("Error encoding file: %s", gzerror(zip->file.gz_file, NULL));
       return TCOD_E_OK;
-    case ZIP_TYPE_STREAM:
-      zip->stream.z_stream.next_in = (Bytef*)in_buffer;
-      zip->stream.z_stream.avail_in = in_n;
-      if (deflate(&zip->stream.z_stream, Z_NO_FLUSH) < 0) {
-        return TCOD_set_errorvf("Error encoding: %s", zip->stream.z_stream.msg);
-      }
+    }
+    case ZIP_TYPE_STREAM: {
+      zip->stream.z_stream->next_in = (Bytef*)in_buffer;
+      zip->stream.z_stream->avail_in = in_n;
+      const int z_errno = deflate(zip->stream.z_stream, Z_NO_FLUSH);
+      assert(z_errno != Z_STREAM_ERROR);
+      if (z_errno < 0) return TCOD_set_errorvf("Error encoding: %s", zip->stream.z_stream->msg);
       return TCOD_E_OK;
+    }
     default:
     case ZIP_TYPE_UNDEFINED:
       assert(false);
@@ -168,41 +177,195 @@ static TCOD_Error zip_write(ZipIO* zip, unsigned int in_n, const void* in_buffer
 /// @brief Flush and close a generic zip stream.
 /// @param zip Generic zip union.
 /// @return Negative value on error, such as a file failing to be written.
-static TCOD_Error zip_close(ZipIO* zip) {
+static TCOD_Error zip_close(ZipIO* __restrict zip) {
+  if (!zip) return TCOD_E_OK;
+  TCOD_Error error = TCOD_E_OK;
   switch (zip->type) {
-    case ZIP_TYPE_FILE:
+    case ZIP_TYPE_FILE: {
       if (zip->file.gz_file) {
         const int z_errno = gzclose(zip->file.gz_file);
         zip->file.gz_file = NULL;
-        if (z_errno == Z_ERRNO) return TCOD_set_errorvf("File error: %s", strerror(errno));
+        if (z_errno == Z_ERRNO) error = TCOD_set_errorvf("File error: %s", strerror(errno));
       }
-      break;
-    case ZIP_TYPE_STREAM:
+    } break;
+    case ZIP_TYPE_STREAM: {
       const int z_errno =
-          (zip->stream.mode == ZIP_MODE_WRITE ? deflateEnd(&zip->stream.z_stream) : inflateEnd(&zip->stream.z_stream));
-      if (z_errno != Z_OK) return TCOD_set_errorvf("Stream error: %s", zip->stream.z_stream.msg);
-      break;
+          (zip->stream.mode == ZIP_MODE_WRITE ? deflateEnd(zip->stream.z_stream) : inflateEnd(zip->stream.z_stream));
+      if (z_errno != Z_OK) error = TCOD_set_errorvf("Stream error: %s", zip->stream.z_stream->msg);
+    } break;
     default:
     case ZIP_TYPE_UNDEFINED:
       assert(false);
       break;
   }
   zip->type = ZIP_TYPE_UNDEFINED;
+  return error;
+}
+
+/// @brief REXPaint loader object.
+typedef struct REXPaintLoader {
+  int xp_version;  ///< @brief REXPaint version number, is typically ``-1``.
+  int layer_count;  ///< @brief Total number of layers in this file.
+  int layer_index;  ///< @brief Index of the next later to load.
+  int layer_width;  ///< @brief Width of the next layer.
+  int layer_height;  ///< @brief Height of the next layer.
+  size_t memory_used;  ///< @brief Estimated total memory usage so far.
+  size_t memory_limit;  ///< @brief Enforced memory limit, will not load into memory beyond this limit.
+  ZipIO* __restrict input_stream;  ///< @brief Internally used data stream.
+} REXPaintLoader;
+
+/// @brief Close and delete a loaders input stream.
+/// @param xp_loader Must not be NULL, attributes unrelated to the stream will remain valid.
+/// @return Negative values on errors, such as a file failing to be written.
+static TCOD_Error xp_loader_uninit(REXPaintLoader* xp_loader) {
+  assert(xp_loader);
+  if (!xp_loader) return TCOD_E_OK;
+  TCOD_Error error = TCOD_E_OK;
+  if (xp_loader->input_stream) error = zip_close(xp_loader->input_stream);
+  xp_loader->input_stream = NULL;
+  return error;
+}
+/// @brief Load the next layer chunk header into loader attributes.
+/// @param xp_loader Must not be NULL. Uninitialized on any error.
+/// @return Negative values on error, such as bad size values or an unexpected end-of-stream.
+static TCOD_Error xp_loader_load_next_layer_chunk(REXPaintLoader* xp_loader) {
+  assert(xp_loader);
+  if (!xp_loader) return TCOD_E_INVALID_ARGUMENT;
+  if (xp_loader->layer_index < xp_loader->layer_count) ++xp_loader->layer_index;
+  if (xp_loader->layer_index == xp_loader->layer_count) {
+    xp_loader->layer_width = xp_loader->layer_height = 0;
+    return TCOD_E_OK;  // End of REXPaint stream reached
+  }
+  RexPaintLayerChunk xp_layer;
+  TCOD_Error error = zip_read(xp_loader->input_stream, sizeof(xp_layer), &xp_layer);
+  if (error < 0) {
+    xp_loader_uninit(xp_loader);
+    return error;
+  }
+  // Untrusted width/height input values
+  xp_loader->layer_width = SDL_Swap32LE(xp_layer.width);
+  xp_loader->layer_height = SDL_Swap32LE(xp_layer.height);
+  if (xp_layer.width < 0 || xp_layer.height < 0) {
+    xp_loader_uninit(xp_loader);
+    return TCOD_set_errorv("REXPaint layer had negative size values!");
+  }
   return TCOD_E_OK;
+}
+/// @brief Initialize a REXPaint loader object.
+/// @param xp_loader Loader to initialize, must not be NULL. Uninitialized on any error.
+/// @param input Loader will take full ownership of this stream. Closed on any error.
+/// @return Negative value on error.
+static TCOD_Error xp_loader_init(REXPaintLoader* xp_loader, ZipIO input) {
+  static const size_t DEFAULT_MEMORY_LIMIT = 0x40000000;  // 1GiB
+  assert(xp_loader);
+  if (!xp_loader) return TCOD_E_INVALID_ARGUMENT;
+
+  *xp_loader = (REXPaintLoader){.memory_limit = DEFAULT_MEMORY_LIMIT, .input_stream = calloc(1, sizeof(ZipIO))};
+  if (!xp_loader->input_stream) return TCOD_E_OUT_OF_MEMORY;
+  *xp_loader->input_stream = input;
+
+  RexPaintHeader xp_header;
+  TCOD_Error error = zip_read(xp_loader->input_stream, sizeof(xp_header), &xp_header);
+  if (error < 0) {
+    xp_loader_uninit(xp_loader);
+    return error;
+  }
+  xp_loader->xp_version = SDL_Swap32LE(xp_header.version);
+  xp_loader->layer_count = SDL_Swap32LE(xp_header.layer_count);
+
+  if (xp_loader->layer_count < 0) {
+    xp_loader_uninit(xp_loader);
+    return TCOD_set_errorv("REXPaint file had a negative count of layers.");
+  };
+  xp_loader->memory_used += (sizeof(TCOD_Console) + sizeof(TCOD_Console*)) * xp_loader->layer_count;
+  if (xp_loader->memory_used >= xp_loader->memory_limit) {
+    xp_loader_uninit(xp_loader);
+    return TCOD_set_errorv("Memory limits reached.");
+  }
+
+  xp_loader->layer_index = -1;
+  error = xp_loader_load_next_layer_chunk(xp_loader);
+  if (error < 0) return error;
+  return TCOD_E_OK;
+}
+/// @brief Delete a REXPaint loader object.
+/// @param xp_loader
+/// @return Negative on error, such as a file failing to write.
+static TCOD_Error xp_loader_delete(REXPaintLoader* xp_loader) {
+  if (!xp_loader) return TCOD_E_OK;
+  TCOD_Error error = xp_loader_uninit(xp_loader);
+  free(xp_loader);
+  return error;
+}
+/// @brief Return a new REXPaint loader for a file.
+/// @param path Path to a REXPaint file.
+/// @return A valid loader or NULL on failure. The caller owns this pointer.
+static REXPaintLoader* xp_loader_from_file(const char* path) {
+  REXPaintLoader* xp_loader = calloc(1, sizeof(*xp_loader));
+  if (!xp_loader) {
+    TCOD_set_errorv("Out of memory.");
+    return NULL;
+  }
+  ZipIO zip = {
+      .file = {
+          .type = ZIP_TYPE_FILE,
+          .mode = ZIP_MODE_READ,
+          .gz_file = gzopen(path, "rb"),
+      }};
+  if (!zip.file.gz_file) {
+    TCOD_set_errorvf("Could not open file: '%s'", path);
+    xp_loader_delete(xp_loader);
+    return NULL;
+  }
+
+  if (xp_loader_init(xp_loader, zip) < 0) {
+    xp_loader_delete(xp_loader);
+    return NULL;
+  }
+  return xp_loader;
+}
+/// @brief Return a new REXPaint loader for a buffer of memory.
+/// @param n_data Length of `data` in bytes.
+/// @param data Pointer to zipped REXPaint data in memory.
+/// @return A valid loader or NULL on failure. The caller owns this pointer.
+static REXPaintLoader* xp_loader_from_buffer(unsigned int n_data, const unsigned char* data) {
+  REXPaintLoader* xp_loader = calloc(1, sizeof(*xp_loader));
+  ZipIO zip = {
+      .stream = {
+          .type = ZIP_TYPE_STREAM,
+          .mode = ZIP_MODE_READ,
+          .z_stream = calloc(1, sizeof(*zip.stream.z_stream)),
+      }};
+  if (!xp_loader || !zip.stream.z_stream) {
+    free(xp_loader);
+    free(zip.stream.z_stream);
+    TCOD_set_errorv("Out of memory.");
+    return NULL;
+  }
+  *zip.stream.z_stream = (z_stream){.next_in = (Bytef*)data, .avail_in = n_data};
+  const int z_errno = inflateInit(zip.stream.z_stream);
+  if (z_errno != Z_OK) {
+    TCOD_set_errorf("Stream error: %s", zip.stream.z_stream->msg);
+    xp_loader_delete(xp_loader);
+    return NULL;
+  }
+  if (xp_loader_init(xp_loader, zip) < 0) {
+    xp_loader_delete(xp_loader);
+    return NULL;
+  }
+  return xp_loader;
 }
 
 /// @brief Convert a list of consoles into a single console, deleting the list when done.
 ///     Follows REXPaint's rules for transparency.
 /// @param console_list Will be taken and deleted by this call.
 /// @return A new console or NULL on error.
-static TCOD_Console* combine_console_list(TCOD_list_t console_list) {
-  TCOD_Console* main_console;
-  if (!console_list) {
-    return NULL;
-  }
+static TCOD_Console* combine_console_list(TCOD_List* console_list) {
+  if (!console_list) return NULL;
+
   /* Reverse the list so that elements will be dequeued. */
   TCOD_list_reverse(console_list);
-  main_console = TCOD_list_pop(console_list);
+  TCOD_Console* main_console = TCOD_list_pop(console_list);
   while (!TCOD_list_is_empty(console_list)) {
     TCOD_Console* console = TCOD_list_pop(console_list);
     TCOD_console_set_key_color(console, XP_KEY_COLOR);  // Set key color before blit.
@@ -217,10 +380,11 @@ static TCOD_Console* combine_console_list(TCOD_list_t console_list) {
 /// @param i Index of the REXPaint tile.
 /// @param xp_tile Raw uncompressed data of the REXPaint tile.
 /// @param console Output console with the same width/height as the input.
-static void xp_tile_to_console_tile(int i, const RexPaintTile* xp_tile, TCOD_Console* console) {
-  // Input is column-major, output is row-major
-  const int x = i / console->h;
-  const int y = i % console->h;
+static void xp_tile_to_console_tile(
+    ptrdiff_t i, const RexPaintTile* __restrict xp_tile, TCOD_Console* __restrict console) {
+  // Input REXPaint is column-major, output TCOD_Console is row-major
+  const ptrdiff_t x = i / console->h;
+  const ptrdiff_t y = i % console->h;
   console->tiles[x + y * console->w] = (TCOD_ConsoleTile){
       SDL_Swap32LE(xp_tile->ch),
       {xp_tile->fg.r, xp_tile->fg.g, xp_tile->fg.b, 0xff},
@@ -228,63 +392,82 @@ static void xp_tile_to_console_tile(int i, const RexPaintTile* xp_tile, TCOD_Con
   };
 }
 
-/// @brief Read a console from a generic stream.
-/// @param zip Input zip for reading.
-/// @param out New console will be outputted here.
-/// @return Negative value on error.
-static TCOD_Error console_from_zip(ZipIO* zip, TCOD_Console** out) {
-  RexPaintLayerChunk xp_layer;
-  TCOD_Error error = zip_read(zip, sizeof(xp_layer), &xp_layer);
-  if (error < 0) return error;
-  // Untrusted width/height input values
-  xp_layer.width = SDL_Swap32LE(xp_layer.width);
-  xp_layer.height = SDL_Swap32LE(xp_layer.height);
-  *out = TCOD_console_new(xp_layer.width, xp_layer.height);
-  if (!*out) return TCOD_E_ERROR;
-  const int layer_total = xp_layer.width * xp_layer.height;
-  for (int i = 0; i < layer_total; ++i) {
+/// @brief Read the next console from a REXPaint loader.
+/// @param xp_loader Input loader for reading, must not be NULL. Uninitialized on any error.
+/// @param out New console will be outputted here. Can be NULL to skip this layer.
+/// @return Negative value on error, such as an unexpected end-of-stream.
+static TCOD_Error console_from_xp_loader(REXPaintLoader* xp_loader, TCOD_Console** out) {
+  if (!xp_loader) {
+    TCOD_set_errorv("REXPaint loader must not be NULL");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  if (xp_loader->layer_index >= xp_loader->layer_count) {
+    return TCOD_set_errorv("Reached end of REXPaint stream.");
+  }
+  // Sanitize size values, these may be negative if previous errors were ignored.
+  assert(xp_loader->layer_width >= 0);
+  assert(xp_loader->layer_height >= 0);
+  xp_loader->layer_width = TCOD_MAX(0, xp_loader->layer_width);
+  xp_loader->layer_height = TCOD_MAX(0, xp_loader->layer_height);
+
+  xp_loader->memory_used += xp_loader->layer_width * xp_loader->layer_height * sizeof(TCOD_ConsoleTile);
+  if (xp_loader->memory_used >= xp_loader->memory_limit) {
+    xp_loader_uninit(xp_loader);
+    return TCOD_set_errorv("Memory limits reached.");
+  }
+
+  if (out) {
+    *out = TCOD_console_new(xp_loader->layer_width, xp_loader->layer_height);
+    if (!*out) return TCOD_E_ERROR;
+  }
+  const ptrdiff_t layer_total = (ptrdiff_t)xp_loader->layer_width * (ptrdiff_t)xp_loader->layer_height;
+  for (ptrdiff_t i = 0; i < layer_total; ++i) {
     RexPaintTile xp_tile;
-    error = zip_read(zip, sizeof(xp_tile), &xp_tile);
+    const TCOD_Error error = zip_read(xp_loader->input_stream, sizeof(xp_tile), &xp_tile);
     if (error < 0) return error;
-    xp_tile_to_console_tile(i, &xp_tile, *out);
+    if (out) xp_tile_to_console_tile(i, &xp_tile, *out);
+  }
+  const TCOD_Error error = xp_loader_load_next_layer_chunk(xp_loader);
+  if (error < 0) return error;
+  return TCOD_E_OK;
+}
+
+/// @brief Append consoles from a REXPaint loader into an array.
+/// @param xp_loader Must not be NULL
+/// @param n_out Length of the output array.
+///   Can be ``xp_loader->layer_count - xp_loader->layer_index`` to extract all remaining layers from the stream.
+/// @param out Output array of pointers to consoles.
+/// @return Negative values on error, such as an unexected end-of-stream.
+static TCOD_Error xp_loader_to_console_array(REXPaintLoader* xp_loader, int n_out, TCOD_Console** out) {
+  if (!xp_loader) {
+    TCOD_set_errorv("xp_loader must not be NULL");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  for (int i = 0; i < n_out; ++i) {
+    const TCOD_Error error = console_from_xp_loader(xp_loader, out ? &out[i] : NULL);
+    if (error < 0) {
+      for (; i >= 0; --i) {
+        TCOD_console_delete(out[i]);
+        out[i] = NULL;
+      }
+      return error;
+    }
   }
   return TCOD_E_OK;
 }
 
 int TCOD_load_xp(const char* path, int n, TCOD_Console** out) {
-  ZipIO zip = {
-      .file = {
-          .type = ZIP_TYPE_FILE,
-          .mode = ZIP_MODE_READ,
-          .gz_file = gzopen(path, "rb"),
-      }};
-  if (!zip.file.gz_file) {
-    return TCOD_set_errorvf("Could not open file: '%s'", path);
-  }
-  RexPaintHeader xp_header;
-  TCOD_Error error = zip_read(&zip, sizeof(xp_header), &xp_header);
-  if (error < 0) {
-    zip_close(&zip);
-    return error;
-  }
-  xp_header.version = SDL_Swap32LE(xp_header.version);
-  xp_header.layer_count = SDL_Swap32LE(xp_header.layer_count);
+  REXPaintLoader* xp_loader = xp_loader_from_file(path);
+  if (!xp_loader) return TCOD_E_ERROR;
+  const int layer_count = xp_loader->layer_count;
   if (n <= 0 || !out) {
-    zip_close(&zip);
-    return xp_header.layer_count;
+    xp_loader_delete(xp_loader);
+    return layer_count;
   }
-  for (int i = 0; i < n; ++i) {
-    if (console_from_zip(&zip, &out[i]) < 0) {
-      for (; i >= 0; --i) {
-        TCOD_console_delete(out[i]);
-        out[i] = NULL;
-      }
-      zip_close(&zip);
-      return TCOD_E_ERROR;
-    }
-  }
-  zip_close(&zip);
-  return xp_header.layer_count;
+  const TCOD_Error error = xp_loader_to_console_array(xp_loader, n, out);
+  xp_loader_delete(xp_loader);
+  if (error < 0) return error;
+  return layer_count;
 }
 
 /// @brief Append a console to a generic zip.
@@ -367,15 +550,24 @@ TCOD_Error TCOD_save_xp(int n, const TCOD_Console* const* consoles, const char* 
   return zip_close(&zip);
 }
 
-TCOD_list_t TCOD_console_list_from_xp(const char* filename) {
-  int layer_count = TCOD_load_xp(filename, 0, NULL);
-  if (layer_count < 0) return NULL;
-  TCOD_list_t console_list = TCOD_list_allocate(layer_count);
-  for (int i = 0; i < layer_count; ++i) TCOD_list_push(console_list, NULL);
-  if (TCOD_load_xp(filename, layer_count, (TCOD_Console**)TCOD_list_begin(console_list)) < 0) {
-    TCOD_list_delete(console_list);
-    console_list = NULL;
+TCOD_List* TCOD_console_list_from_xp(const char* filename) {
+  REXPaintLoader* xp_loader = xp_loader_from_file(filename);
+  if (!xp_loader) return NULL;
+  assert(xp_loader->layer_count >= 0);
+  TCOD_List* console_list = TCOD_list_allocate(xp_loader->layer_count);
+  if (!console_list) {
+    xp_loader_delete(xp_loader);
+    return NULL;
   }
+  TCOD_list_set_size(console_list, xp_loader->layer_count);
+  const TCOD_Error error =
+      xp_loader_to_console_array(xp_loader, xp_loader->layer_count, (TCOD_Console**)TCOD_list_begin(console_list));
+  if (error < 0) {
+    TCOD_list_delete(console_list);
+    xp_loader_delete(xp_loader);
+    return NULL;
+  }
+  xp_loader_delete(xp_loader);
   return console_list;
 }
 TCOD_Console* TCOD_console_from_xp(const char* filename) {
@@ -399,7 +591,7 @@ bool TCOD_console_save_xp(const TCOD_Console* con, const char* filename, int com
   con = TCOD_console_validate_(con);
   return TCOD_save_xp(1, &con, filename, compress_level) == TCOD_E_OK;
 }
-bool TCOD_console_list_save_xp(TCOD_list_t console_list, const char* filename, int compress_level) {
+bool TCOD_console_list_save_xp(TCOD_List* console_list, const char* filename, int compress_level) {
   return (
       TCOD_save_xp(
           TCOD_list_size(console_list),
@@ -409,50 +601,31 @@ bool TCOD_console_list_save_xp(TCOD_list_t console_list, const char* filename, i
 }
 
 int TCOD_load_xp_from_memory(int n_data, const unsigned char* data, int n_out, TCOD_Console** out) {
-  ZipIO zip = {
-      .stream = {
-          .type = ZIP_TYPE_STREAM,
-          .mode = ZIP_MODE_READ,
-          .z_stream = {.next_in = (Bytef*)data, .avail_in = n_data},
-      }};
-  const int z_errno = inflateInit(&zip.stream.z_stream);
-  if (z_errno != Z_OK) return TCOD_set_errorf("Stream error: %s", zip.stream.z_stream.msg);
-  RexPaintHeader header;
-  TCOD_Error error = zip_read(&zip, sizeof(header), &header);
-  if (error < 0) {
-    zip_close(&zip);
-    return error;
-  }
-  header.version = SDL_Swap32LE(header.version);
-  header.layer_count = SDL_Swap32LE(header.layer_count);
+  REXPaintLoader* xp_loader = xp_loader_from_buffer(n_data, data);
+  if (!xp_loader) return TCOD_E_ERROR;
+  const int layer_count = xp_loader->layer_count;
+
   if (n_out <= 0 || !out) {
-    zip_close(&zip);
-    return header.layer_count;
+    xp_loader_delete(xp_loader);
+    return layer_count;
   }
-  for (int i = 0; i < n_out && i < header.layer_count; ++i) {
-    if (console_from_zip(&zip, &out[i]) < 0) {
-      zip_close(&zip);
-      for (; i >= 0; --i) {
-        TCOD_console_delete(out[i]);
-        out[i] = NULL;
-      }
-      return TCOD_E_ERROR;
-    }
-  }
-  zip_close(&zip);
-  return header.layer_count;
+  const TCOD_Error error = xp_loader_to_console_array(xp_loader, n_out, out);
+  xp_loader_delete(xp_loader);
+  if (error < 0) return error;
+  return layer_count;
 }
 
 int TCOD_save_xp_to_memory(
     int n_consoles, const TCOD_Console* const* consoles, int n_out, unsigned char* out, int compression_level) {
+  z_stream stream = {.next_out = out, .avail_out = n_out};
   ZipIO zip = {
       .stream = {
           .type = ZIP_TYPE_STREAM,
           .mode = ZIP_MODE_WRITE,
-          .z_stream = {.next_out = out, .avail_out = n_out},
+          .z_stream = &stream,
       }};
-  const int z_errno = deflateInit(&zip.stream.z_stream, compression_level);
-  if (z_errno != Z_OK) return TCOD_set_errorf("Stream error: %s", zip.stream.z_stream.msg);
+  const int z_errno = deflateInit(zip.stream.z_stream, compression_level);
+  if (z_errno != Z_OK) return TCOD_set_errorf("Stream error: %s", zip.stream.z_stream->msg);
   size_t total_size = sizeof(RexPaintHeader) + sizeof(RexPaintLayerChunk) * n_consoles;
   for (int i = 0; i < n_consoles; ++i) {
     total_size += consoles[i]->w * consoles[i]->h * sizeof(RexPaintTile);
@@ -462,7 +635,7 @@ int TCOD_save_xp_to_memory(
     }
   }
   if (n_out <= 0 || !out) {
-    int upper_size = deflateBound(&zip.stream.z_stream, (uLong)total_size);
+    int upper_size = deflateBound(zip.stream.z_stream, (uLong)total_size);
     zip_close(&zip);
     return upper_size;
   }
@@ -478,9 +651,9 @@ int TCOD_save_xp_to_memory(
       return TCOD_E_ERROR;
     }
   }
-  if (deflate(&zip.stream.z_stream, Z_FINISH) == Z_STREAM_END) {
+  if (deflate(zip.stream.z_stream, Z_FINISH) == Z_STREAM_END) {
     zip_close(&zip);
-    return zip.stream.z_stream.total_out;  // Success.
+    return zip.stream.z_stream->total_out;  // Success.
   }
   zip_close(&zip);
   return TCOD_set_errorv("Output buffer was too small.");

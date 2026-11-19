@@ -11,6 +11,9 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 ### CMake
 - CMake-installed pkg-config files now handle absolute include paths and link to the correct library on MSVC.
 
+### Fixed
+- Saving/loading REXPaint files with zero layers is more predictable.
+
 ### Security
 - Loading REXPaint files is no longer allowed an unlimited amount of memory.
 

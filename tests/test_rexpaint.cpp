@@ -42,7 +42,7 @@ TEST_CASE("REXPaint in-memory.") {
   for (auto& it : console_out) TCOD_console_delete(it);
 }
 
-TEST_CASE("REXPaint bad data.") {
+TEST_CASE("REXPaint save negative size") {
   char tmp_file[L_tmpnam]{};
   std::tmpnam(tmp_file);
   TCOD_Console bad_console = {};
@@ -52,6 +52,60 @@ TEST_CASE("REXPaint bad data.") {
   REQUIRE(TCOD_save_xp_to_memory(1, &bad_console_ptr, 0, nullptr, COMPRESSION_LEVEL) == TCOD_E_ERROR);
   REQUIRE(TCOD_save_xp(1, &bad_console_ptr, tmp_file, COMPRESSION_LEVEL) == TCOD_E_ERROR);
   REQUIRE_FALSE(std::filesystem::exists(tmp_file));
+}
+
+TEST_CASE("REXPaint layer-count bomb") {
+  /// @brief REXPaint file with INT_MAX layer count.
+  constexpr std::array<uint8_t, 27> HUGE_LAYER_COUNT_XP = {120, 1,   1,   16,  0,   239, 255, 255, 255,
+                                                           255, 255, 255, 255, 255, 127, 255, 255, 255,
+                                                           127, 255, 255, 255, 127, 128, 8,   14,  113};
+  REQUIRE(
+      TCOD_load_xp_from_memory((int)HUGE_LAYER_COUNT_XP.size(), HUGE_LAYER_COUNT_XP.data(), 0, NULL) == TCOD_E_ERROR);
+
+  TCOD_Console* console = NULL;
+  REQUIRE(
+      TCOD_load_xp_from_memory((int)HUGE_LAYER_COUNT_XP.size(), HUGE_LAYER_COUNT_XP.data(), 1, &console) ==
+      TCOD_E_ERROR);
+  REQUIRE_FALSE(console);
+}
+
+TEST_CASE("REXPaint layer-size bomb") {
+  /// @brief REXPaint file with one layer with a width/height of INT_MAX.
+  constexpr std::array<uint8_t, 27> HUGE_LAYER_SIZE_XP = {120, 1,   1,   16,  0,   239, 255, 255, 255,
+                                                          255, 255, 1,   0,   0,   0,   255, 255, 255,
+                                                          127, 255, 255, 255, 127, 90,  190, 10,  246};
+  REQUIRE(TCOD_load_xp_from_memory((int)HUGE_LAYER_SIZE_XP.size(), HUGE_LAYER_SIZE_XP.data(), 0, NULL) == 1);
+
+  TCOD_Console* console = NULL;
+  REQUIRE(
+      TCOD_load_xp_from_memory((int)HUGE_LAYER_SIZE_XP.size(), HUGE_LAYER_SIZE_XP.data(), 1, &console) == TCOD_E_ERROR);
+  REQUIRE_FALSE(console);
+}
+
+TEST_CASE("REXPaint negative layers") {
+  /// @brief REXPaint file with -1 layers.
+  constexpr std::array<uint8_t, 27> NEGATIVE_LAYER_COUNT_XP = {
+      120, 1, 1, 16, 0, 239, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 99, 172, 7, 249};
+
+  REQUIRE(
+      TCOD_load_xp_from_memory((int)NEGATIVE_LAYER_COUNT_XP.size(), NEGATIVE_LAYER_COUNT_XP.data(), 0, NULL) ==
+      TCOD_E_ERROR);
+}
+
+TEST_CASE("REXPaint negative layer size") {
+  /// @brief REXPaint file with one layer with a width/height of -1.
+  constexpr std::array<uint8_t, 27> NEGATIVE_LAYER_SIZE_XP = {120, 1,   1,   16,  0,   239, 255, 255, 255,
+                                                              255, 255, 1,   0,   0,   0,   255, 255, 255,
+                                                              255, 255, 255, 255, 255, 93,  190, 11,  246};
+  REQUIRE(
+      TCOD_load_xp_from_memory((int)NEGATIVE_LAYER_SIZE_XP.size(), NEGATIVE_LAYER_SIZE_XP.data(), 0, NULL) ==
+      TCOD_E_ERROR);
+
+  TCOD_Console* console = NULL;
+  REQUIRE(
+      TCOD_load_xp_from_memory((int)NEGATIVE_LAYER_SIZE_XP.size(), NEGATIVE_LAYER_SIZE_XP.data(), 1, &console) ==
+      TCOD_E_ERROR);
+  REQUIRE_FALSE(console);
 }
 
 TEST_CASE("REXPaint to file.") {
@@ -86,5 +140,31 @@ TEST_CASE("REXPaint from file.") {
   REQUIRE(console.at(1, 1).bg == TCOD_ColorRGBA{0, 255, 0, 255});
   REQUIRE(console.at(2, 1).bg == TCOD_ColorRGBA{0, 0, 255, 255});
   REQUIRE(console.at(3, 1).bg == TCOD_ColorRGBA{0, 0, 0, 255});
+}
+TEST_CASE("REXPaint empty list") {
+  char tmp_file[L_tmpnam]{};
+  std::tmpnam(tmp_file);
+
+  tcod::save_xp({}, tmp_file, 0);
+
+  auto consoles = tcod::load_xp(tmp_file);
+  REQUIRE(consoles.size() == 0);
+
+  REQUIRE(std::filesystem::remove(tmp_file));
+}
+
+TEST_CASE("REXPaint empty console") {
+  char tmp_file[L_tmpnam]{};
+  std::tmpnam(tmp_file);
+
+  auto empty_console = tcod::Console{0, 0};
+  tcod::save_xp({empty_console.get()}, tmp_file, 0);
+
+  auto consoles = tcod::load_xp(tmp_file);
+  REQUIRE(consoles.size() == 1);
+  REQUIRE(consoles.at(0).get()->w == 0);
+  REQUIRE(consoles.at(0).get()->h == 0);
+
+  REQUIRE(std::filesystem::remove(tmp_file));
 }
 #endif  // TCOD_NO_ZLIB

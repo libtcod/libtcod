@@ -500,7 +500,7 @@ TCOD_Error TCOD_save_xp(int n, const TCOD_Console* const* consoles, const char* 
     TCOD_set_errorv("n parameter can not be negative");
     return TCOD_E_INVALID_ARGUMENT;
   }
-  if (n >= 0 && !consoles) {
+  if (n > 0 && !consoles) {
     TCOD_set_errorv("consoles parameter can not be NULL");
     return TCOD_E_INVALID_ARGUMENT;
   }

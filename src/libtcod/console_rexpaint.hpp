@@ -57,7 +57,7 @@ inline std::vector<tcod::ConsolePtr> load_xp(const std::filesystem::path& path) 
   const auto path_str = path.string();
   int layer_count = tcod::check_throw_error(TCOD_load_xp(path_str.c_str(), 0, nullptr));
   std::vector<TCOD_Console*> tmp(layer_count, nullptr);
-  tcod::check_throw_error(TCOD_load_xp(path_str.c_str(), layer_count, &tmp[0]));
+  tcod::check_throw_error(TCOD_load_xp(path_str.c_str(), layer_count, tmp.data()));
   return std::vector<tcod::ConsolePtr>(tmp.begin(), tmp.end());
 }
 /**

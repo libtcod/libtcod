@@ -1276,7 +1276,7 @@ void TCOD_mouse_move(int x, int y) {
 void TCOD_mouse_includes_touch(bool enable) { (void)enable; }
 
 /*clipboard stuff */
-bool TCOD_sys_clipboard_set(const char* text) { return SDL_SetClipboardText(text) == 0; }
+bool TCOD_sys_clipboard_set(const char* text) { return SDL_SetClipboardText(text); }
 
 char* TCOD_sys_clipboard_get() {
   /*

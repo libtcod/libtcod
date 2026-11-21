@@ -55,7 +55,7 @@ TCODLIB_API bool TCOD_mouse_is_cursor_visible(void);
 TCOD_DEPRECATED("Use SDL_WarpMouseInWindow to move mouse cursor instead.")
 TCODLIB_API void TCOD_mouse_move(int x, int y);
 
-TCOD_DEPRECATED_NOMESSAGE
+TCOD_DEPRECATED("This function does nothing.")
 TCODLIB_API void TCOD_mouse_includes_touch(bool enable);
 #ifdef __cplusplus
 }

@@ -75,70 +75,70 @@ TCODLIB_API void TCOD_sys_startup(void);
 TCODLIB_API void TCOD_sys_shutdown(void);
 
 /* filesystem stuff */
-TCOD_DEPRECATED_NOMESSAGE
+TCOD_DEPRECATED("Use SDL Storage Abstraction instead.")
 TCODLIB_API bool TCOD_sys_create_directory(const char* path);
-TCOD_DEPRECATED_NOMESSAGE
+TCOD_DEPRECATED("Use SDL Storage Abstraction instead.")
 TCODLIB_API bool TCOD_sys_delete_file(const char* path);
-TCOD_DEPRECATED_NOMESSAGE
+TCOD_DEPRECATED("Use SDL Storage Abstraction instead.")
 TCODLIB_API bool TCOD_sys_delete_directory(const char* path);
-TCOD_DEPRECATED_NOMESSAGE
+TCOD_DEPRECATED("Use SDL Storage Abstraction instead.")
 TCODLIB_API bool TCOD_sys_is_directory(const char* path);
-TCOD_DEPRECATED_NOMESSAGE
+TCOD_DEPRECATED("Use SDL Storage Abstraction instead.")
 TCODLIB_API TCOD_list_t TCOD_sys_get_directory_content(const char* path, const char* pattern);
-TCOD_DEPRECATED_NOMESSAGE
+TCOD_DEPRECATED("Use SDL Storage Abstraction instead.")
 TCODLIB_API bool TCOD_sys_file_exists(const char* filename, ...);
-TCOD_DEPRECATED_NOMESSAGE
+TCOD_DEPRECATED("Use SDL Storage Abstraction instead.")
 TCODLIB_API bool TCOD_sys_read_file(const char* filename, unsigned char** buf, size_t* size);
-TCOD_DEPRECATED_NOMESSAGE
+TCOD_DEPRECATED("Use SDL Storage Abstraction instead.")
 TCODLIB_API bool TCOD_sys_write_file(const char* filename, unsigned char* buf, uint32_t size);
 #ifndef TCOD_NO_THREADS
 /* threads */
-TCOD_DEPRECATED_NOMESSAGE
+TCOD_DEPRECATED("Use standard C11 or SDL for thread management instead.")
 TCODLIB_API TCOD_thread_t TCOD_thread_new(int (*func)(void*), void* data);
-TCOD_DEPRECATED_NOMESSAGE
+TCOD_DEPRECATED("Use standard C11 or SDL for thread management instead.")
 TCODLIB_API void TCOD_thread_delete(TCOD_thread_t th);
-TCOD_DEPRECATED_NOMESSAGE
+TCOD_DEPRECATED("Use standard C11 or SDL for thread management instead.")
 TCODLIB_API int TCOD_sys_get_num_cores(void);
-TCOD_DEPRECATED_NOMESSAGE
+TCOD_DEPRECATED("Use standard C11 or SDL for thread management instead.")
 TCODLIB_API void TCOD_thread_wait(TCOD_thread_t th);
 /* mutex */
-TCOD_DEPRECATED_NOMESSAGE
+TCOD_DEPRECATED("Use standard C11 or SDL for thread management instead.")
 TCODLIB_API TCOD_mutex_t TCOD_mutex_new(void);
-TCOD_DEPRECATED_NOMESSAGE
+TCOD_DEPRECATED("Use standard C11 or SDL for thread management instead.")
 TCODLIB_API void TCOD_mutex_in(TCOD_mutex_t mut);
-TCOD_DEPRECATED_NOMESSAGE
+TCOD_DEPRECATED("Use standard C11 or SDL for thread management instead.")
 TCODLIB_API void TCOD_mutex_out(TCOD_mutex_t mut);
-TCOD_DEPRECATED_NOMESSAGE
+TCOD_DEPRECATED("Use standard C11 or SDL for thread management instead.")
 TCODLIB_API void TCOD_mutex_delete(TCOD_mutex_t mut);
 /* semaphore */
-TCOD_DEPRECATED_NOMESSAGE
+TCOD_DEPRECATED("Use standard C11 or SDL for thread management instead.")
 TCODLIB_API TCOD_semaphore_t TCOD_semaphore_new(int initVal);
-TCOD_DEPRECATED_NOMESSAGE
+TCOD_DEPRECATED("Use standard C11 or SDL for thread management instead.")
 TCODLIB_API void TCOD_semaphore_lock(TCOD_semaphore_t sem);
-TCOD_DEPRECATED_NOMESSAGE
+TCOD_DEPRECATED("Use standard C11 or SDL for thread management instead.")
 TCODLIB_API void TCOD_semaphore_unlock(TCOD_semaphore_t sem);
-TCOD_DEPRECATED_NOMESSAGE
+TCOD_DEPRECATED("Use standard C11 or SDL for thread management instead.")
 TCODLIB_API void TCOD_semaphore_delete(TCOD_semaphore_t sem);
 /* condition */
-TCOD_DEPRECATED_NOMESSAGE
+TCOD_DEPRECATED("Use standard C11 or SDL for thread management instead.")
 TCODLIB_API TCOD_cond_t TCOD_condition_new(void);
-TCOD_DEPRECATED_NOMESSAGE
+TCOD_DEPRECATED("Use standard C11 or SDL for thread management instead.")
 TCODLIB_API void TCOD_condition_signal(TCOD_cond_t sem);
-TCOD_DEPRECATED_NOMESSAGE
+TCOD_DEPRECATED("Use standard C11 or SDL for thread management instead.")
 TCODLIB_API void TCOD_condition_broadcast(TCOD_cond_t sem);
-TCOD_DEPRECATED_NOMESSAGE
+TCOD_DEPRECATED("Use standard C11 or SDL for thread management instead.")
 TCODLIB_API void TCOD_condition_wait(TCOD_cond_t sem, TCOD_mutex_t mut);
-TCOD_DEPRECATED_NOMESSAGE
+TCOD_DEPRECATED("Use standard C11 or SDL for thread management instead.")
 TCODLIB_API void TCOD_condition_delete(TCOD_cond_t sem);
 #endif  // TCOD_NO_THREADS
 #ifndef NO_SDL
 /* dynamic library */
 typedef void* TCOD_library_t;
-TCOD_DEPRECATED_NOMESSAGE
+TCOD_DEPRECATED("Use SDL for Shared Object/DLL Management instead.")
 TCODLIB_API TCOD_library_t TCOD_load_library(const char* path);
-TCOD_DEPRECATED_NOMESSAGE
+TCOD_DEPRECATED("Use SDL for Shared Object/DLL Management instead.")
 TCODLIB_API void* TCOD_get_function_address(TCOD_library_t library, const char* function_name);
-TCOD_DEPRECATED_NOMESSAGE
+TCOD_DEPRECATED("Use SDL for Shared Object/DLL Management instead.")
 TCODLIB_API void TCOD_close_library(TCOD_library_t);
 
 /***************************************************************************
@@ -253,7 +253,8 @@ TCOD_DEPRECATED("Use the SDL API to handle the clipboard.")
 TCODLIB_API char* TCOD_sys_clipboard_get(void);
 
 /* SDL renderer callback */
-TCOD_DEPRECATED_NOMESSAGE
+TCOD_DEPRECATED(
+    "This is slow. Render consoles to an SDL_Texture via TCOD_sdl2_render_texture then use the SDL render API instead.")
 TCODLIB_API void TCOD_sys_register_SDL_renderer(SDL_renderer_t renderer);
 #endif  // NO_SDL
 #ifdef __cplusplus

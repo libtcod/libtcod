@@ -204,7 +204,7 @@ bool TCOD_sys_check_magic_number(const char* filename, size_t size, uint8_t* dat
 void TCOD_list_set_size(TCOD_list_t lst, int size);
 
 typedef struct scale_data_t {
-  float force_recalc;
+  float force_recalculation;
   float last_scale_xc, last_scale_yc;
   float last_scale_factor;
   bool last_fullscreen;

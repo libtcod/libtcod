@@ -976,7 +976,7 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event* ev, TCOD_event_t eventMask,
       /* If the app is started while the device is locked, the screen will be in portrait mode.  We need to rescale
        * when it changes. */
       if (scale_data.surface_width != ev->window.data1 || scale_data.surface_height != ev->window.data1)
-        scale_data.force_recalc = 1;
+        scale_data.force_recalculation = 1;
       break;
     }
 #endif

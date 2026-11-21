@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 import argparse
-import datetime
+import datetime as dt
 import json
 import re
 import subprocess
@@ -32,7 +32,7 @@ def parse_changelog(args: argparse.Namespace) -> tuple[str, str]:
     )
     assert match
     header, changes, tail = match.groups()
-    tagged = f"\n## [{args.tag}] - {datetime.date.today().isoformat()}\n{changes}"  # noqa: DTZ011
+    tagged = f"\n## [{args.tag}] - {dt.date.today().isoformat()}\n{changes}"  # noqa: DTZ011
     if args.verbose:
         print(tagged)
 
@@ -84,6 +84,7 @@ def update_vcpkg_manifest(args: argparse.Namespace) -> None:
     if not args.dry_run:
         with vcpkg_path.open("w", encoding="utf-8") as f:
             json.dump(vcpkg_manifest, f, indent=2)
+            f.write("\n")
 
 
 def replace_unreleased_tags(tag: str, path: Path, *, dry_run: bool) -> None:
@@ -140,7 +141,6 @@ def main() -> None:
     if not args.dry_run:
         CHANGELOG_PATH.write_text(new_changelog, encoding="utf-8")
         edit = ["-e"] if args.edit else []
-        subprocess.run(["pre-commit", "run", "-a"], check=False)  # noqa: S607
         subprocess.run(  # noqa: S603
             ["git", "commit", "-avm", f"Prepare {args.tag} release.", *edit],  # noqa: S607
             check=True,

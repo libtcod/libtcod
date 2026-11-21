@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 import argparse
-import datetime
+import datetime as dt
 import re
 from pathlib import Path
 
@@ -26,7 +26,7 @@ def get_copyright(args: argparse.Namespace) -> str:
     copyright = LICENSE_FILE.read_text(encoding="utf-8")
     copyright = re.sub(
         pattern=r"(?<=Copyright © \d\d\d\d-)\d+",
-        repl=str(datetime.date.today().year),  # noqa: DTZ011
+        repl=str(dt.date.today().year),  # noqa: DTZ011
         string=copyright,
     )
     if not args.dry_run:

@@ -5,6 +5,7 @@ target-version = "py312"
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
+    "CPY",  # flake8-copyright
     "E501", # line-too-long
     "S101", # assert
     "T20",  # flake8-print

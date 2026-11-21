@@ -402,6 +402,7 @@
         "Programiv",
         "pstdint",
         "PTVS",
+        "pydocstyle",
         "pygame",
         "pyro",
         "Pyromancer",

@@ -79,6 +79,11 @@ jobs:
             config: Release
             cpack: true
 
+          - os: xcode-27
+            triplet: arm64-osx
+            shared: dynamic
+            config: Release
+
           - os: windows-2025
             triplet: x64-windows
             shared: static

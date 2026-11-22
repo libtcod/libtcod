@@ -8,6 +8,8 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 Versions since `2.0.0` only track API breaks and no longer guarantee ABI compatibility.
 
 ## [Unreleased]
+### Fixed
+- Fixed call to undeclared library function 'strerror' on some platforms. https://github.com/libtcod/libtcod/pull/210
 
 ## [2.3.3] - 2026-11-20
 ### CMake
